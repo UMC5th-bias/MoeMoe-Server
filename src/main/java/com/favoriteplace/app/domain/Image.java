@@ -14,6 +14,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,10 +38,6 @@ public class Image {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "guestbook_id")
     private GuestBook guestBook;
-
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "pilgrimage_id")
-    private Pilgrimage pilgrimage;
 
     @Column(nullable = false)
     private String url;

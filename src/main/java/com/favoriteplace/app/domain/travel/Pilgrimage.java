@@ -1,5 +1,6 @@
 package com.favoriteplace.app.domain.travel;
 
+import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.common.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,13 +24,12 @@ import static lombok.AccessLevel.PROTECTED;
 @Builder
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor(access = PRIVATE)
-public class Pilgrimage extends BaseTimeEntity{
+public class Pilgrimage extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "pilgrimage_id")
     private Long id;
 
-    //TODO : 조회할 때, FK를 address가 가지고 있는게 더 괜찮을 듯
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id", nullable = false)
     private Address address;
@@ -37,8 +38,15 @@ public class Pilgrimage extends BaseTimeEntity{
     @JoinColumn(name = "rally_id", nullable = false)
     private Rally rally;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "virtual_image_id", nullable = false)
+    private Image virtualImage;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "real_image_id", nullable = false)
+    private Image realImage;
+
     @Column(name = "rally_name", nullable = false)
-    //TODO : 카멜 케이스 DB에 언더라인으로 들어가나?
     private String rallyName;
 
     @Column(name = "detail_address", nullable = false)

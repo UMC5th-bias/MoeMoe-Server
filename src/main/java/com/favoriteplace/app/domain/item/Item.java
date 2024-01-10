@@ -56,13 +56,8 @@ public class Item extends BaseTimeEntity{
 
     private LocalDateTime sale_deadline;
 
-    //팔지 않는 제품의 경우 0 포인트 or null??
     private Long point;
 
     private String description;
-
-    //여기 양방향 매핑이 필요할까...?
-    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
-    private List<AcquiredItem> acquiredItems = new ArrayList<>();
 
 }

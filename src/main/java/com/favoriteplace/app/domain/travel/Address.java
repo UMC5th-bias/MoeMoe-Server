@@ -25,8 +25,8 @@ public class Address {
     private Long id;
 
     @Column(nullable = false)
-    private String state;
+    private String state;   //ex. 도툐도
 
     @Column(nullable = false)
-    private String district;
+    private String district;  //ex.시부야구
 }

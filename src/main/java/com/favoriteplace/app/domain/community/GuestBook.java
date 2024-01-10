@@ -7,6 +7,7 @@ import static lombok.AccessLevel.PROTECTED;
 
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.common.BaseTimeEntity;
+import com.favoriteplace.app.domain.travel.Pilgrimage;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -35,7 +36,7 @@ public class GuestBook extends BaseTimeEntity {
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "pilgrimage_id", nullable = false)
-    private com.favoriteplace.app.domain.travel.Pilgrimage Pilgrimage;
+    private Pilgrimage Pilgrimage;
 
     @Column(columnDefinition = "LONGTEXT", nullable = false)
     private String content;
