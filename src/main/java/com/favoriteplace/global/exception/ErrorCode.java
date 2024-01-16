@@ -18,7 +18,9 @@ public enum ErrorCode {
     INVALID_HTTP_METHOD(HttpStatus.METHOD_NOT_ALLOWED, 400, "잘못된 Http Method 요청입니다."),
 
     //User (2000번대)
-    USER_NOT_FOUND(HttpStatus.BAD_REQUEST, 2001, "유저를 찾을 수 없습니다.");
+    USER_NOT_FOUND(HttpStatus.BAD_REQUEST, 2001, "유저를 찾을 수 없습니다."),
+    LOGIN_FAILED(HttpStatus.UNAUTHORIZED, 2002, "로그인에 실패했습니다.");
+
 
     private final HttpStatus httpStatus;
     private final int code;
