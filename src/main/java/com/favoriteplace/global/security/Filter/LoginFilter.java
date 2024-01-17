@@ -20,7 +20,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
-        // UsernamePasswordAuthenticationToken 생성
+        // UsernamePasswordAuthenticationToken 생성(이때 authentication 는 인증 여부를 확인하는 authenticated 값이 false)
         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
             email, password);
 
