@@ -35,6 +35,10 @@ public class Rally extends BaseTimeEntity {
     @JoinColumn(name = "item_id", nullable = false)
     private Item item;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "image_id", nullable = false)
+    private Image image;
+
     @Column(nullable = false)
     private String name;  //애니메이션 이름
 
@@ -44,4 +48,6 @@ public class Rally extends BaseTimeEntity {
     @Column(nullable = false)
     private Long achieve_number;  //달성한 사람 수
 
+    @Column(nullable = false)
+    private Long pilgrimage_number; //해당 랠리의 성지 순례 갯수
 }
