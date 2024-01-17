@@ -32,36 +32,33 @@ public class PilgrimageQueryService {
         Rally rally = rallyRepository.findById(rallyId).orElseThrow(
                 ()-> new RestApiException(ErrorCode.RALLY_NOT_FOUND));
         Member member = memberRepository.findById(0L).orElse(null);
-
-        RallyDto.RallyDetailResponseDto result;
         // 비회원
         if (member == null){
-            result = RallyConverter.toRallyDetailResponseDto(
+            return RallyConverter.toRallyDetailResponseDto(
                     rally, 0L, false, false);
-        } // 회원
-        else {
-            LikedRally isLikeList = likedRallyRepository.findByRallyAndMember(rally, member);
-            List<VisitedPilgrimage> pilgrimageNumber = visitedPilgrimageRepository.findByMemberAndPilgrimage_Rally(member, rally);
-            if (isLikeList == null) {
-                result = RallyConverter.toRallyDetailResponseDto(
-                    rally, Long.valueOf(pilgrimageNumber.size()), false, true);
-            } else {
-                result = RallyConverter.toRallyDetailResponseDto(
-                        rally, Long.valueOf(pilgrimageNumber.size()), true, true);
-            }
         }
-        return result;
+        LikedRally isLikeList = likedRallyRepository.findByRallyAndMember(rally, member);
+        List<VisitedPilgrimage> pilgrimageNumber = visitedPilgrimageRepository.findByMemberAndPilgrimage_Rally(member, rally);
+        if (isLikeList == null) {
+            return RallyConverter.toRallyDetailResponseDto(
+                rally, Long.valueOf(pilgrimageNumber.size()), false, true);
+        }
+        return RallyConverter.toRallyDetailResponseDto(
+                rally, Long.valueOf(pilgrimageNumber.size()), true, true);
     }
 
     // 사용자 정보 없을 때 RallyAddressPilgrimageDto.isVisited->false
     public RallyDto.RallyAddressListDto getRallyAddressList(Long rallyId) {
         Rally rally = rallyRepository.findById(rallyId).orElseThrow(
                 ()-> new RestApiException(ErrorCode.RALLY_NOT_FOUND));
-//        Member member = memberRepository.findByAccessToken().
-//        if (member == null){
-//             비회원 로직
-//        }
-//        회원로직
+        Member member = memberRepository.findById(0L).orElse(null);
+        // 비회원
+        if (member == null){
+
+        } // 회원
+        else {
+
+        }
         return null;
     }
 
