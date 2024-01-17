@@ -49,5 +49,9 @@ public class Rally extends BaseTimeEntity {
     private Long achieveNumber;  //달성한 사람 수
 
     @Column(nullable = false)
-    private Long pilgrimage_number; //해당 랠리의 성지 순례 갯수
+    private Long pilgrimageNumber; //해당 랠리의 성지 순례 갯수
+
+    public void addPilgrimage(){
+        this.pilgrimageNumber += 1;
+    }
 }
