@@ -21,7 +21,10 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.BAD_REQUEST, 2001, "유저를 찾을 수 없습니다."),
 
     //Rally (4000번대)
-    RALLY_NOT_FOUND(HttpStatus.BAD_REQUEST, 4001, "랠리가 존재하지 않습니다.");
+    RALLY_NOT_FOUND(HttpStatus.BAD_REQUEST, 4001, "랠리가 존재하지 않습니다."),
+
+    //Post (5000번대)
+    POST_NOT_FOUND(HttpStatus.BAD_REQUEST, 5001, "자유게시판 게시글이 존재하지 않습니다.");
 
     private final HttpStatus httpStatus;
     private final int code;

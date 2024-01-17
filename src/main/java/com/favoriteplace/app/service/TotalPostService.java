@@ -47,13 +47,13 @@ public class TotalPostService {
         List<HomeResponseDto.TrendingPost> trendingPosts = new ArrayList<>();
 
         for(int i=0; i< combined.size() && i<5; i++){
-            trendingPosts.add(convertToTrendingPost(combined.get(i), i+1, DateTimeFormatUtils.getPassDateTime(now)));
+            trendingPosts.add(convertToTrendingPost(combined.get(i), i+1));
         }
 
         return trendingPosts;
     }
 
-    public HomeResponseDto.TrendingPost convertToTrendingPost(Object object, int rank, String passedTime){
+    public HomeResponseDto.TrendingPost convertToTrendingPost(Object object, int rank){
         if(object instanceof GuestBook guestBook){
             return HomeResponseDto.TrendingPost.builder()
                     .id(guestBook.getId())
@@ -64,7 +64,7 @@ public class TotalPostService {
                     .hashtags(hashtagRepository.findAllByGuestBookId(guestBook.getId()).stream()
                             .map(HashTag::getTagName)
                             .collect(Collectors.toList()))
-                    .passedTime(passedTime)
+                    .passedTime(DateTimeFormatUtils.getPassDateTime(guestBook.getCreatedAt()))
                     .board("성지순례 인증")
                     .build();
         }
@@ -77,7 +77,7 @@ public class TotalPostService {
                     .profileImageUrl(post.getMember().getProfileImageUrl())
                     .profileIconUrl(post.getMember().getProfile_icon().getImage().getUrl())
                     .hashtags(new ArrayList<>())
-                    .passedTime(passedTime)
+                    .passedTime(DateTimeFormatUtils.getPassDateTime(post.getCreatedAt()))
                     .board("자유게시판")
                     .build();
         }
