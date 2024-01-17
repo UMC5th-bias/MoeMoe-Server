@@ -38,6 +38,9 @@ public class GuestBook extends BaseTimeEntity {
     @JoinColumn(name = "pilgrimage_id", nullable = false)
     private Pilgrimage Pilgrimage;
 
+    @Column(nullable = false)
+    private String title;
+
     @Column(columnDefinition = "LONGTEXT", nullable = false)
     private String content;
 
