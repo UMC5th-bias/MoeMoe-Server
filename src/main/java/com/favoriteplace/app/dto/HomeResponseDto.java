@@ -28,8 +28,8 @@ public class HomeResponseDto {
                     .id(member.getId())
                     .nickname(member.getNickname())
                     .profileImageUrl(member.getProfileImageUrl())
-                    .profileTitleUrl(member.getProfile_title().getImage().getUrl())
-                    .profileIconUrl(member.getProfile_icon().getImage().getUrl())
+                    .profileTitleUrl(member.getProfileTitle().getImage().getUrl())
+                    .profileIconUrl(member.getProfileIcon().getImage().getUrl())
                     .build();
         }
     }

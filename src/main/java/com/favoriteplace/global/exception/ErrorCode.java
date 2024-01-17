@@ -20,8 +20,11 @@ public enum ErrorCode {
     //User (2000번대)
     USER_NOT_FOUND(HttpStatus.BAD_REQUEST, 2001, "유저를 찾을 수 없습니다."),
 
+    //Pilgrimage (3000번대)
+    PILGRIMAGE_NOT_FOUND(HttpStatus.BAD_REQUEST, 3001, "성지순례 정보를 찾을 수 없습니다."),
+
     //Rally (4000번대)
-    RALLY_NOT_FOUND(HttpStatus.BAD_REQUEST, 4001, "랠리가 존재하지 않습니다.");
+    RALLY_NOT_FOUND(HttpStatus.BAD_REQUEST, 4001, "랠리 정보를 찾을 수 없습니다.");
 
     private final HttpStatus httpStatus;
     private final int code;
