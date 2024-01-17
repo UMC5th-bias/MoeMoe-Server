@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -19,13 +20,18 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
-
+    private final List<ExcludePath> excludePaths = Arrays.asList(
+        new ExcludePath("/auth/logout", HttpMethod.POST),
+        new ExcludePath("/pilgrimage/**", HttpMethod.POST)
+        // Add more paths and methods as needed
+    );
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        //TODO 인증 필요한 endpoint 추가
-        String[] excludePath = {"/auth/logout"};
-        String path = request.getRequestURI();
-        return !Arrays.stream(excludePath).anyMatch(path::startsWith);
+        String requestURI = request.getRequestURI();
+        String method = request.getMethod();
+
+        return excludePaths.stream()
+            .anyMatch(excludePath -> excludePath.matches(requestURI, method));
     }
 
     @Override
@@ -56,5 +62,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return bearerToken.substring(7);
         }
         return null;
+    }
+
+    private static class ExcludePath {
+        private final String path;
+        private final HttpMethod method;
+
+        public ExcludePath(String path, HttpMethod method) {
+            this.path = path;
+            this.method = method;
+        }
+
+        public boolean matches(String requestURI, String requestMethod) {
+            return path.equals(requestURI) && method.matches(requestMethod);
+        }
+    }
+
+    private enum HttpMethod {
+        GET, POST, PUT, DELETE;  // Add more methods as needed
+
+        public boolean matches(String requestMethod) {
+            return this.name().equalsIgnoreCase(requestMethod);
+        }
     }
 }

@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +35,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
         //유저 정보 가져오기
         String email = request.getParameter("email");
+        System.out.println("hi");
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new RestApiException(ErrorCode.USER_NOT_FOUND));
 
