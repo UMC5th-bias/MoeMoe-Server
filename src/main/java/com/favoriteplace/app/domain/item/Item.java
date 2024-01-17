@@ -39,7 +39,7 @@ public class Item extends BaseTimeEntity{
     @Column(name = "item_id")
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "image_id", nullable = false)
     private Image image;
 
@@ -54,7 +54,7 @@ public class Item extends BaseTimeEntity{
     @Column(nullable = false)
     private ItemType type;
 
-    private LocalDateTime sale_deadline;
+    private LocalDateTime saleDeadline;
 
     private Long point;
 
