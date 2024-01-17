@@ -1,9 +1,11 @@
 package com.favoriteplace.app.service;
 
+import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.travel.Pilgrimage;
 import com.favoriteplace.app.domain.travel.Rally;
 import com.favoriteplace.app.dto.travel.PilgrimageDto;
 import com.favoriteplace.app.dto.travel.RallyDto;
+import com.favoriteplace.app.repository.MemberRepository;
 import com.favoriteplace.app.repository.PilgrimageRepository;
 import com.favoriteplace.app.repository.RallyRepository;
 import com.favoriteplace.global.exception.ErrorCode;
@@ -19,16 +21,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class PilgrimageQueryService {
     private final PilgrimageRepository pilgrimageRepository;
     private final RallyRepository rallyRepository;
+    private final MemberRepository memberRepository;
 
     // 사용자 정보 없을 때 isLike->false
     public RallyDto.RallyDetailResponseDto getRallyDetail(Long rallyId) {
         Rally rally = rallyRepository.findById(rallyId).orElseThrow(
                 ()-> new RestApiException(ErrorCode.RALLY_NOT_FOUND));
-//        Member member = accessToken 이용해서 사용자 조회
-//        if (member == null){
-//             비회원 로직
-//        }
-//        회원로직
+        Member member = memberRepository.findById(0L).orElse(null);
+        if (member == null){
+
+        } else {
+
+        }
         return null;
     }
 
