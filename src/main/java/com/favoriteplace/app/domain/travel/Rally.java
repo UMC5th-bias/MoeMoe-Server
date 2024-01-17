@@ -42,6 +42,6 @@ public class Rally extends BaseTimeEntity {
     private String description;
 
     @Column(nullable = false)
-    private Long achieve_number;  //달성한 사람 수
+    private Long achieveNumber;  //달성한 사람 수
 
 }
