@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 public class JwtTokenProvider {
 
     private final Key key;
-    private final Integer expirePeriod = 24 * 60 * 60 * 1000 * 15;
+    private final Integer expirePeriod = 24 * 60 * 60 * 1000 * 40;
 
     public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
@@ -44,11 +44,36 @@ public class JwtTokenProvider {
             .collect(Collectors.joining(","));
 
         long now = (new Date()).getTime();
+
         // Access Token 생성
         Date accessTokenExpiresIn = new Date(now + expirePeriod);
         String accessToken = Jwts.builder()
             .setSubject(authentication.getName())
             .claim("auth", authorities)
+            .setExpiration(accessTokenExpiresIn)
+            .signWith(key, SignatureAlgorithm.HS256)
+            .compact();
+
+        // Refresh Token 생성
+        String refreshToken = Jwts.builder()
+            .setExpiration(new Date(now + expirePeriod))
+            .signWith(key, SignatureAlgorithm.HS256)
+            .compact();
+
+        return TokenInfo.builder()
+            .grantType("Bearer")
+            .accessToken(accessToken)
+            .refreshToken(refreshToken)
+            .build();
+    }
+
+    public TokenInfo generateToken(String email) {
+        long now = (new Date()).getTime();
+
+        // Access Token 생성
+        Date accessTokenExpiresIn = new Date(now + expirePeriod);
+        String accessToken = Jwts.builder()
+            .setSubject(email)
             .setExpiration(accessTokenExpiresIn)
             .signWith(key, SignatureAlgorithm.HS256)
             .compact();
