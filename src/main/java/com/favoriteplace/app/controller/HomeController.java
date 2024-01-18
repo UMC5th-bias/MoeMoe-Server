@@ -20,23 +20,24 @@ public class HomeController {
     @GetMapping()
     public HomeResponseDto getHomeInfo(@RequestHeader("Authorization") String accessToken){
         //유저가 맞을 때
-        if(memberService.isTokenExists(accessToken)){
-            return HomeResponseDto.builder()
-                    .isLoggedIn(true)
-                    .userInfo(memberService.getUserInfo(accessToken))
-                    .rally(rallyService.getMemberRecentRally(accessToken))
-                    .trendingPosts(totalPostService.getTrendingPosts())
-                    .build();
-        }
-        //유저가 아닐때
-        else{
-            return HomeResponseDto.builder()
-                    .isLoggedIn(false)
-                    .userInfo(null)
-                    .rally(rallyService.getRandomRally())
-                    .trendingPosts(totalPostService.getTrendingPosts())
-                    .build();
-        }
+//        if(memberService.isTokenExists(accessToken)){
+//            return HomeResponseDto.builder()
+//                    .isLoggedIn(true)
+//                    .userInfo(memberService.getUserInfo(accessToken))
+//                    .rally(rallyService.getMemberRecentRally(accessToken))
+//                    .trendingPosts(totalPostService.getTrendingPosts())
+//                    .build();
+//        }
+//        //유저가 아닐때
+//        else{
+//            return HomeResponseDto.builder()
+//                    .isLoggedIn(false)
+//                    .userInfo(null)
+//                    .rally(rallyService.getRandomRally())
+//                    .trendingPosts(totalPostService.getTrendingPosts())
+//                    .build();
+//        }
+        return null;
     }
 
 }
