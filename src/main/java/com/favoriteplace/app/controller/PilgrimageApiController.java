@@ -16,6 +16,7 @@ public class PilgrimageApiController {
     private final PilgrimageQueryService pilgrimageQueryService;
 
     // 성지순례 랠리 상세
+    // 회원 + 비회원
     // jwt 수정 필요함
     @GetMapping("/{rallyId}")
     public RallyDto.RallyDetailResponseDto getRallyDetail(@PathVariable("rallyId")Long rallyId){
@@ -24,6 +25,7 @@ public class PilgrimageApiController {
     }
 
     // 성지순례 랠리 장소리스트
+    // 회원 + 비회원
     // jwt 수정 필요함
     @GetMapping("/{rallyId}/list")
     public RallyDto.RallyAddressListDto getRallyAddressList(@PathVariable("rallyId")Long rallyId){
@@ -32,6 +34,7 @@ public class PilgrimageApiController {
     }
 
     // 성지순례 랠리 장소 상세
+    // 회원
     // jwt 수정 필요함
     @GetMapping("/detail/{pilgrimageId}")
     public PilgrimageDto.PilgrimageDetailDto getPilgrimageDetail(@PathVariable("pilgrimageId")Long pilgrimageId){

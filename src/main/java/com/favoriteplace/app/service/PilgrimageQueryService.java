@@ -34,17 +34,14 @@ public class PilgrimageQueryService {
         Member member = memberRepository.findById(0L).orElse(null);
         // 비회원
         if (member == null){
-            return RallyConverter.toRallyDetailResponseDto(
-                    rally, 0L, false, false);
+            return RallyConverter.toRallyDetailResponseDto(rally, 0L, false, false);
         }
         LikedRally isLikeList = likedRallyRepository.findByRallyAndMember(rally, member);
         List<VisitedPilgrimage> pilgrimageNumber = visitedPilgrimageRepository.findByMemberAndPilgrimage_Rally(member, rally);
         if (isLikeList == null) {
-            return RallyConverter.toRallyDetailResponseDto(
-                rally, Long.valueOf(pilgrimageNumber.size()), false, true);
+            return RallyConverter.toRallyDetailResponseDto(rally, Long.valueOf(pilgrimageNumber.size()), false, true);
         }
-        return RallyConverter.toRallyDetailResponseDto(
-                rally, Long.valueOf(pilgrimageNumber.size()), true, true);
+        return RallyConverter.toRallyDetailResponseDto(rally, Long.valueOf(pilgrimageNumber.size()), true, true);
     }
 
     // 사용자 정보 없을 때 RallyAddressPilgrimageDto.isVisited->false
