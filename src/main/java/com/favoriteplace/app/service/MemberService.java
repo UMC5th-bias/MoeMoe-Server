@@ -10,6 +10,7 @@ import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.security.provider.JwtTokenProvider;
 import com.favoriteplace.global.util.SecurityUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -33,30 +34,13 @@ public class MemberService {
         return null;
     }
 
-    //TODO : 사용자 인증 여부 확인
     @Transactional
-    public boolean isTokenExists(String accessToken) {
-        /*
-        [JWT]
-        String userId = jwtUtil.getUserIdFromToken(accessToken);
-        return memberRepository.existsById(Long.valueOf(userId));
-        */
-        //[임시] : accessToken 대신 memberId 사용
-        return memberRepository.existsById(Long.valueOf(accessToken));
+    public boolean isTokenExists(HttpServletRequest request) {
+        return securityUtil.getUserFromHeader(request) != null;
     }
 
     @Transactional
-    public HomeResponseDto.UserInfo getUserInfo(String accessToken) {
-        /*
-        [JWT]
-        String userId = jwtUtil.getUserIdFromToken(accessToken);
-        Member member = memberRepository.findById(Long.valueOf(accessToken))
-                .orElseThrow(() -> new RestApiException(ErrorCode.USER_NOT_FOUND));
-        return HomeResponseDto.UserInfo.of(member);
-         */
-        //[임시] : accessToken 대신 memberId 사용
-        Member member = memberRepository.findById(Long.valueOf(accessToken))
-                .orElseThrow(() -> new RestApiException(ErrorCode.USER_NOT_FOUND));
-        return HomeResponseDto.UserInfo.of(member);
+    public HomeResponseDto.UserInfo getUserInfo(HttpServletRequest request) {
+        return HomeResponseDto.UserInfo.of(securityUtil.getUserFromHeader(request));
     }
 }
