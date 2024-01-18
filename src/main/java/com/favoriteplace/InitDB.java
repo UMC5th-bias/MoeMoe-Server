@@ -94,8 +94,7 @@ public class InitDB {
                     .id(6L).member(member)
                     .title("게시글7").content("abcdefg")
                     .likeCount(35L).view(35L).build();
-            em.merge(post1); em.merge(post2); em.merge(post3); em.merge(post4);
-            em.merge(post5); em.merge(post6); em.merge(post7);
+            em.merge(post1); em.merge(post2); em.merge(post3); em.merge(post4); em.merge(post5); em.merge(post6); em.merge(post7);
 
             Address address = Address.builder().id(0L)
                     .state("도교").district("시부야구").build();
@@ -111,15 +110,13 @@ public class InitDB {
                     .pilgrimage_number(2L).build();
             em.merge(rally1); em.merge(rally2);
 
-
             Pilgrimage pilgrimage1 = Pilgrimage.builder()
                     .address(address).rally(rally1).virtualImage(image1).realImage(image1)
                     .rallyName("최애의 아이").detailAddress("스크램블 교차로1").latitude(1.1).longitude(1.1).build();
             Pilgrimage pilgrimage2 = Pilgrimage.builder()
                     .address(address).rally(rally2).virtualImage(image2).realImage(image2)
                     .rallyName("최애의 아이").detailAddress("스크램블 교차로2").latitude(1.1).longitude(1.1).build();
-            em.merge(pilgrimage1);
-            em.merge(pilgrimage2);
+            em.merge(pilgrimage1); em.merge(pilgrimage2);
 
             GuestBook guestBook1 = GuestBook.builder().id(0L)
                     .member(member).pilgrimage(pilgrimage1)
