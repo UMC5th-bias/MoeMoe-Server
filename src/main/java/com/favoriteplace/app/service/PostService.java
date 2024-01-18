@@ -1,7 +1,7 @@
 package com.favoriteplace.app.service;
 
 import com.favoriteplace.app.domain.community.Post;
-import com.favoriteplace.app.dto.community.TrendingFreePostResponseDto;
+import com.favoriteplace.app.dto.community.TrendingTodayPostResponseDto;
 import com.favoriteplace.app.repository.PostRepository;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
@@ -19,7 +19,7 @@ public class PostService {
     private final PostRepository postRepository;
 
     @Transactional
-    public List<TrendingFreePostResponseDto.TrendingPostRank> getTodayTrendingPost() {
+    public List<TrendingTodayPostResponseDto.TrendingPostRank> getTodayTrendingPost() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startOfDay = now.toLocalDate().atStartOfDay();
         List<Post> posts = postRepository.findByCreatedAtBetweenOrderByLikeCountDesc(startOfDay, now);
@@ -28,9 +28,9 @@ public class PostService {
         }
         posts.subList(0, Math.min(5, posts.size()));
 
-        List<TrendingFreePostResponseDto.TrendingPostRank> trendingPostRanks = new ArrayList<>();
+        List<TrendingTodayPostResponseDto.TrendingPostRank> trendingPostRanks = new ArrayList<>();
         for(int i =0; i<posts.size() && i<5; i++){
-            trendingPostRanks.add(TrendingFreePostResponseDto.TrendingPostRank.of(posts.get(i)));
+            trendingPostRanks.add(TrendingTodayPostResponseDto.TrendingPostRank.of(posts.get(i)));
         }
         return trendingPostRanks;
     }

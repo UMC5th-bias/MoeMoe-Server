@@ -27,7 +27,10 @@ public enum ErrorCode {
     RALLY_NOT_FOUND(HttpStatus.BAD_REQUEST, 4001, "랠리 정보를 찾을 수 없습니다."),
 
     //Post (5000번대)
-    POST_NOT_FOUND(HttpStatus.BAD_REQUEST, 5001, "자유게시판 게시글이 존재하지 않습니다.");
+    POST_NOT_FOUND(HttpStatus.BAD_REQUEST, 5001, "자유게시판 게시글이 존재하지 않습니다."),
+
+    //GuestBook (6000번대)
+    GUESTBOOK_NOT_FOUND(HttpStatus.BAD_REQUEST, 6001, "성지순례 인증글이 존재하지 않습니다.");
 
 
     private final HttpStatus httpStatus;

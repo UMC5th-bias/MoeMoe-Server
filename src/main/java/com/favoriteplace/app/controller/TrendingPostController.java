@@ -1,6 +1,8 @@
 package com.favoriteplace.app.controller;
 
-import com.favoriteplace.app.dto.community.TrendingFreePostResponseDto;
+import com.favoriteplace.app.dto.community.TrendingTodayPostResponseDto;
+import com.favoriteplace.app.repository.GuestBookRepository;
+import com.favoriteplace.app.service.GuestBookService;
 import com.favoriteplace.app.service.PostService;
 import com.favoriteplace.global.util.DateTimeFormatUtils;
 import lombok.RequiredArgsConstructor;
@@ -15,13 +17,21 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class TrendingPostController {
     private final PostService postService;
+    private final GuestBookService guestBookService;
 
     @GetMapping("/today/free")
-    public TrendingFreePostResponseDto getTodayTrendingFreePost(){
-        //당일 기준 으로 TOP 5 뽑아서 추천수 기준으로 내림차순 정렬
-        return TrendingFreePostResponseDto.builder()
+    public TrendingTodayPostResponseDto getTodayTrendingFreePost(){
+        return TrendingTodayPostResponseDto.builder()
                 .date(DateTimeFormatUtils.convertDateToString(LocalDateTime.now()))
                 .rank(postService.getTodayTrendingPost())
+                .build();
+    }
+
+    @GetMapping("/today/guestbooks")
+    public TrendingTodayPostResponseDto getTodayTrendingGuestBook(){
+        return TrendingTodayPostResponseDto.builder()
+                .date(DateTimeFormatUtils.convertDateToString(LocalDateTime.now()))
+                .rank(guestBookService.getTodayTrendingGuestBook())
                 .build();
     }
 }
