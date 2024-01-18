@@ -2,8 +2,8 @@ spring:
   datasource:
     #로컬 DB(각자에 맞게 변경)
     url: jdbc:mysql://localhost:3306/FavoritePlace
-    username: dongnae
-    password: df1234
+    username: root
+    password: Due1988!
     driver-class-name: com.mysql.cj.jdbc.Driver
   sql:
     init:
