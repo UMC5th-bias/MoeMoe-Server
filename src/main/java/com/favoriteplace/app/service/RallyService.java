@@ -17,53 +17,34 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class RallyService {
-    private final MemberRepository memberRepository;
     private final SecurityUtil securityUtil;
     private final RallyRepository rallyRepository;
     private final VisitedPilgrimageRepository visitedPilgrimageRepository;
     private final PilgrimageRepository pilgrimageRepository;
 
     @Transactional
-    public HomeResponseDto.HomeRally getMemberRecentRally(HttpServletRequest request) {
-        /*
-        [JWT]
-        String userId = jwtUtil.getUserIdFromToken(accessToken);
-        Member member = memberRepository.findById(Long.valueOf(accessToken))
-                .orElseThrow(() -> new RestApiException(ErrorCode.USER_NOT_FOUND));
-         */
-        //[임시] : accessToken 대신 memberId 사용
-        Long id = securityUtil.getUserFromHeader(request).getId();
-
-        List<VisitedPilgrimage> visitedPilgrimages = visitedPilgrimageRepository.findByMemberIdOrderByModifiedAtDesc(id);
-
+    public HomeResponseDto.HomeRally getRecentRallyElseRandomRally(HttpServletRequest request) {
         Rally rally;
         long visitedCount = 0L;
-        if(visitedPilgrimages.isEmpty()){
-            //랜덤 랠리
+        if(!securityUtil.isTokenExists(request)){
             rally = recommandRandomRally();
-        }else{
-            rally = visitedPilgrimages.get(0).getPilgrimage().getRally();
-            visitedCount = getCompletePilgrimageCount(id, rally.getId());
+        }
+        else{
+            Long id = securityUtil.getUserFromHeader(request).getId();
+            List<VisitedPilgrimage> visitedPilgrimages = visitedPilgrimageRepository.findByMemberIdOrderByModifiedAtDesc(id);
+            if(visitedPilgrimages.isEmpty()){
+                //랜덤 랠리
+                rally = recommandRandomRally();
+            }else{
+                rally = visitedPilgrimages.get(0).getPilgrimage().getRally();
+                visitedCount = getCompletePilgrimageCount(id, rally.getId());
+            }
         }
         return HomeResponseDto.HomeRally.of(rally, visitedCount);
-    }
-
-    @Transactional
-    public HomeResponseDto.HomeRally getRandomRally() {
-        Rally rally = recommandRandomRally();
-        return HomeResponseDto.HomeRally.of(rally, 0L);
-    }
-
-    @Transactional
-    public long getCompletePilgrimageCount(Long memberId, Long rallyId){
-        List<Pilgrimage> pilgrimages = pilgrimageRepository.findByRallyId(rallyId);
-        List<Long> pilgrimageIds = pilgrimages.stream().map(Pilgrimage::getId).toList();
-        return visitedPilgrimageRepository.countByMemberIdAndPilgrimageIdIn(memberId, pilgrimageIds);
     }
 
     @Transactional
@@ -76,5 +57,14 @@ public class RallyService {
         int index = random.nextInt(rallies.size());
         return rallies.get(index);
     }
+
+    @Transactional
+    public long getCompletePilgrimageCount(Long memberId, Long rallyId){
+        List<Pilgrimage> pilgrimages = pilgrimageRepository.findByRallyId(rallyId);
+        List<Long> pilgrimageIds = pilgrimages.stream().map(Pilgrimage::getId).toList();
+        return visitedPilgrimageRepository.countByMemberIdAndPilgrimageIdIn(memberId, pilgrimageIds);
+    }
+
+
 
 }

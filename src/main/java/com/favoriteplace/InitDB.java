@@ -57,7 +57,7 @@ public class InitDB {
 
             Member member = Member.builder()
                     .id(0L).profileIcon(item1)
-                    .profileTitle(item2).email("email@email.com")
+                    .profileTitle(item2).email("aaa@email.com")
                     .password("1234").birthday(null)
                     .nickname("user1").description("hi")
                     .profileImageUrl("").status(MemberStatus.Y)
