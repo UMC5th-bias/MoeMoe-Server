@@ -9,7 +9,6 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-@Builder
 public class PostResponseDto {
 
     @Getter
@@ -18,6 +17,24 @@ public class PostResponseDto {
         private UserInfoResponseDto userInfo;
         private PostInfoResponseDto postInfo;
     }
+
+    @Getter
+    @Builder
+    public static class PostCommentResponseDto{
+        private Long size;
+        private List<PostComment> comment;
+    }
+
+    @Getter
+    @Builder
+    public static class PostComment{
+        private UserInfoResponseDto userInfo;
+        private Long id;
+        private String content;
+        private String passedTime;
+        private Boolean isWrite;
+    }
+
 
     @Getter
     @Builder

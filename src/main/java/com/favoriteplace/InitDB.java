@@ -2,6 +2,7 @@ package com.favoriteplace;
 
 import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.domain.community.Comment;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.Post;
 import com.favoriteplace.app.domain.enums.ItemType;
@@ -147,6 +148,20 @@ public class InitDB {
                     .title("인증글7").content("인증글내용7").likeCount(30L).view(30L).latitude(1.1).longitude(1.1)
                     .build();
             em.merge(guestBook1);em.merge(guestBook2); em.merge(guestBook3); em.merge(guestBook4); em.merge(guestBook5); em.merge(guestBook6); em.merge(guestBook7);
+
+            Comment comment1 = Comment.builder()
+                    .member(member).post(post1).guestBook(null).content("댓글1").build();
+            Comment comment2 = Comment.builder()
+                    .member(member).post(post1).guestBook(null).content("댓글2").build();
+            Comment comment3 = Comment.builder()
+                    .member(member).post(post1).guestBook(null).content("댓글3").build();
+            Comment comment4 = Comment.builder()
+                    .member(member).post(post1).guestBook(null).content("댓글4").build();
+            Comment comment5 = Comment.builder()
+                    .member(member).post(post1).guestBook(null).content("댓글5").build();
+            Comment comment6 = Comment.builder()
+                    .member(member).post(post1).guestBook(null).content("댓글6").build();
+            em.merge(comment1); em.merge(comment2);em.merge(comment3);em.merge(comment4);em.merge(comment5);em.merge(comment6);
         }
     }
 }
