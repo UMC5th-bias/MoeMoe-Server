@@ -105,11 +105,11 @@ public class InitDB {
             Rally rally1 = Rally.builder().id(0L)
                     .item(item1).image(image1).name("최애의 아이")
                     .description("환생한 내가 아이돌의 자녀??!!").achieveNumber(10L)
-                    .pilgrimage_number(4L).build();
+                    .pilgrimageNumber(4L).build();
             Rally rally2 = Rally.builder().id(1L)
                     .item(item2).image(image2).name("날씨의 아이")
                     .description("비야 멈춰라!").achieveNumber(20L)
-                    .pilgrimage_number(2L).build();
+                    .pilgrimageNumber(2L).build();
             em.merge(rally1); em.merge(rally2);
 
             Pilgrimage pilgrimage1 = Pilgrimage.builder()
