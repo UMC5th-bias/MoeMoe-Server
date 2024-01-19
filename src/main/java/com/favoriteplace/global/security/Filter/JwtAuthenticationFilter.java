@@ -23,7 +23,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final List<ExcludePath> excludePaths = Arrays.asList(
         new ExcludePath("/auth/logout", HttpMethod.POST),
         new ExcludePath("/pilgrimage/**", HttpMethod.POST),
-        new ExcludePath("/detail/**", HttpMethod.GET)
+        new ExcludePath("/pilgrimage/detail/**", HttpMethod.GET)
         // Add more paths and methods as needed
     );
     @Override
@@ -31,13 +31,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String requestURI = request.getRequestURI();
         String method = request.getMethod();
 
-        return excludePaths.stream()
+        return !excludePaths.stream()
             .anyMatch(excludePath -> excludePath.matches(requestURI, method));
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+        log.info("hqwefqwe: "+request);
 
         // 1. Request Header 에서 JWT 토큰 추출
         String token = resolveToken((HttpServletRequest) request);

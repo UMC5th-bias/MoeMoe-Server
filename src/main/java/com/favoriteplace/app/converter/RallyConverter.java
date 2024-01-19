@@ -39,7 +39,7 @@ public class RallyConverter {
     public static RallyDto.RallyAddressPilgrimageDto toRallyAddressPilgrimageDto(Pilgrimage pilgrimage){
         return RallyDto.RallyAddressPilgrimageDto.builder()
                 .id(pilgrimage.getId())
-                .pilgrimageAddress(pilgrimage.getDetailAddress())
+                .detailAddress(pilgrimage.getDetailAddress())
                 .image(pilgrimage.getVirtualImage().getUrl())
                 .isVisited(false)
                 .build();

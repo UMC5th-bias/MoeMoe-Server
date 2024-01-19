@@ -46,8 +46,20 @@ public class RallyDto {
     @AllArgsConstructor
     public static class RallyAddressPilgrimageDto{
         Long id;
-        String pilgrimageAddress;
+        String detailAddress;
         String image;
         Boolean isVisited;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class RallyTrendingDto {
+        Long id;
+        String name;
+        Long pilgrimageNumber;
+        Long myPilgrimageNumber;
+        String image;
     }
 }
