@@ -22,7 +22,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final List<ExcludePath> excludePaths = Arrays.asList(
         new ExcludePath("/auth/logout", HttpMethod.POST),
-        new ExcludePath("/pilgrimage/**", HttpMethod.POST)
+        new ExcludePath("/pilgrimage/**", HttpMethod.POST),
+        new ExcludePath("/detail/**", HttpMethod.GET)
         // Add more paths and methods as needed
     );
     @Override

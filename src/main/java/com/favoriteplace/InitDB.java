@@ -59,7 +59,7 @@ public class InitDB {
                     .id(0L)
                     .profileIcon(item1)
                     .profileTitle(item2)
-                    .email("email@email.com")
+                    .email("user@naver.com")
                     .password("1234")
                     .birthday(null)
                     .nickname("user"+number)

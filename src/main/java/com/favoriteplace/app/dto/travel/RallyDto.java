@@ -41,6 +41,7 @@ public class RallyDto {
     }
     @Builder
     @Getter
+    @Setter
     @NoArgsConstructor
     @AllArgsConstructor
     public static class RallyAddressPilgrimageDto{
