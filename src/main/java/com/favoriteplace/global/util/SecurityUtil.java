@@ -4,6 +4,8 @@ import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.repository.MemberRepository;
 
 import com.favoriteplace.app.service.MemberService;
+import com.favoriteplace.global.exception.ErrorCode;
+import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.security.provider.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +14,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Component

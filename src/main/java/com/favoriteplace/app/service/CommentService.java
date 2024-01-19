@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +30,9 @@ public class CommentService {
             (int page, int size, Long postId) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Comment> commentPage = commentRepository.findAllByPostIdOrderByCreatedAtAsc(postId, pageable);
+        if(commentPage.isEmpty()){
+            return Collections.emptyList();
+        }
         List<PostResponseDto.PostComment> comments = new ArrayList<>();
         for(Comment comment:commentPage.getContent()){
             comments.add(PostResponseDto.PostComment.builder()

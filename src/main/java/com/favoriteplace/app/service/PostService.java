@@ -5,14 +5,19 @@ import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.Post;
 import com.favoriteplace.app.dto.community.PostResponseDto;
 import com.favoriteplace.app.dto.community.TrendingPostResponseDto;
+import com.favoriteplace.app.repository.CommentRepository;
 import com.favoriteplace.app.repository.ImageRepository;
 import com.favoriteplace.app.repository.LikedPostRepository;
 import com.favoriteplace.app.repository.PostRepository;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
+import com.favoriteplace.global.util.DateTimeFormatUtils;
 import com.favoriteplace.global.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +34,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final ImageRepository imageRepository;
     private final LikedPostRepository likedPostRepository;
+    private final CommentRepository commentRepository;
     private final SecurityUtil securityUtil;
 
     @Transactional
@@ -49,17 +55,17 @@ public class PostService {
     }
 
     @Transactional
-    public PostResponseDto.PostInfoResponseDto getPostDetail(Long postId, HttpServletRequest request) {
+    public PostResponseDto.PostInfo getPostDetail(Long postId, HttpServletRequest request) {
         Optional<Post> post = postRepository.findById(postId);
         if(post.isEmpty()){
             throw new RestApiException(ErrorCode.POST_NOT_FOUND);
         }
         List<String> imageUrls = getImageUrlsByPostId(postId);
         if(!securityUtil.isTokenExists(request)){
-            return PostResponseDto.PostInfoResponseDto.of(post.get(), false, false, imageUrls);
+            return PostResponseDto.PostInfo.of(post.get(), false, false, imageUrls);
         }
         Long memberId = securityUtil.getUserFromHeader(request).getId();
-        return PostResponseDto.PostInfoResponseDto.of(post.get(), isLiked(postId, memberId), isWriter(postId, memberId), imageUrls);
+        return PostResponseDto.PostInfo.of(post.get(), isLiked(postId, memberId), isWriter(postId, memberId), imageUrls);
     }
 
     private Boolean isWriter(Long postId, Long memberId){
@@ -80,4 +86,26 @@ public class PostService {
                 .orElse(Collections.emptyList());
     }
 
+    @Transactional
+    public List<PostResponseDto.MyPost> getMyPosts(int page, int size) {
+        Member member = securityUtil.getUser();
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> postPage = postRepository.findAllByMemberIdOrderByCreatedAtDesc(member.getId(), pageable);
+        if(postPage.isEmpty()){
+            return Collections.emptyList();
+        }
+        List<PostResponseDto.MyPost> myPosts = new ArrayList<>();
+        for(Post post : postPage.getContent()){
+            myPosts.add(PostResponseDto.MyPost.builder()
+                            .id(post.getId())
+                            .title(post.getTitle())
+                            .nickname(member.getNickname())
+                            .views(post.getView())
+                            .likes(post.getLikeCount())
+                            .views(commentRepository.countByPostId(post.getId()) != null ? commentRepository.countByPostId(post.getId()) : 0L)
+                            .passedTime(DateTimeFormatUtils.getPassDateTime(post.getCreatedAt())).build()
+            );
+        }
+        return myPosts;
+    }
 }

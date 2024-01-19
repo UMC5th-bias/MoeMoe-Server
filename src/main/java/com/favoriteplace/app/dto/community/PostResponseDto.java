@@ -13,9 +13,21 @@ public class PostResponseDto {
 
     @Getter
     @Builder
-    public static class PostDetailResponseDto{
-        private UserInfoResponseDto userInfo;
-        private PostInfoResponseDto postInfo;
+    public static class MyPostResponseDto{
+        private Long size;
+        private List<MyPost> post;
+    }
+
+    @Getter
+    @Builder
+    public static class MyPost{
+        private Long id;
+        private String title;
+        private String nickname;
+        private Long views;
+        private Long likes;
+        private Long comments;
+        private String passedTime;
     }
 
     @Getter
@@ -35,10 +47,16 @@ public class PostResponseDto {
         private Boolean isWrite;
     }
 
+    @Getter
+    @Builder
+    public static class PostDetailResponseDto{
+        private UserInfoResponseDto userInfo;
+        private PostInfo postInfo;
+    }
 
     @Getter
     @Builder
-    public static class PostInfoResponseDto{
+    public static class PostInfo {
         private Long id;
         private String title;
         private String content;
@@ -49,8 +67,8 @@ public class PostResponseDto {
         private String createdAt;
         private List<String> image;
 
-        public static PostInfoResponseDto of(Post post, Boolean isLike, Boolean isWrite, List<String> images){
-            return PostInfoResponseDto.builder()
+        public static PostInfo of(Post post, Boolean isLike, Boolean isWrite, List<String> images){
+            return PostInfo.builder()
                     .id(post.getId())
                     .title(post.getTitle())
                     .content(post.getContent())
