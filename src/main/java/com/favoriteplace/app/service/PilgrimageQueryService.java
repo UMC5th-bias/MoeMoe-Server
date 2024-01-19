@@ -8,10 +8,7 @@ import com.favoriteplace.app.dto.travel.PilgrimageDto;
 import com.favoriteplace.app.dto.travel.RallyDto;
 import com.favoriteplace.app.repository.*;
 import com.favoriteplace.global.exception.ErrorCode;
-import com.favoriteplace.global.exception.ErrorResponse;
 import com.favoriteplace.global.exception.RestApiException;
-import com.favoriteplace.global.util.SecurityUtil;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -114,5 +111,30 @@ public class PilgrimageQueryService {
             result.setIsMultiWritable(true);
         }
         return result;
+    }
+
+    // 이달의 추천 랠리
+    public RallyDto.RallyTrendingDto getRallyTrending() {
+        return null;
+    }
+
+    // 내 성지순례 + 인증글
+    public PilgrimageDto.MyPilgrimageDto getMyPilgrimageDto(Member member) {
+        return null;
+    }
+
+    // 성지순례 애니 별 카테고리
+    public PilgrimageDto.PilgrimageCategoryAnimeDto getCategoryAnime(Member member) {
+        return null;
+    }
+
+    // 성지순례 지역 별 카테고리
+    public PilgrimageDto.PilgrimageCategoryRegionDto getCategoryRegion() {
+        return null;
+    }
+
+    // 성지순례 지역 상세 카테고리
+    public PilgrimageDto.PilgrimageCategoryRegionDetailDto getCategoryRegionDetail(Long regionId) {
+        return null;
     }
 }
