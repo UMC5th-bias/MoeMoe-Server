@@ -12,11 +12,11 @@ public class RallyDto {
     @AllArgsConstructor
     public static class RallyDetailResponseDto {
         String name;
-        Integer pilgrimageNumber;
-        Integer myPilgrimageNumber;
+        Long pilgrimageNumber;
+        Long myPilgrimageNumber;
         String image;
         String description;
-        Integer achieveNumber;
+        Long achieveNumber;
         String itemImage;
         Boolean isLike;
     }
@@ -26,8 +26,8 @@ public class RallyDto {
     @AllArgsConstructor
     public static class RallyAddressListDto{
         String name;
-        Integer pilgrimageNumber;
-        Integer myPilgrimageNumber;
+        Long pilgrimageNumber;
+        Long myPilgrimageNumber;
         String image;
         List<RallyAddressDto> rally;
     }
@@ -41,6 +41,7 @@ public class RallyDto {
     }
     @Builder
     @Getter
+    @Setter
     @NoArgsConstructor
     @AllArgsConstructor
     public static class RallyAddressPilgrimageDto{

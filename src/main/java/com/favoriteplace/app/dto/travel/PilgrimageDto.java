@@ -1,22 +1,23 @@
 package com.favoriteplace.app.dto.travel;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 public class PilgrimageDto {
     @Builder
     @Getter
+    @Setter
     @AllArgsConstructor
     @NoArgsConstructor
     public static class PilgrimageDetailDto {
         String rallyName;
-        Integer pilgrimageNumber;
-        Integer myPilgrimageNumber;
+        Long pilgrimageNumber;
+        Long myPilgrimageNumber;
         String image;
         String realImage;
+        String address;
         Double latitude;
         Double longitude;
+        Boolean isWritable;
+        Boolean isMultiWritable;
     }
 }
