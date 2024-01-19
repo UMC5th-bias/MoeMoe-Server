@@ -13,6 +13,7 @@ import java.util.List;
 public interface VisitedPilgrimageRepository extends JpaRepository<VisitedPilgrimage, Long> {
     List<VisitedPilgrimage> findByMemberIdOrderByModifiedAtDesc(Long memberId);
     List<VisitedPilgrimage> findByMemberAndPilgrimage_Rally(Member member, Rally rally);
-    List<VisitedPilgrimage> findByPilgrimageAndMember(Pilgrimage pilgrimage, Member member);
+    List<VisitedPilgrimage> findDistinctByMemberAndPilgrimage_Rally(Member member, Rally rally);
+    List<VisitedPilgrimage> findByPilgrimageAndMemberOrderByCreatedAtDesc(Pilgrimage pilgrimage, Member member);
     Long countByMemberIdAndPilgrimageIdIn(Long memberId, List<Long> pilgrimageIds);
 }

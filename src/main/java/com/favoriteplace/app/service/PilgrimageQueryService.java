@@ -1,5 +1,6 @@
 package com.favoriteplace.app.service;
 
+import com.favoriteplace.app.converter.PilgrimageConverter;
 import com.favoriteplace.app.converter.RallyConverter;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.travel.*;
@@ -36,7 +37,8 @@ public class PilgrimageQueryService {
             return RallyConverter.toRallyDetailResponseDto(rally, 0L, false, false);
         }
         LikedRally isLikeList = likedRallyRepository.findByRallyAndMember(rally, member);
-        List<VisitedPilgrimage> pilgrimageNumber = visitedPilgrimageRepository.findByMemberAndPilgrimage_Rally(member, rally);
+        List<VisitedPilgrimage> pilgrimageNumber = visitedPilgrimageRepository
+                .findByMemberAndPilgrimage_Rally(member, rally);
         if (isLikeList == null) {
             return RallyConverter.toRallyDetailResponseDto(rally, Long.valueOf(pilgrimageNumber.size()), false, true);
         }
@@ -50,31 +52,33 @@ public class PilgrimageQueryService {
                 ()-> new RestApiException(ErrorCode.RALLY_NOT_FOUND));
 
         // 주소, 성지순례 리스트 정보 담은 주소 리스트 생성
-        // 랠리에서 주소 나누는 단계에서 문제 발생함. 조회 제대로 안 됨.
         List<Address> addressList = addressRepository.findByPilgrimages_Rally(rally);
         if (addressList.isEmpty()) throw new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND);
+
         List<RallyDto.RallyAddressDto> addressDtoList = addressList.stream()
                 .map(address -> rallyAddressDtoList(rally, address))
                 .collect(Collectors.toList());
+
         // 회원이라면 방문기록 수정하기
-        RallyDto.RallyAddressListDto result;
         if (member != null){
-            addressDtoList.stream().forEach(rallyAddressDto -> rallyAddressDto.getPilgrimage()
+            addressDtoList.stream().forEach(rallyAddressDto ->
+                    rallyAddressDto.getPilgrimage()
                     .stream()
-                    .forEach(rallyAddressPilgrimageDto -> checkVisitedPilgrimage(rallyAddressPilgrimageDto, member)));
-            result = RallyConverter.toRallyAddressListDto(rally, addressDtoList, 0L);
-        } else {
-            // RallyAddressListDto 생성 후 반환하기
-            Long myPilgrimageNumber = Long.valueOf(visitedPilgrimageRepository.findByMemberAndPilgrimage_Rally(member, rally).size());
-            result = RallyConverter.toRallyAddressListDto(rally, addressDtoList, myPilgrimageNumber);
+                    .forEach(rallyAddressPilgrimageDto ->
+                            checkVisitedPilgrimage(rallyAddressPilgrimageDto, member)));
+            return RallyConverter.toRallyAddressListDto(rally, addressDtoList, 0L);
         }
-        return result;
+        // RallyAddressListDto 생성 후 반환하기
+        Long myPilgrimageNumber = Long.valueOf(visitedPilgrimageRepository
+                .findDistinctByMemberAndPilgrimage_Rally(member, rally).size());
+        return RallyConverter.toRallyAddressListDto(rally, addressDtoList, myPilgrimageNumber);
     }
 
     private void checkVisitedPilgrimage(RallyDto.RallyAddressPilgrimageDto dto, Member member){
         Pilgrimage pilgrimage = pilgrimageRepository.findById(dto.getId())
                 .orElseThrow(() -> new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
-        List<VisitedPilgrimage> count = visitedPilgrimageRepository.findByPilgrimageAndMember(pilgrimage, member);
+        List<VisitedPilgrimage> count = visitedPilgrimageRepository
+                .findByPilgrimageAndMemberOrderByCreatedAtDesc(pilgrimage, member);
         if (!count.isEmpty()){
             dto.setIsVisited(true);
         }
@@ -95,8 +99,20 @@ public class PilgrimageQueryService {
     public PilgrimageDto.PilgrimageDetailDto getPilgrimageDetail(Long pilgrimageId, Member member) {
         Pilgrimage pilgrimage = pilgrimageRepository.findById(pilgrimageId)
                 .orElseThrow(() -> new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
+        List<VisitedPilgrimage> visitedPilgrimages = visitedPilgrimageRepository
+                .findDistinctByMemberAndPilgrimage_Rally(member, pilgrimage.getRally());
+        PilgrimageDto.PilgrimageDetailDto result = PilgrimageConverter.toPilgrimageDetailDto(pilgrimage, Long.valueOf(visitedPilgrimages.size()));
 
-
-        return null;
+        // 이 성지순례에 인증 기록이 있다면 isWritable -> true
+        List<VisitedPilgrimage> visitedLog = visitedPilgrimageRepository
+                .findByPilgrimageAndMemberOrderByCreatedAtDesc(pilgrimage, member);
+        if (visitedLog.size() >= 1) {
+            result.setIsWritable(true);
+        }
+        // 이 성지순례에 인증 기록이 두 개 이상이라면 isisMultiWritable -> true
+        if (visitedLog.size() >= 2) {
+            result.setIsMultiWritable(true);
+        }
+        return result;
     }
 }

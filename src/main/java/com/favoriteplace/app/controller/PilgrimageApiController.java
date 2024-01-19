@@ -22,6 +22,7 @@ public class PilgrimageApiController {
     private final SecurityUtil securityUtil;
 
     // 성지순례 랠리 상세
+    // 랠리 찜 개발 후 테스트 필요
     // 회원 + 비회원
     @GetMapping("/{rallyId}")
     public RallyDto.RallyDetailResponseDto getRallyDetail(HttpServletRequest request, @PathVariable("rallyId")Long rallyId){
@@ -31,6 +32,7 @@ public class PilgrimageApiController {
     }
 
     // 성지순례 랠리 장소 리스트
+    // 랠리 인증하기 개발 후 테스트 필요
     // 회원 + 비회원
     @GetMapping("/{rallyId}/list")
     public RallyDto.RallyAddressListDto getRallyAddressList(HttpServletRequest request, @PathVariable("rallyId")Long rallyId){
