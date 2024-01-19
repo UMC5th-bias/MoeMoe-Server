@@ -11,12 +11,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+
 @RequiredArgsConstructor
 @Component
 public class SecurityUtil {
 
     private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    public static final String TOKEN_HEADER_PREFIX = "Bearer ";
 
     public Member getUser(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -25,11 +28,12 @@ public class SecurityUtil {
     }
 
     public Member getUserFromHeader(HttpServletRequest request) {
-        String token = resolveToken(request);
-        // 로그인 안 한 사용자의 경우 null 반환
-        if (token == null) {
+        String authorizationHeader = request.getHeader(AUTHORIZATION);
+        if (authorizationHeader == null || !authorizationHeader.startsWith(TOKEN_HEADER_PREFIX)) {
             return null;
         }
+        String token = resolveToken(request);
+
         Authentication authentication = jwtTokenProvider.getAuthentication(token);
         return memberRepository.findByEmail(authentication.getName()).get();
     }

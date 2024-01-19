@@ -66,6 +66,7 @@ public class PilgrimageApiController {
     // 회원 + 비회원
     @GetMapping("/{rallyId}")
     public RallyDto.RallyDetailResponseDto getRallyDetail(HttpServletRequest request, @PathVariable("rallyId")Long rallyId){
+        // 헤더 검증 로직 추가
         Member member = securityUtil.getUserFromHeader(request);
         RallyDto.RallyDetailResponseDto dto = pilgrimageQueryService.getRallyDetail(rallyId, member);
         return dto;
