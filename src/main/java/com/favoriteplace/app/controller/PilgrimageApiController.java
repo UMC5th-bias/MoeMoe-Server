@@ -53,8 +53,8 @@ public class PilgrimageApiController {
 
     // 성지순례 지역 카테고리
     @GetMapping("/region")
-    public PilgrimageDto.PilgrimageCategoryRegionDto getCategoryRegion(){
-        PilgrimageDto.PilgrimageCategoryRegionDto dto = pilgrimageQueryService.getCategoryRegion();
+    public List<PilgrimageDto.PilgrimageCategoryRegionDto> getCategoryRegion(){
+        List<PilgrimageDto.PilgrimageCategoryRegionDto> dto = pilgrimageQueryService.getCategoryRegion();
         return dto;
     }
 

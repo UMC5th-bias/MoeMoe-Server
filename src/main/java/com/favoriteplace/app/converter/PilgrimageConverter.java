@@ -3,6 +3,7 @@ package com.favoriteplace.app.converter;
 import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.HashTag;
+import com.favoriteplace.app.domain.travel.Address;
 import com.favoriteplace.app.domain.travel.Pilgrimage;
 import com.favoriteplace.app.domain.travel.Rally;
 import com.favoriteplace.app.dto.travel.PilgrimageDto;
@@ -62,6 +63,20 @@ public class PilgrimageConverter {
                 .createdAt(guestBook.getCreatedAt().toString())
                 .image(mainImg.getUrl())
                 .hashTag(hashTags)
+                .build();
+    }
+
+    public static PilgrimageDto.PilgrimageCategoryRegionDto toPilgrimageCategoryRegionDto(String state, List<PilgrimageDto.PilgrimageAddressDetailDto> dtos){
+        return PilgrimageDto.PilgrimageCategoryRegionDto.builder()
+                .state(state)
+                .detail(dtos)
+                .build();
+    }
+
+    public static PilgrimageDto.PilgrimageAddressDetailDto toPilgrimageAddressDetailDto(Address address){
+        return PilgrimageDto.PilgrimageAddressDetailDto.builder()
+                .id(address.getId())
+                .district(address.getDistrict())
                 .build();
     }
 }

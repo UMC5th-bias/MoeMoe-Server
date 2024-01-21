@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -205,12 +207,39 @@ public class PilgrimageQueryService {
         }).collect(Collectors.toList());
     }
 
-    // 성지순례 지역 별 카테고리
-    public PilgrimageDto.PilgrimageCategoryRegionDto getCategoryRegion() {
-        return null;
+    /***
+     * 성지순례 지역 별 카테고리
+     * @return
+     */
+    public List<PilgrimageDto.PilgrimageCategoryRegionDto> getCategoryRegion() {
+        List<Address> address = addressRepository.findAll();
+
+        // 전체 state 추출
+        Set<String> addressKeyList = address.stream()
+                .map(Address::getState)
+                .collect(Collectors.toSet());
+
+        // 전체 address 정보 state 별로 그룹화
+        Map<String, List<Address>> addressGroupByState = address.stream()
+                .collect(Collectors.groupingBy(Address::getState));
+
+        List<PilgrimageDto.PilgrimageCategoryRegionDto> dtos = addressKeyList.stream().map(
+                stateKey -> {
+                    List<Address> addressList = addressGroupByState.get(stateKey);
+                    List<PilgrimageDto.PilgrimageAddressDetailDto> addressDetailDtos = addressList.stream().map(addressDetail ->
+                            PilgrimageConverter.toPilgrimageAddressDetailDto(addressDetail)
+                    ).collect(Collectors.toList());
+                    return PilgrimageConverter.toPilgrimageCategoryRegionDto(stateKey, addressDetailDtos);
+                }
+        ).collect(Collectors.toList());
+        return dtos;
     }
 
-    // 성지순례 지역 상세 카테고리
+    /***
+     * 성지순례 지역 상세 카테고리
+     * @param regionId
+     * @return
+     */
     public PilgrimageDto.PilgrimageCategoryRegionDetailDto getCategoryRegionDetail(Long regionId) {
         return null;
     }

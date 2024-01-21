@@ -12,6 +12,7 @@ import com.favoriteplace.app.domain.item.Item;
 import com.favoriteplace.app.domain.travel.Address;
 import com.favoriteplace.app.domain.travel.Pilgrimage;
 import com.favoriteplace.app.domain.travel.Rally;
+import com.favoriteplace.app.repository.AddressRepository;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +26,9 @@ public class InitDB {
 
     @PostConstruct
     public void init(){
-        initService.initDB();
         initService.createMember("1");
         initService.initRallyAndPilgrimage();
+        initService.initDB();
     }
 
     @Component
@@ -35,6 +36,7 @@ public class InitDB {
     @Transactional
     static class InitService {
         private final EntityManager em;
+        private final AddressRepository addressRepository;
 
         public void initDB(){
             Image image1 = Image.builder()
@@ -98,9 +100,7 @@ public class InitDB {
                     .likeCount(35L).view(35L).build();
             em.merge(post1); em.merge(post2); em.merge(post3); em.merge(post4); em.merge(post5); em.merge(post6); em.merge(post7);
 
-            Address address = Address.builder().id(0L)
-                    .state("도교").district("시부야구").build();
-            em.merge(address);
+            Address address = addressRepository.findByStateAndDistrict("도쿄도", "시부야구");
 
             Rally rally1 = Rally.builder().id(0L)
                     .item(item1).image(image1).name("최애의 아이")
