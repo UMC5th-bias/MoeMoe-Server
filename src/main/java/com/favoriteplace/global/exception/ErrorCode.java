@@ -21,6 +21,7 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.BAD_REQUEST, 2001, "유저를 찾을 수 없습니다."),
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, 2002, "로그인에 실패했습니다."),
     USER_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, 2003, "해당 이메일로 가입한 유저가 존재합니다."),
+    NOT_VAILD_EMAIL_AUTHCODE(HttpStatus.BAD_REQUEST, 2004, "이메일 인증번호가 일치하지 않습니다."),
 
 
     //Pilgrimage (3000번대)

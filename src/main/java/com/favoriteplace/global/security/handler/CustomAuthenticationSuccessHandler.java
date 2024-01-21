@@ -28,6 +28,10 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
 
+    /**
+     * User
+     *
+     */
     @Override
     @Transactional
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -35,7 +39,6 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
         //유저 정보 가져오기
         String email = request.getParameter("email");
-        System.out.println("hi");
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new RestApiException(ErrorCode.USER_NOT_FOUND));
 

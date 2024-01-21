@@ -1,4 +1,7 @@
 spring:
+  redis:
+    host: localhost
+    port: 6379
   datasource:
     #로컬 DB(각자에 맞게 변경)
     url: jdbc:mysql://localhost:3306/FavoritePlace
@@ -21,3 +24,14 @@ spring:
 jwt:
   header: Authorization
   secret: c2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQtc2ppsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQK
+mail:
+  host: smtp.naver.com
+  port: 465
+  username: sju08227@naver.com
+  password: sju093475@
+  properties:
+    mail:
+      smtp:
+        auth: true
+        ssl:
+          enable: true

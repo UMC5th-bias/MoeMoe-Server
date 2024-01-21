@@ -26,10 +26,6 @@ public class SecurityUtil {
 
     public Member getUserFromHeader(HttpServletRequest request) {
         String token = resolveToken(request);
-        // 로그인 안 한 사용자의 경우 null 반환
-        if (token == null) {
-            return null;
-        }
         Authentication authentication = jwtTokenProvider.getAuthentication(token);
         return memberRepository.findByEmail(authentication.getName()).get();
     }
