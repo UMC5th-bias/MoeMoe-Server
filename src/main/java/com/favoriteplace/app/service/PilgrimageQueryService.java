@@ -181,8 +181,7 @@ public class PilgrimageQueryService {
 
     /***
      * 이달의 추천 랠리
-     * 당월 1일 부터 현재까지의 좋아요 집계
-     * @return
+     * @return 당월 1일 부터 현재까지의 좋아요 집계 1위 랠리
      */
     public RallyDto.RallyTrendingDto getRallyTrending() {
         return null;
@@ -209,7 +208,7 @@ public class PilgrimageQueryService {
 
     /***
      * 성지순례 지역 별 카테고리
-     * @return
+     * @return state 별로 그룹화 한 지역 정보
      */
     public List<PilgrimageDto.PilgrimageCategoryRegionDto> getCategoryRegion() {
         List<Address> address = addressRepository.findAll();
@@ -238,7 +237,7 @@ public class PilgrimageQueryService {
     /***
      * 성지순례 지역 상세 카테고리
      * @param regionId
-     * @return
+     * @return district 별 성지순례 리스트
      */
     public PilgrimageDto.PilgrimageCategoryRegionDetailDto getCategoryRegionDetail(Long regionId) {
         return null;
