@@ -9,12 +9,14 @@ import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Slf4j
 @RequestMapping(value = "/pilgrimage")
 @RequiredArgsConstructor
 public class PilgrimageApiController {
@@ -85,10 +87,12 @@ public class PilgrimageApiController {
     // 성지순례 랠리 장소 상세
     // 회원
     @GetMapping("/detail/{pilgrimageId}")
-    public PilgrimageDto.PilgrimageDetailDto getPilgrimageDetail(@PathVariable("pilgrimageId")Long pilgrimageId){
+        public PilgrimageDto.PilgrimageDetailDto getPilgrimageDetail(@PathVariable("pilgrimageId")Long pilgrimageId){
         // Jwt AuthenticationFilter에 엔드포인트 추가
+//        log.info("check member: "+securityUtil.getUser().toString());
+        Member member = securityUtil.getUser();
         PilgrimageDto.PilgrimageDetailDto dto = pilgrimageQueryService.getPilgrimageDetail(
-                pilgrimageId, securityUtil.getUser());
+                pilgrimageId, member);
         return dto;
     }
 }

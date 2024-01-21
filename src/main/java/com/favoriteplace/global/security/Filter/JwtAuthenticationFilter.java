@@ -8,6 +8,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -28,10 +30,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     );
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        String requestURI = request.getRequestURI();
+        String requestURI = request.getServletPath();
         String method = request.getMethod();
 
-        return excludePaths.stream()
+        return !excludePaths.stream()
             .anyMatch(excludePath -> excludePath.matches(requestURI, method));
     }
 
@@ -52,6 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             log.info("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestURI);
         } else {
             log.info("유효한 JWT 토큰이 없습니다, uri: {}", requestURI);
+
         }
         chain.doFilter(request, response);
     }
@@ -66,19 +69,35 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return null;
     }
 
-    private static class ExcludePath {
-        private final String path;
+    public class ExcludePath {
+        private final String pathPattern;
         private final HttpMethod method;
 
-        public ExcludePath(String path, HttpMethod method) {
-            this.path = path;
+        public ExcludePath(String pathPattern, HttpMethod method) {
+            this.pathPattern = pathPattern;
             this.method = method;
         }
 
-        public boolean matches(String requestURI, String requestMethod) {
-            return path.equals(requestURI) && method.matches(requestMethod);
+        public boolean matches(String requestURI, String method) {
+            // 정규 표현식을 사용하여 매치 여부 확인
+            String regex = pathPattern.replaceAll("\\*\\*", ".*");
+            return Pattern.matches(regex, requestURI) && this.method.matches(method);
         }
     }
+
+//    private static class ExcludePath {
+//        private final String path;
+//        private final HttpMethod method;
+//
+//        public ExcludePath(String path, HttpMethod method) {
+//            this.path = path;
+//            this.method = method;
+//        }
+//
+//        public boolean matches(String requestURI, String requestMethod) {
+//            return path.equals(requestURI) && method.matches(requestMethod);
+//        }
+//    }
 
     private enum HttpMethod {
         GET, POST, PUT, DELETE;  // Add more methods as needed
