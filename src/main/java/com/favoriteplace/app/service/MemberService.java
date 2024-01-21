@@ -1,6 +1,7 @@
 package com.favoriteplace.app.service;
 
 import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.dto.HomeResponseDto;
 import com.favoriteplace.app.dto.member.MemberDto;
 import com.favoriteplace.app.dto.member.MemberDto.EmailCheckReqDto;
 import com.favoriteplace.app.dto.member.MemberDto.MemberSignUpReqDto;
@@ -9,6 +10,8 @@ import com.favoriteplace.app.repository.MemberRepository;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.security.provider.JwtTokenProvider;
+import com.favoriteplace.global.util.SecurityUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,7 +24,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final SecurityUtil securityUtil;
 
     @Transactional
     public MemberDto.TokenInfo signup(MemberSignUpReqDto memberSignUpReqDto) {
@@ -32,5 +35,15 @@ public class MemberService {
 
         memberRepository.save(member);
         return null;
+    }
+
+    @Transactional
+    public boolean isTokenExists(HttpServletRequest request) {
+        return securityUtil.getUserFromHeader(request) != null;
+    }
+
+    @Transactional
+    public HomeResponseDto.UserInfo getUserInfo(HttpServletRequest request) {
+        return HomeResponseDto.UserInfo.of(securityUtil.getUserFromHeader(request));
     }
 }

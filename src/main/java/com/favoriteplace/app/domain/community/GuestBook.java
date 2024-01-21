@@ -36,7 +36,7 @@ public class GuestBook extends BaseTimeEntity {
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "pilgrimage_id", nullable = false)
-    private Pilgrimage Pilgrimage;
+    private Pilgrimage pilgrimage;
 
     @Column(nullable = false)
     private String title;

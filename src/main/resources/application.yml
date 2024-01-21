@@ -21,17 +21,3 @@ spring:
         hbm2ddl:
           auto: update
         default_batch_fetch_size: 1000
-jwt:
-  header: Authorization
-  secret: c2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQtc2ppsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQK
-mail:
-  host: smtp.naver.com
-  port: 465
-  username: sju08227@naver.com
-  password: sju093475@
-  properties:
-    mail:
-      smtp:
-        auth: true
-        ssl:
-          enable: true

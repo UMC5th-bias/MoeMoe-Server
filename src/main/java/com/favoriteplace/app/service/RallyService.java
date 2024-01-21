@@ -10,6 +10,8 @@ import com.favoriteplace.app.repository.RallyRepository;
 import com.favoriteplace.app.repository.VisitedPilgrimageRepository;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
+import com.favoriteplace.global.util.SecurityUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,12 +23,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RallyService {
     private final MemberRepository memberRepository;
+    private final SecurityUtil securityUtil;
     private final RallyRepository rallyRepository;
     private final VisitedPilgrimageRepository visitedPilgrimageRepository;
     private final PilgrimageRepository pilgrimageRepository;
 
     @Transactional
-    public HomeResponseDto.HomeRally getMemberRecentRally(String accessToken) {
+    public HomeResponseDto.HomeRally getMemberRecentRally(HttpServletRequest request) {
         /*
         [JWT]
         String userId = jwtUtil.getUserIdFromToken(accessToken);
@@ -34,10 +37,9 @@ public class RallyService {
                 .orElseThrow(() -> new RestApiException(ErrorCode.USER_NOT_FOUND));
          */
         //[임시] : accessToken 대신 memberId 사용
-        memberRepository.findById(Long.valueOf(accessToken))
-                .orElseThrow(() -> new RestApiException(ErrorCode.USER_NOT_FOUND));
+        Long id = securityUtil.getUserFromHeader(request).getId();
 
-        List<VisitedPilgrimage> visitedPilgrimages = visitedPilgrimageRepository.findByMemberIdOrderByModifiedAtDesc(Long.valueOf(accessToken));
+        List<VisitedPilgrimage> visitedPilgrimages = visitedPilgrimageRepository.findByMemberIdOrderByModifiedAtDesc(id);
 
         Rally rally;
         long visitedCount = 0L;
@@ -46,7 +48,7 @@ public class RallyService {
             rally = recommandRandomRally();
         }else{
             rally = visitedPilgrimages.get(0).getPilgrimage().getRally();
-            visitedCount = getCompletePilgrimageCount(Long.valueOf(accessToken), rally.getId());
+            visitedCount = getCompletePilgrimageCount(id, rally.getId());
         }
         return HomeResponseDto.HomeRally.of(rally, visitedCount);
     }
