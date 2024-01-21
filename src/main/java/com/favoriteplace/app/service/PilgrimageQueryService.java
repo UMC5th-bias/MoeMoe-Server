@@ -10,6 +10,7 @@ import com.favoriteplace.app.repository.*;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class PilgrimageQueryService {
@@ -113,13 +115,32 @@ public class PilgrimageQueryService {
         return result;
     }
 
-    // 이달의 추천 랠리
-    public RallyDto.RallyTrendingDto getRallyTrending() {
+    // 내 성지순례 + 인증글
+    public PilgrimageDto.MyPilgrimageDto getMyPilgrimageDto(Member member) {
+        if (member == null) {
+            return PilgrimageConverter.toMyPilgrimageDto();
+        }
+//        log.info("member = "+member.getNickname());
+        // 관심있는 랠리
+        List<LikedRally> likedRally = likedRallyRepository.findByMember(member);
+        log.info("liked rally = "+likedRally);
+        List<PilgrimageDto.LikedRallyDto> likedRallyDtos = likedRally.stream().map(
+                        likeRally -> {
+                            Rally rally = rallyRepository.findById(likeRally.getRally().getId())
+                                            .orElseThrow(()->new RestApiException(ErrorCode.RALLY_NOT_FOUND));
+                            return PilgrimageConverter.toLikedRallyDto(rally);
+                        })
+                .collect(Collectors.toList());
+        log.info("rally = " + likedRallyDtos);
+        // 내 성지순례 인증글 (시간순)
+//        PilgrimageConverter.toMyGuestBookDto();
+        // 합치기
+//        PilgrimageConverter.toMyPilgrimageDto();
         return null;
     }
 
-    // 내 성지순례 + 인증글
-    public PilgrimageDto.MyPilgrimageDto getMyPilgrimageDto(Member member) {
+    // 이달의 추천 랠리
+    public RallyDto.RallyTrendingDto getRallyTrending() {
         return null;
     }
 

@@ -2,6 +2,7 @@ package com.favoriteplace.app.dto.travel;
 
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PilgrimageDto {
@@ -29,9 +30,9 @@ public class PilgrimageDto {
     @NoArgsConstructor
     public static class MyPilgrimageDto {
         Long likedRallySize;
-        List<LikedRallyDto> likedRally;
+        List<LikedRallyDto> likedRally = new ArrayList<>();
         Long guestBookSize;
-        List<MyGuestBookDto> guestBook;
+        List<MyGuestBookDto> guestBook = new ArrayList<>();
     }
 
     @Builder
@@ -53,8 +54,7 @@ public class PilgrimageDto {
         String title;
         String createdAt;
         String image;
-        Long imageSize;
-        List<String> hashTag;
+        List<String> hashTag = new ArrayList<>();
     }
 
     @Builder
@@ -75,7 +75,7 @@ public class PilgrimageDto {
     @NoArgsConstructor
     public static class PilgrimageCategoryRegionDto {
         String state;
-        List<PilgrimageAddressDetailDto> detail;
+        List<PilgrimageAddressDetailDto> detail = new ArrayList<>();
     }
 
     @Builder
