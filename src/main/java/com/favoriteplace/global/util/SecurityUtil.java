@@ -28,6 +28,7 @@ public class SecurityUtil {
     }
 
     public Member getUserFromHeader(HttpServletRequest request) {
+
         String authorizationHeader = request.getHeader(AUTHORIZATION);
         if (authorizationHeader == null || !authorizationHeader.startsWith(TOKEN_HEADER_PREFIX)) {
             return null;
