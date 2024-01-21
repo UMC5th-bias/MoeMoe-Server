@@ -63,4 +63,16 @@ public class RallyDto {
         Long myPilgrimageNumber;
         String image;
     }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class PilgrimageCategoryAnimeDto {
+        Long id;
+        String name;
+        Long pilgrimageNumber;
+        Long myPilgrimageNumber;
+        String image;
+    }
 }

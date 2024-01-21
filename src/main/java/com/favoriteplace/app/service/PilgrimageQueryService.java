@@ -2,7 +2,10 @@ package com.favoriteplace.app.service;
 
 import com.favoriteplace.app.converter.PilgrimageConverter;
 import com.favoriteplace.app.converter.RallyConverter;
+import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.domain.community.GuestBook;
+import com.favoriteplace.app.domain.community.HashTag;
 import com.favoriteplace.app.domain.travel.*;
 import com.favoriteplace.app.dto.travel.PilgrimageDto;
 import com.favoriteplace.app.dto.travel.RallyDto;
@@ -27,8 +30,16 @@ public class PilgrimageQueryService {
     private final LikedRallyRepository likedRallyRepository;
     private final VisitedPilgrimageRepository visitedPilgrimageRepository;
     private final AddressRepository addressRepository;
+    private final GuestBookRepository guestBookRepository;
+    private final HashtagRepository hashtagRepository;
+    private final ImageRepository imageRepository;
 
-    // 성지순례 랠리 상세
+    /***
+     * 랠리 상세
+     * @param rallyId
+     * @param member
+     * @return 랠리 상세페이지 dto
+     */
     public RallyDto.RallyDetailResponseDto getRallyDetail(Long rallyId, Member member) {
         Rally rally = rallyRepository.findById(rallyId).orElseThrow(
                 ()-> new RestApiException(ErrorCode.RALLY_NOT_FOUND));
@@ -44,8 +55,12 @@ public class PilgrimageQueryService {
         return RallyConverter.toRallyDetailResponseDto(rally, Long.valueOf(pilgrimageNumber.size()), true, true);
     }
 
-    // 성지순례 랠리 장소 리스트
-    // 사용자 정보 없을 때 RallyAddressPilgrimageDto.isVisited->false
+    /***
+     * 한 랠리의 성지순례 리스트
+     * @param rallyId
+     * @param member
+     * @return 한 랠리에 대한 성지순례 리스트 dto
+     */
     public RallyDto.RallyAddressListDto getRallyAddressList(Long rallyId, Member member) {
         Rally rally = rallyRepository.findById(rallyId).orElseThrow(
                 ()-> new RestApiException(ErrorCode.RALLY_NOT_FOUND));
@@ -94,7 +109,12 @@ public class PilgrimageQueryService {
         return RallyConverter.toRallyAddressDto(address, dtoList);
     }
 
-    // 성지순례 랠리 장소 상세
+    /***
+     * 성지순례 랠리 장소 상세
+     * @param pilgrimageId
+     * @param member
+     * @return 성지순례 상세페이지 dto
+     */
     public PilgrimageDto.PilgrimageDetailDto getPilgrimageDetail(Long pilgrimageId, Member member) {
         Pilgrimage pilgrimage = pilgrimageRepository.findById(pilgrimageId)
                 .orElseThrow(() -> new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
@@ -115,38 +135,74 @@ public class PilgrimageQueryService {
         return result;
     }
 
-    // 내 성지순례 + 인증글
+    //
+
+    /***
+     * 성지순례 메인 (내 성지순례 + 인증글)
+     * @param member
+     * @return 내 성지순례, 내 인증글 dto
+     */
     public PilgrimageDto.MyPilgrimageDto getMyPilgrimageDto(Member member) {
         if (member == null) {
             return PilgrimageConverter.toMyPilgrimageDto();
         }
-//        log.info("member = "+member.getNickname());
         // 관심있는 랠리
+        List<PilgrimageDto.LikedRallyDto> likedRallyDtos = getLikedRally(member);
+        // 내 성지순례 인증글 (시간순)
+        List<PilgrimageDto.MyGuestBookDto> myGuestBookDtos = getMyGuestBook(member);
+
+        return PilgrimageConverter.toMyPilgrimageDto(likedRallyDtos, myGuestBookDtos);
+    }
+
+    private List<PilgrimageDto.LikedRallyDto> getLikedRally(Member member) {
         List<LikedRally> likedRally = likedRallyRepository.findByMember(member);
-        log.info("liked rally = "+likedRally);
-        List<PilgrimageDto.LikedRallyDto> likedRallyDtos = likedRally.stream().map(
+        return likedRally.stream().map(
                         likeRally -> {
                             Rally rally = rallyRepository.findById(likeRally.getRally().getId())
-                                            .orElseThrow(()->new RestApiException(ErrorCode.RALLY_NOT_FOUND));
+                                    .orElseThrow(()->new RestApiException(ErrorCode.RALLY_NOT_FOUND));
                             return PilgrimageConverter.toLikedRallyDto(rally);
                         })
                 .collect(Collectors.toList());
-        log.info("rally = " + likedRallyDtos);
-        // 내 성지순례 인증글 (시간순)
-//        PilgrimageConverter.toMyGuestBookDto();
-        // 합치기
-//        PilgrimageConverter.toMyPilgrimageDto();
-        return null;
     }
 
-    // 이달의 추천 랠리
+    private List<PilgrimageDto.MyGuestBookDto> getMyGuestBook(Member member){
+        List<GuestBook> guestBooks = guestBookRepository.findByMemberOrderByCreatedAtDesc(member);
+        return guestBooks.stream().map(
+                guestBook -> {
+                    Image image = imageRepository.findFirstByGuestBook(guestBook);
+                    List<HashTag> hashTags = hashtagRepository.findAllByGuestBookId(guestBook.getId());
+                    List<String> hashTagsDto = hashTags.stream().map(hashTag -> hashTag.getTagName()).collect(Collectors.toList());
+                    return PilgrimageConverter.toMyGuestBookDto(guestBook, image, hashTagsDto);
+                }
+        ).collect(Collectors.toList());
+    }
+
+    /***
+     * 이달의 추천 랠리
+     * 당월 1일 부터 현재까지의 좋아요 집계
+     * @return
+     */
     public RallyDto.RallyTrendingDto getRallyTrending() {
         return null;
     }
 
-    // 성지순례 애니 별 카테고리
-    public PilgrimageDto.PilgrimageCategoryAnimeDto getCategoryAnime(Member member) {
-        return null;
+    /***
+     * 성지순례 애니 별 카테고리
+     * @param member
+     * @return
+     */
+    public List<RallyDto.PilgrimageCategoryAnimeDto> getCategoryAnime(Member member) {
+        // 전체 랠리 최신 순으로 조회하기
+        List<Rally> rallyList = rallyRepository.findAllOrderByCreatedAt();
+        if (member == null) {
+            return rallyList.stream()
+                    .map(rally -> RallyConverter.toPilgrimageCategoryAnimeDto(rally, 0L))
+                    .collect(Collectors.toList());
+        }
+        return rallyList.stream().map(rally->{
+            List<VisitedPilgrimage> visitedPilgrimages = visitedPilgrimageRepository.findDistinctByMemberAndPilgrimage_Rally(member, rally);
+            return RallyConverter.toPilgrimageCategoryAnimeDto(rally, Long.valueOf(visitedPilgrimages.size()));
+        }).collect(Collectors.toList());
     }
 
     // 성지순례 지역 별 카테고리

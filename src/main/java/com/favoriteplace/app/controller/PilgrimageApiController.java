@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @Slf4j
 @RequestMapping(value = "/pilgrimage")
@@ -43,9 +45,9 @@ public class PilgrimageApiController {
     // 성지순례 애니메이션 카테고리
     // 회원 + 비회원
     @GetMapping("/anime")
-    public PilgrimageDto.PilgrimageCategoryAnimeDto getCategoryAnime(HttpServletRequest request){
+    public List<RallyDto.PilgrimageCategoryAnimeDto> getCategoryAnime(HttpServletRequest request){
         Member member = securityUtil.getUserFromHeader(request);
-        PilgrimageDto.PilgrimageCategoryAnimeDto dto = pilgrimageQueryService.getCategoryAnime(member);
+        List<RallyDto.PilgrimageCategoryAnimeDto> dto = pilgrimageQueryService.getCategoryAnime(member);
         return dto;
     }
 
