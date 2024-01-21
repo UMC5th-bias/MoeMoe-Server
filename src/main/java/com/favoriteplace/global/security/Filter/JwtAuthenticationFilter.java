@@ -31,7 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String requestURI = request.getRequestURI();
         String method = request.getMethod();
 
-        return !excludePaths.stream()
+        return excludePaths.stream()
             .anyMatch(excludePath -> excludePath.matches(requestURI, method));
     }
 

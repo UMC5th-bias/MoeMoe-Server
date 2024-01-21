@@ -1,9 +1,9 @@
 spring:
   datasource:
     #로컬 DB(각자에 맞게 변경)
-    url: jdbc:mysql://localhost:3306/FavoritePlace
+    url: jdbc:mysql://localhost:3306/favorite_place
     username: root
-    password: Due1988!
+    password: Jnbivcb7@@12
     driver-class-name: com.mysql.cj.jdbc.Driver
   sql:
     init:
@@ -16,7 +16,7 @@ spring:
         format_sql: true
         use_sql_comments: true
         hbm2ddl:
-          auto: update
+          auto: create
         default_batch_fetch_size: 1000
 jwt:
   header: Authorization
