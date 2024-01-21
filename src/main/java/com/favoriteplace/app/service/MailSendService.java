@@ -42,7 +42,6 @@ public class MailSendService {
         authNumber = Integer.parseInt(randomNumber);
     }
 
-
     //mail을 어디서 보내는지, 어디로 보내는지 , 인증 번호를 html 형식으로 어떻게 보내는지 작성합니다.
     public MemberDto.EmailSendResDto joinEmail(String email) {
         makeRandomNumber();
@@ -78,7 +77,7 @@ public class MailSendService {
         redisUtil.setDataExpire(Integer.toString(authNumber),toMail,60*5L); // 제한시간 5분
     }
 
-    public void CheckAuthNum(String email, String authNum){
+    public void checkAuthNum(String email, String authNum){
         if(redisUtil.getData(authNum) == null){
             throw new RestApiException(NOT_VAILD_EMAIL_AUTHCODE);
         }

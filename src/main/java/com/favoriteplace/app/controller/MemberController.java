@@ -43,8 +43,14 @@ public class MemberController {
     }
 
     @PostMapping("/signup/email/check")
-    public ResponseEntity<Void> AuthCheck(@RequestBody @Valid EmailCheckReqDto reqDto){
-        mailSendService.CheckAuthNum(reqDto.getEmail(), reqDto.getAuthNum().toString());
+    public ResponseEntity<Void> authCheck(@RequestBody @Valid EmailCheckReqDto reqDto){
+        mailSendService.checkAuthNum(reqDto.getEmail(), reqDto.getAuthNum().toString());
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/signup/email/duplicate")
+    public ResponseEntity<Void> emailDuplicateCheck(@RequestBody @Valid MemberDto.EmailSendReqDto reqDto) {
+        memberService.emailDuplicateCheck(reqDto);
         return ResponseEntity.ok().build();
     }
 }
