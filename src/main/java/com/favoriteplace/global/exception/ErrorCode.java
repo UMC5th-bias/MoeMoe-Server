@@ -33,9 +33,12 @@ public enum ErrorCode {
     //Post (5000번대)
     POST_NOT_FOUND(HttpStatus.BAD_REQUEST, 5001, "자유게시판 게시글이 존재하지 않습니다."),
 
-    //GuestBook (6000번대)
-    GUESTBOOK_NOT_FOUND(HttpStatus.BAD_REQUEST, 6001, "성지순례 인증글이 존재하지 않습니다.");
 
+    //GuestBook (6000번대)
+    GUESTBOOK_NOT_FOUND(HttpStatus.BAD_REQUEST, 6001, "성지순례 인증글이 존재하지 않습니다."),
+
+    //커뮤니티 (7000번대)
+    SORT_KEYWORD_NOT_ALLOWED(HttpStatus.BAD_REQUEST, 7001, "존재하지 않는 정렬 방식입니다.");
 
     private final HttpStatus httpStatus;
     private final int code;
