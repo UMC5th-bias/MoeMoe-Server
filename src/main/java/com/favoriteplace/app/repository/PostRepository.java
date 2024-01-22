@@ -14,4 +14,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByCreatedAtBetweenOrderByLikeCountDesc(LocalDateTime start, LocalDateTime end);
 
     Page<Post> findAllByMemberIdOrderByCreatedAtDesc(Long memberId, Pageable pageable);
+
+    Page<Post> findAllByOrderByCreatedAtDesc(Pageable pageable);
+
+    Page<Post> findAllByOrderByLikeCountDesc(Pageable pageable);
 }

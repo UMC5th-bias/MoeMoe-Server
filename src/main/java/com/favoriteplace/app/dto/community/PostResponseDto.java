@@ -11,6 +11,22 @@ import java.util.List;
 @Getter
 public class PostResponseDto {
 
+    @Builder
+    @Getter
+    public static class MyCommentDto{
+        private Long size;
+        private List<MyComment>comment;
+    }
+
+    @Getter
+    @Builder
+    public static class MyComment{
+        private Long id;
+        private String content;
+        private String passedTime;
+        private MyPost post;
+    }
+
     @Getter
     @Builder
     public static class MyPostResponseDto{

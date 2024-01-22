@@ -1,5 +1,6 @@
 package com.favoriteplace.app.service;
 
+import com.favoriteplace.app.converter.PostConverter;
 import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.Post;
@@ -9,9 +10,9 @@ import com.favoriteplace.app.repository.CommentRepository;
 import com.favoriteplace.app.repository.ImageRepository;
 import com.favoriteplace.app.repository.LikedPostRepository;
 import com.favoriteplace.app.repository.PostRepository;
+import com.favoriteplace.app.service.strategy.SortStrategy;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
-import com.favoriteplace.global.util.DateTimeFormatUtils;
 import com.favoriteplace.global.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,8 @@ public class PostService {
     private final ImageRepository imageRepository;
     private final LikedPostRepository likedPostRepository;
     private final CommentRepository commentRepository;
+    private final SortStrategy sortByLatestStrategy;
+    private final SortStrategy sortByLikedStrategy;
     private final SecurityUtil securityUtil;
 
     @Transactional
@@ -96,16 +99,32 @@ public class PostService {
         }
         List<PostResponseDto.MyPost> myPosts = new ArrayList<>();
         for(Post post : postPage.getContent()){
-            myPosts.add(PostResponseDto.MyPost.builder()
-                            .id(post.getId())
-                            .title(post.getTitle())
-                            .nickname(member.getNickname())
-                            .views(post.getView())
-                            .likes(post.getLikeCount())
-                            .views(commentRepository.countByPostId(post.getId()) != null ? commentRepository.countByPostId(post.getId()) : 0L)
-                            .passedTime(DateTimeFormatUtils.getPassDateTime(post.getCreatedAt())).build()
-            );
+            Long comments = commentRepository.countByPostId(post.getId()) != null ? commentRepository.countByPostId(post.getId()) : 0L;
+            myPosts.add(PostConverter.myPostResponseConverter(post, member, comments));
         }
         return myPosts;
+    }
+
+    public List<PostResponseDto.MyPost> getTotalPostBySort(int page, int size, String sort) {
+        Pageable pageable = PageRequest.of(page, size);
+        SortStrategy sortStrategy;
+        if("latest".equals(sort)){
+            sortStrategy = sortByLatestStrategy;
+        }else if("liked".equals(sort)) {
+            sortStrategy = sortByLikedStrategy;
+        }else{
+            throw new RestApiException(ErrorCode.SORT_KEYWORD_NOT_ALLOWED);
+        }
+        Page<Post> sortedPosts = sortStrategy.sort(pageable);
+        if(sortedPosts.isEmpty()){
+            return Collections.emptyList();
+        }
+        List<PostResponseDto.MyPost> totalPosts = new ArrayList<>();
+        for(Post post : sortedPosts.getContent()){
+            Member member = post.getMember();
+            Long comments = commentRepository.countByPostId(post.getId()) != null ? commentRepository.countByPostId(post.getId()) : 0L;
+            totalPosts.add(PostConverter.myPostResponseConverter(post, member, comments));
+        }
+        return totalPosts;
     }
 }

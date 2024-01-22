@@ -7,6 +7,7 @@ import com.favoriteplace.app.service.MemberService;
 import com.favoriteplace.app.service.PostService;
 import com.favoriteplace.global.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,5 +54,26 @@ public class PostController {
                 .build();
     }
 
+    @GetMapping("/my-comments")
+    public PostResponseDto.MyCommentDto getMyComments(
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "10") int size
+    ){
+        return PostResponseDto.MyCommentDto.builder()
+                .size((long) size)
+                .comment(commentService.getMyComments(page, size))
+                .build();
+    }
 
+    @GetMapping("")
+    public PostResponseDto.MyPostResponseDto getTotalPost(
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "10") int size,
+            @RequestParam(required = false, defaultValue = "latest") String sort
+    ){
+        return PostResponseDto.MyPostResponseDto.builder()
+                .size((long)size)
+                .post(postService.getTotalPostBySort(page, size, sort))
+                .build();
+    }
 }
