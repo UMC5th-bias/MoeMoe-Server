@@ -4,6 +4,7 @@ import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.Post;
 import com.favoriteplace.app.dto.UserInfoResponseDto;
 import com.favoriteplace.app.dto.member.MemberDto;
+import com.favoriteplace.app.dto.member.MemberDto.EmailCheckReqDto;
 import com.favoriteplace.app.dto.member.MemberDto.MemberSignUpReqDto;
 import com.favoriteplace.app.repository.MemberRepository;
 import com.favoriteplace.app.repository.PostRepository;
@@ -32,6 +33,8 @@ public class MemberService {
     public MemberDto.TokenInfo signup(MemberSignUpReqDto memberSignUpReqDto) {
         String password = passwordEncoder.encode(memberSignUpReqDto.getPassword());
         Member member = memberSignUpReqDto.toEntity(password, null);
+
+        //TODO 유저 프로필 이미지 + 새싹회원 칭호 저장
 
         memberRepository.save(member);
         return null;

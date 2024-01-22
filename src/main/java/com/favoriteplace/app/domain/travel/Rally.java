@@ -3,19 +3,13 @@ package com.favoriteplace.app.domain.travel;
 import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.item.Item;
 import com.favoriteplace.app.domain.common.BaseTimeEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+
+import java.util.List;
 
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
@@ -49,5 +43,12 @@ public class Rally extends BaseTimeEntity {
     private Long achieveNumber;  //달성한 사람 수
 
     @Column(nullable = false)
-    private Long pilgrimage_number; //해당 랠리의 성지 순례 갯수
+    private Long pilgrimageNumber; //해당 랠리의 성지 순례 갯수
+
+    @OneToMany(mappedBy = "rally")
+    private List<Pilgrimage> pilgrimages;
+
+    public void addPilgrimage(){
+        this.pilgrimageNumber += 1;
+    }
 }

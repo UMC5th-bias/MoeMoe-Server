@@ -27,7 +27,7 @@ public class HomeResponseDto {
                     .id(rally.getId())
                     .name(rally.getName())
                     .backgroundImageUrl(rally.getImage().getUrl())
-                    .pilgrimageNumber(rally.getPilgrimage_number())
+                    .pilgrimageNumber(rally.getPilgrimageNumber())
                     .completeNumber(completeNumber)
                     .build();
         }

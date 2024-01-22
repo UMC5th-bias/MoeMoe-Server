@@ -10,6 +10,7 @@ import java.beans.ExceptionListener;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -23,10 +24,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final List<ExcludePath> excludePaths = Arrays.asList(
+        //인증이 필수인 경우 추가
         new ExcludePath("/auth/logout", HttpMethod.POST),
         new ExcludePath("/pilgrimage/**", HttpMethod.POST),
         new ExcludePath("/posts/free/my-posts?page&size", HttpMethod.GET),
-        new ExcludePath("/posts/free/my-comments?page&size", HttpMethod.GET)
+        new ExcludePath("/posts/free/my-comments?page&size", HttpMethod.GET),
+        new ExcludePath("/pilgrimage/detail/**", HttpMethod.GET)
         // Add more paths and methods as needed
     );
     @Override
@@ -34,7 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String requestURI = request.getRequestURI();
         String method = request.getMethod();
 
-        return excludePaths.stream()
+        return !excludePaths.stream()
             .anyMatch(excludePath -> excludePath.matches(requestURI, method));
     }
 
@@ -68,17 +71,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return null;
     }
 
-    private static class ExcludePath {
-        private final String path;
+    public class ExcludePath {
+        private final String pathPattern;
         private final HttpMethod method;
 
-        public ExcludePath(String path, HttpMethod method) {
-            this.path = path;
+        public ExcludePath(String pathPattern, HttpMethod method) {
+            this.pathPattern = pathPattern;
             this.method = method;
         }
 
-        public boolean matches(String requestURI, String requestMethod) {
-            return path.equals(requestURI) && method.matches(requestMethod);
+        public boolean matches(String requestURI, String method) {
+            // 정규 표현식을 사용하여 매치 여부 확인
+            String regex = pathPattern.replaceAll("\\*\\*", ".*");
+            return Pattern.matches(regex, requestURI) && this.method.matches(method);
         }
     }
 
