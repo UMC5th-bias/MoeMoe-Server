@@ -5,7 +5,7 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 *.DS_Store
-resources/studious-matrix-412103-04030f986b9b.json
+
 
 ### STS ###
 .apt_generated
@@ -38,3 +38,4 @@ out/
 ### VS Code ###
 .vscode/
 *.yml
+resources/studious-matrix-412103-04030f986b9b.json

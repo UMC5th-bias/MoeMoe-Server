@@ -1,15 +1,21 @@
 package com.favoriteplace.app.controller;
 
 import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.dto.community.PostRequestDto;
 import com.favoriteplace.app.dto.community.PostResponseDto;
 import com.favoriteplace.app.service.CommentService;
 import com.favoriteplace.app.service.MemberService;
 import com.favoriteplace.app.service.PostService;
+import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/posts/free")
@@ -75,5 +81,11 @@ public class PostController {
                 .size((long)size)
                 .post(postService.getTotalPostBySort(page, size, sort))
                 .build();
+    }
+
+    @PostMapping("")
+    public ResponseEntity<Void> createPost(PostRequestDto postRequestDto) throws IOException {
+        postService.createPost(postRequestDto);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

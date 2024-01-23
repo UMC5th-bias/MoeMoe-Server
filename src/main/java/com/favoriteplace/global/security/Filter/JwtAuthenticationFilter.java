@@ -30,7 +30,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         new ExcludePath("/pilgrimage/**", HttpMethod.POST),
         new ExcludePath("/posts/free/my-posts?page&size", HttpMethod.GET),
         new ExcludePath("/posts/free/my-comments?page&size", HttpMethod.GET),
-        new ExcludePath("/pilgrimage/detail/**", HttpMethod.GET)
+        new ExcludePath("/pilgrimage/detail/**", HttpMethod.GET),
+        new ExcludePath("/posts/free", HttpMethod.POST)
         // Add more paths and methods as needed
     );
     @Override
