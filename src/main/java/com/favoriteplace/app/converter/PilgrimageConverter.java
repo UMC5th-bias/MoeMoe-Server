@@ -8,6 +8,7 @@ import com.favoriteplace.app.domain.travel.Pilgrimage;
 import com.favoriteplace.app.domain.travel.Rally;
 import com.favoriteplace.app.dto.travel.PilgrimageDto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PilgrimageConverter {
@@ -30,9 +31,9 @@ public class PilgrimageConverter {
     public static PilgrimageDto.MyPilgrimageDto toMyPilgrimageDto() {
         return PilgrimageDto.MyPilgrimageDto.builder()
                 .likedRallySize(0L)
-                .likedRally(null)
+                .likedRally(new ArrayList<>())
                 .guestBookSize(0L)
-                .guestBook(null)
+                .guestBook(new ArrayList<>())
                 .build();
     }
 
