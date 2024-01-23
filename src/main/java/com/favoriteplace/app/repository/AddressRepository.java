@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface AddressRepository extends JpaRepository<Address, Long> {
     List<Address> findByPilgrimages_Rally(Rally rally);
+    Address findByStateAndDistrict(String state, String district);
 }

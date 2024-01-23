@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -34,7 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     );
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        String requestURI = request.getRequestURI();
+        String requestURI = request.getServletPath();
         String method = request.getMethod();
 
         return !excludePaths.stream()
