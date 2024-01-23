@@ -1,10 +1,14 @@
 package com.favoriteplace.app.service;
 
+import static com.favoriteplace.global.exception.ErrorCode.USER_ALREADY_EXISTS;
+
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.Post;
 import com.favoriteplace.app.dto.UserInfoResponseDto;
 import com.favoriteplace.app.dto.member.MemberDto;
 import com.favoriteplace.app.dto.member.MemberDto.EmailCheckReqDto;
+import com.favoriteplace.app.dto.member.MemberDto.EmailDuplicateResDto;
+import com.favoriteplace.app.dto.member.MemberDto.EmailSendReqDto;
 import com.favoriteplace.app.dto.member.MemberDto.MemberSignUpReqDto;
 import com.favoriteplace.app.repository.MemberRepository;
 import com.favoriteplace.app.repository.PostRepository;
@@ -35,9 +39,16 @@ public class MemberService {
         Member member = memberSignUpReqDto.toEntity(password, null);
 
         //TODO 유저 프로필 이미지 + 새싹회원 칭호 저장
-
         memberRepository.save(member);
         return null;
+    }
+
+    @Transactional
+    public MemberDto.EmailDuplicateResDto emailDuplicateCheck(EmailSendReqDto emailSendReqDto) {
+        String email = emailSendReqDto.getEmail();
+        Boolean isExists = memberRepository.findByEmail(email).isPresent();
+
+        return new EmailDuplicateResDto(isExists);
     }
 
     @Transactional
@@ -57,6 +68,5 @@ public class MemberService {
         }
         return UserInfoResponseDto.of(optionalPost.get().getMember());
     }
-
 
 }

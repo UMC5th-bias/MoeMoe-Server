@@ -2,6 +2,7 @@ package com.favoriteplace.app.controller;
 
 import com.favoriteplace.app.dto.member.MemberDto;
 import com.favoriteplace.app.dto.member.MemberDto.EmailCheckReqDto;
+import com.favoriteplace.app.dto.member.MemberDto.EmailDuplicateResDto;
 import com.favoriteplace.app.dto.member.MemberDto.EmailSendResDto;
 import com.favoriteplace.app.dto.member.MemberDto.MemberSignUpReqDto;
 import com.favoriteplace.app.dto.member.MemberDto.TokenInfo;
@@ -43,8 +44,13 @@ public class MemberController {
     }
 
     @PostMapping("/signup/email/check")
-    public ResponseEntity<Void> AuthCheck(@RequestBody @Valid EmailCheckReqDto reqDto){
-        mailSendService.CheckAuthNum(reqDto.getEmail(), reqDto.getAuthNum().toString());
+    public ResponseEntity<Void> authCheck(@RequestBody @Valid EmailCheckReqDto reqDto){
+        mailSendService.checkAuthNum(reqDto.getEmail(), reqDto.getAuthNum().toString());
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/signup/email/duplicate")
+    public ResponseEntity<EmailDuplicateResDto> emailDuplicateCheck(@RequestBody @Valid MemberDto.EmailSendReqDto reqDto) {
+        return ResponseEntity.ok(memberService.emailDuplicateCheck(reqDto));
     }
 }
