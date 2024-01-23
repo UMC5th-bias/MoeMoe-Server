@@ -86,5 +86,16 @@ public class MemberDto {
         private String accessToken;
         private String refreshToken;
     }
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    public static class MemberInfo {
+        private Integer id;
+        private String nickname;
+        private Integer point;
+        private String profileImageUrl;
+        private String profileTitleUrl;
+        private String profileIconUrl;
+    }
 
 }

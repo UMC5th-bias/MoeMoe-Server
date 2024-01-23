@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "studious-matrix-412103",
+  "private_key_id": "04030f986b9b6fc5d11541e04aebeb199dcfe8d1",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCgL0Mq2yYm2FAI\neU4kIRsECeQ9x6rqrOojY0AOcZN3C7Zf1AvM1iLCEKUjI4siGBMo9JAYM0npWjgG\nIcsU4vrZAzodJvvrYyaWzPSVyB2RAFli0b5amKkD5IFPKxOAb9P92S92Q4K3kt6p\nKev1TcIZE6PDvbHOF1Im/Q4zdTM8yhD+x+kO7wjk5JE+0JsRIGO0akkV+BFL0g/w\nfMXE3q+SIRzu0cO2+3gw2ka2oRJQ3u1jpwY+Gv5hpQEajC/gIZQ9GI003XGCwjpm\noetlmm2ELCjC0c0d7Ucv+ojN/ulg15L4+yJdyNYfBIgrD3hRWC58+DVorCIuPn9a\n22pvpQ8DAgMBAAECggEACbODEZJIx7tIpMXv+q+Ul5SGLn9F6MUrJi4cuYmdLdPX\ndwtJFN4QW298CNpEuWTHq3tp5Ku3UyFXJkWF3p1DWVqtxzxoSNO673dSbGXWJvhK\nvmAUjR97KpSvh8NrAKRrktxEWLKMm21fyQZhPeLrmYgyd8IPBciTMNayzvpooLES\neELl5wCFzh7NzjB7Nd6XCtylmNOKdp3BtddspB1sZ1s9Xr4R6lg0TkreLRueUZfE\n4yc8aOLW5wgPA710zkKTGIdTqT1WVsDMSPrbqq2pc2UcVjwSP1TktPYY4Hgu/HJP\nvuvYSLsv/tLxYU3ewxg1K46TKmT/kDUUJHusWUERaQKBgQDPebKsOBT+rxctomLU\njUGSTjmzDFdLK1mvt0+8KpIqHENNsLVyYmc5SeN+rsOhky8xCXQH+MvYcSOZX4su\nrtX58tckyLBmXSQB9n+in71p5vW8WQtYVC1aPOpnmHA+puJ1620HlqPWueQqqY/2\nn1H5UQY8bdqtHbJn9tY0kAPtWwKBgQDFphhhjTmwuPchdkq21rmM0+bpki5oA4Wp\nKh6rHeCsL7wU6i7TMLKLMogmSJiFtWfajjCSDDZPh6JDmuevpx87EjLYSLcFA4dB\nsegNX8YOrAEopf2BsanWwi+b3iBC/Ef7OLR8tq4RTjHgUxnq6D/32ViJRveXY+bt\nb+MTb6jNeQKBgDVT1X34qETSIkYDgB2b9Sey3ZfM6z8R9Gp61o7J7mnOe+ojKnAt\nJNUPzd6I8xW7rByRjnZiF5sZcYoBidfE7pDhPzVgNB8Lf67VefcF0fy/dZgk1wqs\nEEAqeiGIiAlCgeDHU23o5VHS0/e3P56nUr2fetfbcKKgiHO6eVJnVesTAoGBAI4z\nHNF6mOoDeZHymHiJbj/a6QRc7tRYzF5T9nKocU+QnGHzxrKdE6fAOGJK0qlIRarh\nqCI7dQutCtpW5Z/jvj1yr3AaiMqrqjFivRB6OnWt3LuRCR25Y/cmCLi8jDuFZIhj\nWL9tczjyKEI7p6bxZ6x7DA7gJxwdfTSQzi/aovkJAoGBAJpQvKrWDZtusDRgj2YC\n1Ko2Y7reIuU22eNrS3PdwmTI1kT0Lgj/uOa1sqL/i+VMZaR6NKoZGPnj2TROLsfD\nUzouR2vKzqWEbVoilZ0TrTaR8V12Qkp+0oIElYotHubAC0Qm89afDb3WETipDyp0\nJQTt37azv3mFQShqOLwu9XZ1\n-----END PRIVATE KEY-----\n",
+  "client_email": "springboot-storage-access@studious-matrix-412103.iam.gserviceaccount.com",
+  "client_id": "101486536347893436848",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/springboot-storage-access%40studious-matrix-412103.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
