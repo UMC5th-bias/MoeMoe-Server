@@ -62,4 +62,14 @@ public class RallyConverter {
                 .build();
     }
 
+    public static RallyDto.PilgrimageCategoryAnimeDto toPilgrimageCategoryAnimeDto(Rally rally, Long myPilgrimageNumber){
+        return RallyDto.PilgrimageCategoryAnimeDto.builder()
+                .id(rally.getId())
+                .name(rally.getName())
+                .pilgrimageNumber(rally.getPilgrimageNumber())
+                .myPilgrimageNumber(myPilgrimageNumber)
+                .image(rally.getImage().getUrl())
+                .build();
+    }
+
 }

@@ -2,6 +2,7 @@ package com.favoriteplace.app.dto.travel;
 
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -29,7 +30,7 @@ public class RallyDto {
         Long pilgrimageNumber;
         Long myPilgrimageNumber;
         String image;
-        List<RallyAddressDto> rally;
+        List<RallyAddressDto> rally = new ArrayList<>();
     }
     @Builder
     @Getter
@@ -37,7 +38,7 @@ public class RallyDto {
     @AllArgsConstructor
     public static class RallyAddressDto{
         String address;
-        List<RallyAddressPilgrimageDto> pilgrimage;
+        List<RallyAddressPilgrimageDto> pilgrimage = new ArrayList<>();
     }
     @Builder
     @Getter
@@ -56,6 +57,18 @@ public class RallyDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class RallyTrendingDto {
+        Long id;
+        String name;
+        Long pilgrimageNumber;
+        Long myPilgrimageNumber;
+        String image;
+    }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class PilgrimageCategoryAnimeDto {
         Long id;
         String name;
         Long pilgrimageNumber;

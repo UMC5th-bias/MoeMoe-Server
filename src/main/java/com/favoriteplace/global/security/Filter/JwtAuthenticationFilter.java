@@ -5,10 +5,13 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import java.beans.ExceptionListener;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -25,12 +28,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         //인증이 필수인 경우 추가
         new ExcludePath("/auth/logout", HttpMethod.POST),
         new ExcludePath("/pilgrimage/**", HttpMethod.POST),
+        new ExcludePath("/posts/free/my-posts?page&size", HttpMethod.GET),
+        new ExcludePath("/posts/free/my-comments?page&size", HttpMethod.GET),
         new ExcludePath("/pilgrimage/detail/**", HttpMethod.GET)
         // Add more paths and methods as needed
     );
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        String requestURI = request.getRequestURI();
+        String requestURI = request.getServletPath();
         String method = request.getMethod();
 
         return !excludePaths.stream()
