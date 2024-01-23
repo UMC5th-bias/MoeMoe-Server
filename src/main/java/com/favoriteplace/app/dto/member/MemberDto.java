@@ -60,6 +60,13 @@ public class MemberDto {
     }
 
     @Getter
+    @AllArgsConstructor
+    public static class EmailDuplicateResDto {
+        private Boolean isExists;
+    }
+
+
+    @Getter
     @NoArgsConstructor
     public static class EmailCheckReqDto {
         @Email

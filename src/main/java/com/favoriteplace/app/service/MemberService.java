@@ -6,6 +6,7 @@ import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.dto.HomeResponseDto;
 import com.favoriteplace.app.dto.member.MemberDto;
 import com.favoriteplace.app.dto.member.MemberDto.EmailCheckReqDto;
+import com.favoriteplace.app.dto.member.MemberDto.EmailDuplicateResDto;
 import com.favoriteplace.app.dto.member.MemberDto.EmailSendReqDto;
 import com.favoriteplace.app.dto.member.MemberDto.MemberSignUpReqDto;
 import com.favoriteplace.app.dto.member.MemberDto.TokenInfo;
@@ -40,11 +41,11 @@ public class MemberService {
     }
 
     @Transactional
-    public void emailDuplicateCheck(EmailSendReqDto emailSendReqDto) {
+    public MemberDto.EmailDuplicateResDto emailDuplicateCheck(EmailSendReqDto emailSendReqDto) {
         String email = emailSendReqDto.getEmail();
-        Member member = memberRepository.findByEmail(email)
-            .orElseThrow(() -> new RestApiException(USER_ALREADY_EXISTS));
+        Boolean isExists = memberRepository.findByEmail(email).isPresent();
 
+        return new EmailDuplicateResDto(isExists);
     }
 
     @Transactional
