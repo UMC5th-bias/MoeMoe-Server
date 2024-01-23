@@ -2,6 +2,7 @@ package com.favoriteplace;
 
 import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.domain.community.Comment;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.Post;
 import com.favoriteplace.app.domain.enums.ItemType;
@@ -12,6 +13,7 @@ import com.favoriteplace.app.domain.item.Item;
 import com.favoriteplace.app.domain.travel.Address;
 import com.favoriteplace.app.domain.travel.Pilgrimage;
 import com.favoriteplace.app.domain.travel.Rally;
+import com.favoriteplace.app.repository.AddressRepository;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +27,9 @@ public class InitDB {
 
     @PostConstruct
     public void init(){
-        initService.initDB();
         initService.createMember("1");
         initService.initRallyAndPilgrimage();
+        initService.initDB();
     }
 
     @Component
@@ -35,6 +37,7 @@ public class InitDB {
     @Transactional
     static class InitService {
         private final EntityManager em;
+        private final AddressRepository addressRepository;
 
         public void initDB(){
             Image image1 = Image.builder()
@@ -59,7 +62,7 @@ public class InitDB {
 
             Member member = Member.builder()
                     .id(0L).profileIcon(item1)
-                    .profileTitle(item2).email("email@email.com")
+                    .profileTitle(item2).email("aaa@email.com")
                     .password("1234").birthday(null)
                     .nickname("user1").description("hi")
                     .profileImageUrl("").status(MemberStatus.Y)
@@ -98,9 +101,7 @@ public class InitDB {
                     .likeCount(35L).view(35L).build();
             em.merge(post1); em.merge(post2); em.merge(post3); em.merge(post4); em.merge(post5); em.merge(post6); em.merge(post7);
 
-            Address address = Address.builder().id(0L)
-                    .state("도교").district("시부야구").build();
-            em.merge(address);
+            Address address = addressRepository.findByStateAndDistrict("도쿄도", "시부야구");
 
             Rally rally1 = Rally.builder().id(0L)
                     .item(item1).image(image1).name("최애의 아이")
@@ -149,6 +150,20 @@ public class InitDB {
                     .title("인증글7").content("인증글내용7").likeCount(30L).view(30L).latitude(1.1).longitude(1.1)
                     .build();
             em.merge(guestBook1);em.merge(guestBook2); em.merge(guestBook3); em.merge(guestBook4); em.merge(guestBook5); em.merge(guestBook6); em.merge(guestBook7);
+
+            Comment comment1 = Comment.builder()
+                    .member(member).post(post1).guestBook(null).content("댓글1").build();
+            Comment comment2 = Comment.builder()
+                    .member(member).post(post1).guestBook(null).content("댓글2").build();
+            Comment comment3 = Comment.builder()
+                    .member(member).post(post1).guestBook(null).content("댓글3").build();
+            Comment comment4 = Comment.builder()
+                    .member(member).post(post1).guestBook(null).content("댓글4").build();
+            Comment comment5 = Comment.builder()
+                    .member(member).post(post1).guestBook(null).content("댓글5").build();
+            Comment comment6 = Comment.builder()
+                    .member(member).post(post1).guestBook(null).content("댓글6").build();
+            em.merge(comment1); em.merge(comment2);em.merge(comment3);em.merge(comment4);em.merge(comment5);em.merge(comment6);
         }
         public void initMember(){
             createMember("1");

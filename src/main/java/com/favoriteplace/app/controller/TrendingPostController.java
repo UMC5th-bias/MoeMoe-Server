@@ -1,8 +1,6 @@
 package com.favoriteplace.app.controller;
 
-import com.favoriteplace.app.dto.community.TrendingMonthPostResponseDto;
-import com.favoriteplace.app.dto.community.TrendingTodayPostResponseDto;
-import com.favoriteplace.app.repository.GuestBookRepository;
+import com.favoriteplace.app.dto.community.TrendingPostResponseDto;
 import com.favoriteplace.app.service.GuestBookService;
 import com.favoriteplace.app.service.PostService;
 import com.favoriteplace.app.service.TotalPostService;
@@ -24,23 +22,23 @@ public class TrendingPostController {
     private final TotalPostService totalPostService;
 
     @GetMapping("/today/free")
-    public TrendingTodayPostResponseDto getTodayTrendingFreePost(){
-        return TrendingTodayPostResponseDto.builder()
+    public TrendingPostResponseDto.TrendingTodayPostResponseDto getTodayTrendingFreePost(){
+        return TrendingPostResponseDto.TrendingTodayPostResponseDto.builder()
                 .date(DateTimeFormatUtils.convertDateToString(LocalDateTime.now()))
                 .rank(postService.getTodayTrendingPost())
                 .build();
     }
 
     @GetMapping("/today/guestbooks")
-    public TrendingTodayPostResponseDto getTodayTrendingGuestBook(){
-        return TrendingTodayPostResponseDto.builder()
+    public TrendingPostResponseDto.TrendingTodayPostResponseDto getTodayTrendingGuestBook(){
+        return TrendingPostResponseDto.TrendingTodayPostResponseDto.builder()
                 .date(DateTimeFormatUtils.convertDateToString(LocalDateTime.now()))
                 .rank(guestBookService.getTodayTrendingGuestBook())
                 .build();
     }
 
     @GetMapping("/month")
-    public List<TrendingMonthPostResponseDto> getMonthTrendingPost(){
+    public List<TrendingPostResponseDto.TrendingMonthPostResponseDto> getMonthTrendingPost(){
         return totalPostService.getMonthTrendingPosts();
     }
 

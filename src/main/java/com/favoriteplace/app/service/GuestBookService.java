@@ -1,7 +1,7 @@
 package com.favoriteplace.app.service;
 
 import com.favoriteplace.app.domain.community.GuestBook;
-import com.favoriteplace.app.dto.community.TrendingTodayPostResponseDto;
+import com.favoriteplace.app.dto.community.TrendingPostResponseDto;
 import com.favoriteplace.app.repository.GuestBookRepository;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
@@ -19,7 +19,7 @@ public class GuestBookService {
     private final GuestBookRepository guestBookRepository;
 
     @Transactional
-    public List<TrendingTodayPostResponseDto.TrendingPostRank> getTodayTrendingGuestBook() {
+    public List<TrendingPostResponseDto.TrendingTodayPostResponseDto.TrendingPostRank> getTodayTrendingGuestBook() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startOfDay = now.toLocalDate().atStartOfDay();
         List<GuestBook> guestBooks = guestBookRepository.findByCreatedAtBetweenOrderByLikeCountDesc(startOfDay, now);
@@ -28,9 +28,9 @@ public class GuestBookService {
         }
         guestBooks.subList(0, Math.min(5, guestBooks.size()));
 
-        List<TrendingTodayPostResponseDto.TrendingPostRank> trendingPostsRank = new ArrayList<>();
+        List<TrendingPostResponseDto.TrendingTodayPostResponseDto.TrendingPostRank> trendingPostsRank = new ArrayList<>();
         for(int i = 0; (i < guestBooks.size()) && (i < 5); i++){
-            trendingPostsRank.add(TrendingTodayPostResponseDto.TrendingPostRank.of(guestBooks.get(i)));
+            trendingPostsRank.add(TrendingPostResponseDto.TrendingTodayPostResponseDto.TrendingPostRank.of(guestBooks.get(i)));
         }
         return trendingPostsRank;
     }

@@ -11,4 +11,5 @@ import java.util.List;
 @Repository
 public interface LikedRallyRepository extends JpaRepository<LikedRally, Long> {
     LikedRally findByRallyAndMember(Rally rally, Member member);
+    List<LikedRally> findByMember(Member member);
 }
