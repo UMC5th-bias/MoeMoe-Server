@@ -4,7 +4,7 @@ import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.HashTag;
 import com.favoriteplace.app.domain.community.Post;
 import com.favoriteplace.app.dto.HomeResponseDto;
-import com.favoriteplace.app.dto.community.TrendingMonthPostResponseDto;
+import com.favoriteplace.app.dto.community.TrendingPostResponseDto;
 import com.favoriteplace.app.repository.GuestBookRepository;
 import com.favoriteplace.app.repository.HashtagRepository;
 import com.favoriteplace.app.repository.PostRepository;
@@ -35,7 +35,7 @@ public class TotalPostService {
         return trendingPosts;
     }
 
-    public List<TrendingMonthPostResponseDto> getMonthTrendingPosts() {
+    public List<TrendingPostResponseDto.TrendingMonthPostResponseDto> getMonthTrendingPosts() {
         List<Object> combinedPosts = getNTrendingPosts(3, "month");
         return combinedPosts.stream()
                 .limit(3)
@@ -99,14 +99,14 @@ public class TotalPostService {
         }
     }
 
-    private TrendingMonthPostResponseDto convertToMonthTrendingPost(Object o) {
+    private TrendingPostResponseDto.TrendingMonthPostResponseDto convertToMonthTrendingPost(Object o) {
         if(o instanceof GuestBook guestBook){
-            return TrendingMonthPostResponseDto.builder()
+            return TrendingPostResponseDto.TrendingMonthPostResponseDto.builder()
                     .id(guestBook.getId()).title(guestBook.getTitle())
                     .type("성지순례 인증").build();
         }
         else if(o instanceof Post post){
-            return TrendingMonthPostResponseDto.builder()
+            return TrendingPostResponseDto.TrendingMonthPostResponseDto.builder()
                     .id(post.getId()).title(post.getTitle())
                     .type("자유게시판").build();
         }

@@ -21,6 +21,7 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.BAD_REQUEST, 2001, "유저를 찾을 수 없습니다."),
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, 2002, "로그인에 실패했습니다."),
     USER_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, 2003, "해당 이메일로 가입한 유저가 존재합니다."),
+    NOT_VAILD_EMAIL_AUTHCODE(HttpStatus.BAD_REQUEST, 2004, "이메일 인증번호가 일치하지 않습니다."),
 
 
     //Pilgrimage (3000번대)
@@ -32,9 +33,12 @@ public enum ErrorCode {
     //Post (5000번대)
     POST_NOT_FOUND(HttpStatus.BAD_REQUEST, 5001, "자유게시판 게시글이 존재하지 않습니다."),
 
-    //GuestBook (6000번대)
-    GUESTBOOK_NOT_FOUND(HttpStatus.BAD_REQUEST, 6001, "성지순례 인증글이 존재하지 않습니다.");
 
+    //GuestBook (6000번대)
+    GUESTBOOK_NOT_FOUND(HttpStatus.BAD_REQUEST, 6001, "성지순례 인증글이 존재하지 않습니다."),
+
+    //커뮤니티 (7000번대)
+    SORT_KEYWORD_NOT_ALLOWED(HttpStatus.BAD_REQUEST, 7001, "존재하지 않는 정렬 방식입니다.");
 
     private final HttpStatus httpStatus;
     private final int code;

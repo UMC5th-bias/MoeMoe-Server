@@ -5,6 +5,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import java.beans.ExceptionListener;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -23,8 +25,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final List<ExcludePath> excludePaths = Arrays.asList(
+        //인증이 필수인 경우 추가
         new ExcludePath("/auth/logout", HttpMethod.POST),
         new ExcludePath("/pilgrimage/**", HttpMethod.POST),
+        new ExcludePath("/posts/free/my-posts?page&size", HttpMethod.GET),
+        new ExcludePath("/posts/free/my-comments?page&size", HttpMethod.GET),
         new ExcludePath("/pilgrimage/detail/**", HttpMethod.GET)
         // Add more paths and methods as needed
     );
@@ -40,7 +45,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        log.info("hqwefqwe: "+request);
 
         // 1. Request Header 에서 JWT 토큰 추출
         String token = resolveToken((HttpServletRequest) request);
@@ -54,7 +58,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             log.info("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestURI);
         } else {
             log.info("유효한 JWT 토큰이 없습니다, uri: {}", requestURI);
-
         }
         chain.doFilter(request, response);
     }
@@ -84,20 +87,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return Pattern.matches(regex, requestURI) && this.method.matches(method);
         }
     }
-
-//    private static class ExcludePath {
-//        private final String path;
-//        private final HttpMethod method;
-//
-//        public ExcludePath(String path, HttpMethod method) {
-//            this.path = path;
-//            this.method = method;
-//        }
-//
-//        public boolean matches(String requestURI, String requestMethod) {
-//            return path.equals(requestURI) && method.matches(requestMethod);
-//        }
-//    }
 
     private enum HttpMethod {
         GET, POST, PUT, DELETE;  // Add more methods as needed
