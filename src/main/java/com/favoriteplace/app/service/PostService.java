@@ -4,6 +4,7 @@ import com.favoriteplace.app.converter.PostConverter;
 import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.Post;
+import com.favoriteplace.app.dto.community.CommentRequestDto;
 import com.favoriteplace.app.dto.community.PostRequestDto;
 import com.favoriteplace.app.dto.community.PostResponseDto;
 import com.favoriteplace.app.dto.community.TrendingPostResponseDto;
@@ -14,10 +15,10 @@ import com.favoriteplace.app.repository.PostRepository;
 import com.favoriteplace.app.service.strategy.SortStrategy;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
+import com.favoriteplace.global.gcpImage.UploadImage;
 import com.favoriteplace.global.util.SecurityUtil;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
-import jakarta.mail.Multipart;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,8 +43,11 @@ public class PostService {
     private final CommentRepository commentRepository;
     private final SortStrategy sortByLatestStrategy;
     private final SortStrategy sortByLikedStrategy;
-    private final Storage storage;
+    private final UploadImage uploadImage;
     private final SecurityUtil securityUtil;
+
+    @Value("${spring.cloud.gcp.storage.bucket}")
+    private String bucketName;
 
     @Transactional
     public List<TrendingPostResponseDto.TrendingTodayPostResponseDto.TrendingPostRank> getTodayTrendingPost() {
@@ -133,9 +137,7 @@ public class PostService {
         return totalPosts;
     }
 
-    @Value("${spring.cloud.gcp.storage.bucket}")
-    private String bucketName;
-
+    @Transactional
     public void createPost(PostRequestDto postRequestDto) throws IOException {
         Member member = securityUtil.getUser();
         Post newPost = Post.builder()
@@ -149,7 +151,8 @@ public class PostService {
             List<Image> images = new ArrayList<>();
             for(MultipartFile image: uploadImages){
                 if(!image.isEmpty()){
-                    String uuid = UUID.randomUUID().toString();
+                    String uuid = uploadImage.uploadImageToCloud(image);
+                    /*String uuid = UUID.randomUUID().toString();
                     String ext = image.getContentType();
 
                     //Cloud에 이미지 업로드
@@ -158,7 +161,7 @@ public class PostService {
                                     .setContentType(ext)
                                     .build(),
                             image.getInputStream()
-                    );
+                    );*/
                     Image newImage = Image.builder().url(uuid).build();
                     images.add(newImage);
                 }
@@ -168,5 +171,21 @@ public class PostService {
             }
         }
         postRepository.save(newPost);
+    }
+
+    @Transactional
+    public void deletePost(long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new RestApiException(ErrorCode.POST_NOT_FOUND));
+        postRepository.delete(post);
+    }
+
+    @Transactional
+    public void modifyPost(long postId, PostRequestDto dto) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new RestApiException(ErrorCode.POST_NOT_FOUND));
+        Optional.ofNullable(dto.getTitle()).ifPresent(post::setTitle);
+        Optional.ofNullable(dto.getContent()).ifPresent(post::setContent);
+
+        //TODO
+
     }
 }
