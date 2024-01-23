@@ -13,23 +13,23 @@ public class ItemDto {
     public static class ItemListResDto {
         private Boolean isLoggedIn;
         private MemberDto.MemberInfo userInfo;
-        private List<itemListDivideByCategory> titles;
-        private List<itemListDivideByCategory> icons;
+        private List<ItemListDivideByCategory> titles;
+        private List<ItemListDivideByCategory> icons;
     }
 
     @Builder
     @Getter
     @AllArgsConstructor
-    public static class itemListDivideByCategory {
+    public static class ItemListDivideByCategory {
         private String category;
-        private List<itemList> itemList;
+        private List<ItemList> itemList;
 
     }
 
     @Builder
     @Getter
     @AllArgsConstructor
-    public static class itemList {
+    public static class ItemList {
         private Integer id;
         private String name;
         private String imageUrl;

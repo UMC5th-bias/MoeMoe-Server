@@ -1,9 +1,12 @@
 package com.favoriteplace.app.controller;
 
 import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.dto.item.ItemDto;
+import com.favoriteplace.app.service.ShopService;
 import com.favoriteplace.global.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,19 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/shop")
 public class ShopController {
-
-    private SecurityUtil securityUtil;
+    private final ShopService shopService;
 
     @GetMapping("/limited")
-    public void getLimitedProduct(HttpServletRequest request) {
-        Member member = securityUtil.getUserFromHeader(request);
-
-
-
-        if (member == null) {
-
-        } else {
-
-        }
+    public ResponseEntity<ItemDto.ItemListResDto> getLimitedProduct(HttpServletRequest request) {
+        return ResponseEntity.ok(shopService.getLimitedProduct(request));
     }
 }
