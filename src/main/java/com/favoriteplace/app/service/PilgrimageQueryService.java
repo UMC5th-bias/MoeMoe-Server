@@ -17,8 +17,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -183,9 +187,18 @@ public class PilgrimageQueryService {
      * 이달의 추천 랠리
      * @return 당월 1일 부터 현재까지의 좋아요 집계 1위 랠리
      */
-    public RallyDto.RallyTrendingDto getRallyTrending() {
-
-        return null;
+    public RallyDto.RallyTrendingDto getRallyTrending(Member member) {
+        List<Rally> rallys = likedRallyRepository.findMonthlyTrendingRally(
+                LocalDateTime.now().withDayOfMonth(1));
+        if (rallys.isEmpty()) {
+            throw new RestApiException(ErrorCode.TRENDING_RALLY_NOT_FOUND);
+        }
+        if (member == null) {
+            return RallyConverter.toRallyTrendingDto(rallys.get(0),0L);
+        }
+        List<VisitedPilgrimage> visited = visitedPilgrimageRepository
+                .findDistinctByMemberAndPilgrimage_Rally(member, rallys.get(0));
+        return RallyConverter.toRallyTrendingDto(rallys.get(0), Long.valueOf(visited.size()));
     }
 
     /***
