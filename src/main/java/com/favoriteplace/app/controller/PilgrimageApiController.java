@@ -10,6 +10,7 @@ import com.favoriteplace.global.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,10 +35,10 @@ public class PilgrimageApiController {
     }
 
     // 이달의 추천 랠리 (메인)
-    // 회원 + 비회원
     @GetMapping("/trending")
-    public RallyDto.RallyTrendingDto getRallyTrending() {
-        return pilgrimageQueryService.getRallyTrending();
+    public RallyDto.RallyTrendingDto getRallyTrending(HttpServletRequest request) {
+        Member member = securityUtil.getUserFromHeader(request);
+        return pilgrimageQueryService.getRallyTrending(member);
     }
 
     // 성지순례 애니메이션 카테고리
@@ -56,7 +57,7 @@ public class PilgrimageApiController {
 
     // 성지순례 지역 상세 카테고리
     @GetMapping("/region/{regionId}")
-    public PilgrimageDto.PilgrimageCategoryRegionDetailDto getCategoryRegionDetail(@PathVariable("regionId")Long regionId){
+    public List<PilgrimageDto.PilgrimageCategoryRegionDetailDto> getCategoryRegionDetail(@PathVariable("regionId")Long regionId){
         return pilgrimageQueryService.getCategoryRegionDetail(regionId);
     }
 

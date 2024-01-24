@@ -12,4 +12,5 @@ import java.util.List;
 public interface PilgrimageRepository extends JpaRepository<Pilgrimage, Long> {
     List<Pilgrimage> findByRallyId(Long rallyId);
     List<Pilgrimage> findByRallyAndAddress(Rally rally, Address address);
+    List<Pilgrimage> findByAddress(Address address);
 }

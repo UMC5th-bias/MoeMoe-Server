@@ -29,6 +29,7 @@ public enum ErrorCode {
 
     //Rally (4000번대)
     RALLY_NOT_FOUND(HttpStatus.BAD_REQUEST, 4001, "랠리 정보를 찾을 수 없습니다."),
+    TRENDING_RALLY_NOT_FOUND(HttpStatus.BAD_REQUEST, 4002, "이달의 추천 랠가 존재하지 않습니다."),
 
     //Post (5000번대)
     POST_NOT_FOUND(HttpStatus.BAD_REQUEST, 5001, "자유게시판 게시글이 존재하지 않습니다."),
@@ -38,7 +39,10 @@ public enum ErrorCode {
     GUESTBOOK_NOT_FOUND(HttpStatus.BAD_REQUEST, 6001, "성지순례 인증글이 존재하지 않습니다."),
 
     //커뮤니티 (7000번대)
-    SORT_KEYWORD_NOT_ALLOWED(HttpStatus.BAD_REQUEST, 7001, "존재하지 않는 정렬 방식입니다.");
+    SORT_KEYWORD_NOT_ALLOWED(HttpStatus.BAD_REQUEST, 7001, "존재하지 않는 정렬 방식입니다."),
+
+    // 지역 (8000번대)
+    ADDRESS_NOT_FOUND(HttpStatus.BAD_REQUEST, 8001, "존재하지 않는 지역입니다.");
 
     private final HttpStatus httpStatus;
     private final int code;

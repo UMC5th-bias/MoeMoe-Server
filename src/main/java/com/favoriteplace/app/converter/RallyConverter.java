@@ -8,6 +8,15 @@ import com.favoriteplace.app.dto.travel.RallyDto;
 import java.util.List;
 
 public class RallyConverter {
+    public static RallyDto.RallyTrendingDto toRallyTrendingDto(Rally rally, Long myPilgrimageNumber){
+        return RallyDto.RallyTrendingDto.builder()
+                .id(rally.getId())
+                .name(rally.getName())
+                .pilgrimageNumber(rally.getPilgrimageNumber())
+                .myPilgrimageNumber(myPilgrimageNumber)
+                .image(rally.getImage().getUrl())
+                .build();
+    }
     public static RallyDto.RallyDetailResponseDto toRallyDetailResponseDto(Rally rally, Long myPilgrimageNumber, Boolean isLike, Boolean isMember){
         // 회원
         if (isMember) {
