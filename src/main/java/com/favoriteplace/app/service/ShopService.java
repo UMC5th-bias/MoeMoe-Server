@@ -30,61 +30,51 @@ public class ShopService {
         List<ItemListDivideByCategory> titles;
         List<ItemListDivideByCategory> icons;
 
-        //TODO 추후 리팩토링 필수..(겹치는 로직(title/icon) 메소드로 따로 빼기)
+        //TODO 추후 리팩토링하면 좋을 것 같은 부분
 
-        //한정 판매 아이템 목록 조회
+        //한정 판매 아이템 목록 & 현존하는 ItemCategory 조회
         List<Item> limitedItemList = itemRepository.findAllByStatus(SaleStatus.LIMITED_SALE);
         List<ItemCategory> itemCategories = Arrays.stream(ItemCategory.values())
             .collect(Collectors.toList());
 
-        List<Item> titleItems = limitedItemList.stream()
-                                    .filter(item -> item.getType() == ItemType.TITLE)
-                                    .collect(Collectors.toList());
+        List<Item> titleItems = getItemsByItemType(limitedItemList, ItemType.TITLE);
 
         if (titleItems.size() != 0) {
-
-            List<List<Item>> titleCollect = itemCategories.stream()
-                .map(id -> titleItems.stream()
-                    .filter(item -> item.getCategory() == id)
-                    .collect(Collectors.toList()))
-                .collect(Collectors.toList());
-
-            titles = titleCollect.stream()
-                .filter(title -> !title.isEmpty())
-                .map(titleitemList -> ShopConverter.itemListDivideByCategory(titleitemList)).collect(
-                    Collectors.toList());
+            titles = getItemListDivideByCategory(titleItems, itemCategories);
         } else {
             titles = null;
         }
 
-        List<Item> iconItems = limitedItemList.stream()
-                                    .filter(item -> item.getType() == ItemType.ICON)
-                                    .collect(Collectors.toList());
+        List<Item> iconItems = getItemsByItemType(limitedItemList, ItemType.ICON);
 
         if(iconItems.size() != 0) {
-            List<List<Item>> iconCollect = itemCategories.stream()
-                .map(id -> iconItems.stream()
-                    .filter(item -> item.getCategory() == id)
-                    .collect(Collectors.toList()))
-                .collect(Collectors.toList());
-
-            icons = iconCollect.stream()
-                .filter(icon -> !icon.isEmpty())
-                .map(titleIconList -> ShopConverter.itemListDivideByCategory(titleIconList)).collect(
-                    Collectors.toList());
+            icons = getItemListDivideByCategory(iconItems, itemCategories);
         } else {
             icons = null;
         }
 
-        if (member == null) {
-            return ItemDto.ItemListResDto.builder()
-                .isLoggedIn(false)
-                .userInfo(null)
-                .titles(titles)
-                .icons(icons)
-                .build();
-        }
-        return null;
+        return ShopConverter.totalItemList(member, titles, icons);
     }
 
+    //칭호, 아이콘 별 아이템 조회
+    public List<Item> getItemsByItemType(List<Item> itemList, ItemType itemType) {
+        return itemList.stream()
+            .filter(item -> item.getType() == itemType)
+            .collect(Collectors.toList());
+    }
+
+    //카테고리별 아이템 조회
+    public List<ItemListDivideByCategory> getItemListDivideByCategory(List<Item> itemList, List<ItemCategory> itemCategories) {
+
+        List<List<Item>> collect = itemCategories.stream()
+            .map(id -> itemList.stream()
+                .filter(item -> item.getCategory() == id)
+                .collect(Collectors.toList()))
+            .collect(Collectors.toList());
+
+        return collect.stream()
+            .filter(title -> !title.isEmpty())
+            .map(titleitemList -> ShopConverter.itemListDivideByCategory(titleitemList)).collect(
+                Collectors.toList());
+    }
 }

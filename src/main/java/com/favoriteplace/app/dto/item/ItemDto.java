@@ -1,6 +1,8 @@
 package com.favoriteplace.app.dto.item;
 
+import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.dto.member.MemberDto;
+import com.favoriteplace.app.dto.member.MemberDto.MemberInfo;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,6 +17,15 @@ public class ItemDto {
         private MemberDto.MemberInfo userInfo;
         private List<ItemListDivideByCategory> titles;
         private List<ItemListDivideByCategory> icons;
+
+        public static ItemListResDto from(MemberInfo userInfo, List<ItemListDivideByCategory> titles, List<ItemListDivideByCategory> icons) {
+            return ItemListResDto.builder()
+                .isLoggedIn(userInfo == null ? false : true)
+                .userInfo(userInfo)
+                .titles(titles)
+                .icons(icons)
+                .build();
+        }
     }
 
     @Builder

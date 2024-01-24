@@ -96,6 +96,17 @@ public class MemberDto {
         private String profileImageUrl;
         private String profileTitleUrl;
         private String profileIconUrl;
+
+        public static MemberInfo from(Member member) {
+            return MemberInfo.builder()
+                .id(member == null ? null : member.getId().intValue())
+                .nickname(member == null ? null : member.getNickname())
+                .point(member == null ? null : member.getPoint().intValue())
+                .profileImageUrl(member == null ? null : member.getProfileImageUrl())
+                .profileIconUrl(member == null ? null : member.getProfileIcon().getImage().getUrl())
+                .profileTitleUrl(member == null ? null : member.getProfileTitle().getImage().getUrl())
+                .build();
+        }
     }
 
 }
