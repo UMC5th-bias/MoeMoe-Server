@@ -38,7 +38,10 @@ public enum ErrorCode {
     GUESTBOOK_NOT_FOUND(HttpStatus.BAD_REQUEST, 6001, "성지순례 인증글이 존재하지 않습니다."),
 
     //커뮤니티 (7000번대)
-    SORT_KEYWORD_NOT_ALLOWED(HttpStatus.BAD_REQUEST, 7001, "존재하지 않는 정렬 방식입니다.");
+    SORT_KEYWORD_NOT_ALLOWED(HttpStatus.BAD_REQUEST, 7001, "존재하지 않는 정렬 방식입니다."),
+
+    // 지역 (8000번대)
+    ADDRESS_NOT_FOUND(HttpStatus.BAD_REQUEST, 8001, "존재하지 않는 지역입니다.");
 
     private final HttpStatus httpStatus;
     private final int code;

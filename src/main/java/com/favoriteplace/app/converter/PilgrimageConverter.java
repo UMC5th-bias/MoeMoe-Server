@@ -80,4 +80,14 @@ public class PilgrimageConverter {
                 .district(address.getDistrict())
                 .build();
     }
+
+    public static PilgrimageDto.PilgrimageCategoryRegionDetailDto toPilgrimageCategoryRegionDetailDto(String title, Pilgrimage pilgrimage){
+        return PilgrimageDto.PilgrimageCategoryRegionDetailDto.builder()
+                .id(pilgrimage.getId())
+                .title(title)
+                .detailAddress(pilgrimage.getDetailAddress())
+                .latitude(pilgrimage.getLatitude())
+                .longitude(pilgrimage.getLongitude())
+                .build();
+    }
 }

@@ -34,7 +34,6 @@ public class PilgrimageApiController {
     }
 
     // 이달의 추천 랠리 (메인)
-    // 회원 + 비회원
     @GetMapping("/trending")
     public RallyDto.RallyTrendingDto getRallyTrending() {
         return pilgrimageQueryService.getRallyTrending();
@@ -56,7 +55,7 @@ public class PilgrimageApiController {
 
     // 성지순례 지역 상세 카테고리
     @GetMapping("/region/{regionId}")
-    public PilgrimageDto.PilgrimageCategoryRegionDetailDto getCategoryRegionDetail(@PathVariable("regionId")Long regionId){
+    public List<PilgrimageDto.PilgrimageCategoryRegionDetailDto> getCategoryRegionDetail(@PathVariable("regionId")Long regionId){
         return pilgrimageQueryService.getCategoryRegionDetail(regionId);
     }
 

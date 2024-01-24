@@ -184,6 +184,7 @@ public class PilgrimageQueryService {
      * @return 당월 1일 부터 현재까지의 좋아요 집계 1위 랠리
      */
     public RallyDto.RallyTrendingDto getRallyTrending() {
+
         return null;
     }
 
@@ -239,7 +240,16 @@ public class PilgrimageQueryService {
      * @param regionId
      * @return district 별 성지순례 리스트
      */
-    public PilgrimageDto.PilgrimageCategoryRegionDetailDto getCategoryRegionDetail(Long regionId) {
-        return null;
+    public List<PilgrimageDto.PilgrimageCategoryRegionDetailDto> getCategoryRegionDetail(Long regionId) {
+        Address address = addressRepository.findById(regionId).orElseThrow(()->
+                new RestApiException(ErrorCode.ADDRESS_NOT_FOUND));
+        List<Pilgrimage> pilgrimages = pilgrimageRepository.findByAddress(address);
+
+        return pilgrimages.stream()
+                .map(pilgrimage -> {
+                    Rally rally = rallyRepository.findByPilgrimage(pilgrimage);
+                    return PilgrimageConverter.toPilgrimageCategoryRegionDetailDto(rally.getName(), pilgrimage);
+                })
+                .collect(Collectors.toList());
     }
 }
