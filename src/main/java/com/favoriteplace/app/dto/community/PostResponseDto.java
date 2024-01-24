@@ -13,6 +13,12 @@ public class PostResponseDto {
 
     @Builder
     @Getter
+    public static class SuccessResponseDto{
+        private String message;
+    }
+
+    @Builder
+    @Getter
     public static class MyCommentDto{
         private Long size;
         private List<MyComment>comment;
@@ -97,6 +103,8 @@ public class PostResponseDto {
                     .build();
         }
     }
+
+
 
 
 

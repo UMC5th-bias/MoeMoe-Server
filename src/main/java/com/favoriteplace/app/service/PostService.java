@@ -4,6 +4,8 @@ import com.favoriteplace.app.converter.PostConverter;
 import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.Post;
+import com.favoriteplace.app.dto.community.CommentRequestDto;
+import com.favoriteplace.app.dto.community.PostRequestDto;
 import com.favoriteplace.app.dto.community.PostResponseDto;
 import com.favoriteplace.app.dto.community.TrendingPostResponseDto;
 import com.favoriteplace.app.repository.CommentRepository;
@@ -13,20 +15,23 @@ import com.favoriteplace.app.repository.PostRepository;
 import com.favoriteplace.app.service.strategy.SortStrategy;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
+import com.favoriteplace.global.gcpImage.UploadImage;
 import com.favoriteplace.global.util.SecurityUtil;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,7 +43,11 @@ public class PostService {
     private final CommentRepository commentRepository;
     private final SortStrategy sortByLatestStrategy;
     private final SortStrategy sortByLikedStrategy;
+    private final UploadImage uploadImage;
     private final SecurityUtil securityUtil;
+
+    @Value("${spring.cloud.gcp.storage.bucket}")
+    private String bucketName;
 
     @Transactional
     public List<TrendingPostResponseDto.TrendingTodayPostResponseDto.TrendingPostRank> getTodayTrendingPost() {
@@ -126,5 +135,57 @@ public class PostService {
             totalPosts.add(PostConverter.myPostResponseConverter(post, member, comments));
         }
         return totalPosts;
+    }
+
+    @Transactional
+    public void createPost(PostRequestDto postRequestDto) throws IOException {
+        Member member = securityUtil.getUser();
+        Post newPost = Post.builder()
+                .member(member).title(postRequestDto.getTitle()).images(new ArrayList<>())
+                .content(postRequestDto.getContent()).likeCount(0L).view(0L)
+                .build();
+
+         //이미지 업로드 관련
+        List<MultipartFile> uploadImages = postRequestDto.getImages();
+        if(!uploadImages.isEmpty()){
+            List<Image> images = new ArrayList<>();
+            for(MultipartFile image: uploadImages){
+                if(!image.isEmpty()){
+                    String uuid = uploadImage.uploadImageToCloud(image);
+                    /*String uuid = UUID.randomUUID().toString();
+                    String ext = image.getContentType();
+
+                    //Cloud에 이미지 업로드
+                    BlobInfo blobInfo = storage.create(
+                            BlobInfo.newBuilder(bucketName, uuid)
+                                    .setContentType(ext)
+                                    .build(),
+                            image.getInputStream()
+                    );*/
+                    Image newImage = Image.builder().url(uuid).build();
+                    images.add(newImage);
+                }
+            }
+            if(!images.isEmpty()){
+                newPost.addImages(images);
+            }
+        }
+        postRepository.save(newPost);
+    }
+
+    @Transactional
+    public void deletePost(long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new RestApiException(ErrorCode.POST_NOT_FOUND));
+        postRepository.delete(post);
+    }
+
+    @Transactional
+    public void modifyPost(long postId, PostRequestDto dto) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new RestApiException(ErrorCode.POST_NOT_FOUND));
+        Optional.ofNullable(dto.getTitle()).ifPresent(post::setTitle);
+        Optional.ofNullable(dto.getContent()).ifPresent(post::setContent);
+
+        //TODO
+
     }
 }

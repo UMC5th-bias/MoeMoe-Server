@@ -30,7 +30,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         new ExcludePath("/pilgrimage/**", HttpMethod.POST),
         new ExcludePath("/posts/free/my-posts?page&size", HttpMethod.GET),
         new ExcludePath("/posts/free/my-comments?page&size", HttpMethod.GET),
-        new ExcludePath("/pilgrimage/detail/**", HttpMethod.GET)
+        new ExcludePath("/pilgrimage/detail/**", HttpMethod.GET),
+        new ExcludePath("/posts/free", HttpMethod.POST),
+        new ExcludePath("/posts/free/**", HttpMethod.DELETE),
+        new ExcludePath("/posts/free/**", HttpMethod.POST),
+        new ExcludePath("/posts/free/**", HttpMethod.PUT),
+            new ExcludePath("/posts/free/**", HttpMethod.PATCH)
         // Add more paths and methods as needed
     );
     @Override
@@ -89,7 +94,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private enum HttpMethod {
-        GET, POST, PUT, DELETE;  // Add more methods as needed
+        GET, POST, PUT, DELETE, PATCH;  // Add more methods as needed
 
         public boolean matches(String requestMethod) {
             return this.name().equalsIgnoreCase(requestMethod);
