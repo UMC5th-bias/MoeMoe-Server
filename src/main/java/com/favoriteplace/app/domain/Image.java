@@ -20,6 +20,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Getter
 @Builder
 @NoArgsConstructor(access = PROTECTED)
@@ -42,4 +44,7 @@ public class Image {
     @Column(nullable = false)
     private String url;
 
+    public void setPost(Post post) {
+        this.post = post;
+    }
 }
