@@ -8,6 +8,7 @@ import com.favoriteplace.app.domain.travel.Pilgrimage;
 import com.favoriteplace.app.domain.travel.Rally;
 import com.favoriteplace.app.dto.travel.PilgrimageDto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PilgrimageConverter {
@@ -30,9 +31,9 @@ public class PilgrimageConverter {
     public static PilgrimageDto.MyPilgrimageDto toMyPilgrimageDto() {
         return PilgrimageDto.MyPilgrimageDto.builder()
                 .likedRallySize(0L)
-                .likedRally(null)
+                .likedRally(new ArrayList<>())
                 .guestBookSize(0L)
-                .guestBook(null)
+                .guestBook(new ArrayList<>())
                 .build();
     }
 
@@ -77,6 +78,16 @@ public class PilgrimageConverter {
         return PilgrimageDto.PilgrimageAddressDetailDto.builder()
                 .id(address.getId())
                 .district(address.getDistrict())
+                .build();
+    }
+
+    public static PilgrimageDto.PilgrimageCategoryRegionDetailDto toPilgrimageCategoryRegionDetailDto(String title, Pilgrimage pilgrimage){
+        return PilgrimageDto.PilgrimageCategoryRegionDetailDto.builder()
+                .id(pilgrimage.getId())
+                .title(title)
+                .detailAddress(pilgrimage.getDetailAddress())
+                .latitude(pilgrimage.getLatitude())
+                .longitude(pilgrimage.getLongitude())
                 .build();
     }
 }

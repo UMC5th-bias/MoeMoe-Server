@@ -80,4 +80,14 @@ public class CommentService {
         }
         return myComments;
     }
+
+    public void createComment(long postId, String content) {
+        Member member = securityUtil.getUser();
+        Comment comment = Comment.builder()
+                .member(member)
+                .post(postRepository.findById(postId).orElseThrow(() -> new RestApiException(ErrorCode.POST_NOT_FOUND)))
+                .content(content)
+                .build();
+        commentRepository.save(comment);
+    }
 }
