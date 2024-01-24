@@ -39,6 +39,7 @@ public class SecurityUtil {
     }
 
     private String resolveToken(HttpServletRequest request) {
+        // TODO: getUserFromHeader와 로직이 조금 겹치는 듯, 추후 수정 필요
         String bearerToken = request.getHeader("Authorization");
 
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
