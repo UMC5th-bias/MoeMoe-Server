@@ -102,9 +102,9 @@ public class MemberDto {
                 .id(member == null ? null : member.getId().intValue())
                 .nickname(member == null ? null : member.getNickname())
                 .point(member == null ? null : member.getPoint().intValue())
-                .profileImageUrl(member == null ? null : member.getProfileImageUrl())
-                .profileIconUrl(member == null ? null : member.getProfileIcon().getImage().getUrl())
-                .profileTitleUrl(member == null ? null : member.getProfileTitle().getImage().getUrl())
+                .profileImageUrl(member.getProfileImageUrl() == null ? null : member.getProfileImageUrl())
+                .profileIconUrl(member.getProfileIcon() == null ? null : member.getProfileIcon().getImage().getUrl())
+                .profileTitleUrl(member.getProfileTitle() == null ? null : member.getProfileTitle().getImage().getUrl())
                 .build();
         }
     }
