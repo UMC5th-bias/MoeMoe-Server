@@ -98,6 +98,7 @@ public class MemberDto {
         private String profileIconUrl;
 
         public static MemberInfo from(Member member) {
+            System.out.println(member.getProfileIcon());
             return MemberInfo.builder()
                 .id(member == null ? null : member.getId().intValue())
                 .nickname(member == null ? null : member.getNickname())
