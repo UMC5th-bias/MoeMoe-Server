@@ -28,31 +28,26 @@ public class ShopService {
     public ItemDto.ItemListResDto getLimitedProduct(HttpServletRequest request) {
         Member member = securityUtil.getUserFromHeader(request);
 
-        List<ItemListDivideByCategory> titles;
-        List<ItemListDivideByCategory> icons;
+        List<ItemListDivideByCategory> titles = null;
+        List<ItemListDivideByCategory> icons = null;
         List<ItemCategory> itemCategories;
 
         //TODO 추후 리팩토링하면 좋을 것 같은 부분
 
         //한정 판매 아이템 목록 & 현존하는 ItemCategory 조회
         List<Item> limitedItemList = itemRepository.findAllByStatus(SaleStatus.LIMITED_SALE);
-        itemCategories = Arrays.stream(ItemCategory.values())
-            .collect(Collectors.toList());
+        itemCategories = getItemCategories();
 
         List<Item> titleItems = getItemsByItemType(limitedItemList, ItemType.TITLE);
 
         if (titleItems.size() != 0) {
             titles = getItemListDivideByCategory(titleItems, itemCategories);
-        } else {
-            titles = null;
         }
 
         List<Item> iconItems = getItemsByItemType(limitedItemList, ItemType.ICON);
 
         if(iconItems.size() != 0) {
             icons = getItemListDivideByCategory(iconItems, itemCategories);
-        } else {
-            icons = null;
         }
 
         return ShopConverter.totalItemList(member, titles, icons);
@@ -61,31 +56,26 @@ public class ShopService {
     public ItemDto.ItemListResDto getAlwaysSellProduct(HttpServletRequest request) {
         Member member = securityUtil.getUserFromHeader(request);
 
-        List<ItemListDivideByCategory> titles;
-        List<ItemListDivideByCategory> icons;
+        List<ItemListDivideByCategory> titles = null;
+        List<ItemListDivideByCategory> icons = null;
         List<ItemCategory> itemCategories;
 
         //TODO 추후 리팩토링하면 좋을 것 같은 부분
 
         //한정 판매 아이템 목록 & 현존하는 ItemCategory 조회
         List<Item> limitedItemList = itemRepository.findAllByStatus(SaleStatus.ALWAYS_ON_SALE);
-        itemCategories = Arrays.stream(ItemCategory.values())
-            .collect(Collectors.toList());
+        itemCategories = getItemCategories();
 
         List<Item> titleItems = getItemsByItemType(limitedItemList, ItemType.TITLE);
 
         if (titleItems.size() != 0) {
             titles = getItemListDivideByCategory(titleItems, itemCategories);
-        } else {
-            titles = null;
         }
 
         List<Item> iconItems = getItemsByItemType(limitedItemList, ItemType.ICON);
 
         if(iconItems.size() != 0) {
             icons = getItemListDivideByCategory(iconItems, itemCategories);
-        } else {
-            icons = null;
         }
 
         return ShopConverter.totalItemList(member, titles, icons);
@@ -95,8 +85,6 @@ public class ShopService {
         return Arrays.stream(ItemCategory.values())
             .collect(Collectors.toList());
     }
-
-
 
     //칭호, 아이콘 별 아이템 조회
     public List<Item> getItemsByItemType(List<Item> itemList, ItemType itemType) {
