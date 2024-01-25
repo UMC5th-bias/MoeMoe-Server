@@ -22,4 +22,9 @@ public class ShopController {
     public ResponseEntity<ItemDto.ItemListResDto> getLimitedProduct(HttpServletRequest request) {
         return ResponseEntity.ok(shopService.getLimitedProduct(request));
     }
+
+    @GetMapping("/always")
+    public ResponseEntity<ItemDto.ItemListResDto> getAlwaysSellProduct(HttpServletRequest request) {
+        return ResponseEntity.ok(shopService.getAlwaysSellProduct(request));
+    }
 }
