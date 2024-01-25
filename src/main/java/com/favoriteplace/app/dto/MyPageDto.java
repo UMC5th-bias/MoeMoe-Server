@@ -27,6 +27,7 @@ public class MyPageDto {
     public static class MyItemDto {
         List<MyItemDetailDto> limited;
         List<MyItemDetailDto> always;
+        List<MyItemDetailDto> pilgrimage;
     }
 
     public static class MyItemDetailDto {
