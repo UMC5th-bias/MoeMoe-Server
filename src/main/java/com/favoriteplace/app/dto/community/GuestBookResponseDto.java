@@ -40,5 +40,9 @@ public class GuestBookResponseDto {
 
     @Getter
     @Builder
-    public static class
+    public static class MyGuestBookDto{
+        private Long page;
+        private Long size;
+        private List<GuestBook> guestBook;
+    }
 }

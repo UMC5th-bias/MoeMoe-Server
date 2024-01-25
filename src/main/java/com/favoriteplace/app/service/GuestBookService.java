@@ -1,5 +1,6 @@
 package com.favoriteplace.app.service;
 
+import com.favoriteplace.app.converter.GuestBookConverter;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.dto.community.GuestBookResponseDto;
@@ -23,6 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GuestBookService {
     private final GuestBookRepository guestBookRepository;
+    private final CountComments countComments;
     private final SecurityUtil securityUtil;
 
     @Transactional
@@ -42,6 +44,12 @@ public class GuestBookService {
         return trendingPostsRank;
     }
 
-
-
+    @Transactional
+    public Page<GuestBookResponseDto.GuestBook> getMyGuestBooks(int page, int size) {
+        Member member = securityUtil.getUser();
+        Pageable pageable = PageRequest.of(page-1, size);
+        Page<GuestBook> myGuestBooks = guestBookRepository.findAllByMemberIdOrderByCreatedAtDesc(member.getId(), pageable);
+        if(myGuestBooks.isEmpty()){return Page.empty();}
+        return myGuestBooks.map(guestBook -> GuestBookConverter.toGuestBook(guestBook, member.getNickname(), countComments.countGuestBookComments(guestBook.getId()) ));
+    }
 }

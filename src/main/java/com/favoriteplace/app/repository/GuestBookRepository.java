@@ -2,6 +2,8 @@ package com.favoriteplace.app.repository;
 
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.GuestBook;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,4 +15,5 @@ public interface GuestBookRepository extends JpaRepository<GuestBook, Long> {
     List<GuestBook> findByCreatedAtBetweenOrderByLikeCountDesc(LocalDateTime start, LocalDateTime end);
     List<GuestBook> findByMemberOrderByCreatedAtDesc(Member member);
 
+    Page<GuestBook> findAllByMemberIdOrderByCreatedAtDesc(Long id, Pageable pageable);
 }

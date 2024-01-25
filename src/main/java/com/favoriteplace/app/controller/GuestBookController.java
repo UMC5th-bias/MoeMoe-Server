@@ -31,5 +31,15 @@ public class GuestBookController {
     }
 
     @GetMapping("/my-posts")
-    public
+    public GuestBookResponseDto.MyGuestBookDto getMyPosts(
+            @RequestParam(required = false, defaultValue = "1") int page,
+            @RequestParam(required = false, defaultValue = "10") int size
+    ){
+        Page<GuestBookResponseDto.GuestBook> myGuestBooks = guestBookService.getMyGuestBooks(page, size);
+        return GuestBookResponseDto.MyGuestBookDto.builder()
+                .page((long)myGuestBooks.getNumber() + 1)
+                .size((long)myGuestBooks.getSize())
+                .guestBook(myGuestBooks.getContent())
+                .build();
+    }
 }
