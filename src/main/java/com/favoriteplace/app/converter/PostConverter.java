@@ -6,7 +6,7 @@ import com.favoriteplace.app.dto.community.PostResponseDto;
 import com.favoriteplace.global.util.DateTimeFormatUtils;
 
 public class PostConverter {
-    public static PostResponseDto.MyPost myPostResponseConverter(Post post, Member member, Long comments){
+    public static PostResponseDto.MyPost toMyPost(Post post, Member member, Long comments){
         return PostResponseDto.MyPost.builder()
                 .id(post.getId())
                 .title(post.getTitle())

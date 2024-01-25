@@ -1,9 +1,11 @@
 package com.favoriteplace.app.service;
 
+import com.favoriteplace.app.converter.CommentConverter;
 import com.favoriteplace.app.converter.PostConverter;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.Comment;
 import com.favoriteplace.app.domain.community.Post;
+import com.favoriteplace.app.dto.community.GuestBookResponseDto;
 import com.favoriteplace.app.dto.community.PostResponseDto;
 import com.favoriteplace.app.repository.CommentRepository;
 import com.favoriteplace.app.repository.PostRepository;
@@ -16,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,6 +33,7 @@ public class CommentService {
     private final MemberService memberService;
     private final SecurityUtil securityUtil;
 
+    @Transactional
     public List<PostResponseDto.PostComment> getPostComments
             (int page, int size, Long postId) {
         Pageable pageable = PageRequest.of(page, size);
@@ -50,35 +54,53 @@ public class CommentService {
         return comments;
     }
 
-    private Boolean isWriter(Long postId, Comment comment){
-        Optional<Post> optionalPost = postRepository.findById(postId);
-        if(optionalPost.isEmpty()){
-            throw new RestApiException(ErrorCode.POST_NOT_FOUND);
-        }
-        return optionalPost.get().getMember().getId().equals(comment.getMember().getId());
-    }
-
-    public List<PostResponseDto.MyComment> getMyComments(int page, int size) {
+    @Transactional
+    public List<PostResponseDto.MyComment> getMyPostComments(int page, int size) {
         Member member = securityUtil.getUser();
         Pageable pageable = PageRequest.of(page, size);
-        Page<Comment> pageComment = commentRepository.findAllByMemberIdOrderByCreatedAtDesc(member.getId(), pageable);
+        Page<Comment> pageComment = commentRepository.findAllByMemberIdAndPostIsNotNullAndGuestBookIsNullOrderByCreatedAtDesc(member.getId(), pageable);
         if(pageComment.isEmpty()){
             return Collections.emptyList();
         }
         List<PostResponseDto.MyComment> myComments = new ArrayList<>();
         for(Comment comment: pageComment.getContent()){
             Post post = comment.getPost();
-            Long comments = commentRepository.countByPostId(post.getId()) != null ? commentRepository.countByPostId(post.getId()) : 0L;
+            Long comments = countPostComments(post.getId());
             myComments.add(
                     PostResponseDto.MyComment.builder()
                             .id(comment.getId())
                             .content(comment.getContent())
                             .passedTime(DateTimeFormatUtils.getPassDateTime(comment.getCreatedAt()))
-                            .post(PostConverter.myPostResponseConverter(post, member, comments))
+                            .post(PostConverter.toMyPost(post, member, comments))
                             .build()
             );
         }
         return myComments;
+    }
+
+    @Transactional
+    public Page<GuestBookResponseDto.MyGuestBookComment> getMyGuestBookComments(int page, int size) {
+        Member member = securityUtil.getUser();
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<Comment> pageComment = commentRepository.findAllByMemberIdAndPostIsNullAndGuestBookIsNotNullOrderByCreatedAtDesc(member.getId(), pageable);
+        if(pageComment.isEmpty()){return Page.empty();}
+        return pageComment.map(comment -> CommentConverter.toMyGuestBookComment(comment, countGuestBookComments(comment.getGuestBook().getId())));
+    }
+
+    private Long countPostComments(Long postId){
+        return commentRepository.countByPostId(postId) != null ? commentRepository.countByPostId(postId) : 0L;
+    }
+
+    private Long countGuestBookComments(Long guestBookId){
+        return commentRepository.countByGuestBookId(guestBookId) != null ? commentRepository.countByGuestBookId(guestBookId) : 0L;
+    }
+
+    private Boolean isWriter(Long postId, Comment comment){
+        Optional<Post> optionalPost = postRepository.findById(postId);
+        if(optionalPost.isEmpty()){
+            throw new RestApiException(ErrorCode.POST_NOT_FOUND);
+        }
+        return optionalPost.get().getMember().getId().equals(comment.getMember().getId());
     }
 
     public void createComment(long postId, String content) {

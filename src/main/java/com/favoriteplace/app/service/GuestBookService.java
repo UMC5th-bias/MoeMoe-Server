@@ -1,11 +1,17 @@
 package com.favoriteplace.app.service;
 
+import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.GuestBook;
+import com.favoriteplace.app.dto.community.GuestBookResponseDto;
 import com.favoriteplace.app.dto.community.TrendingPostResponseDto;
 import com.favoriteplace.app.repository.GuestBookRepository;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
+import com.favoriteplace.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GuestBookService {
     private final GuestBookRepository guestBookRepository;
+    private final SecurityUtil securityUtil;
 
     @Transactional
     public List<TrendingPostResponseDto.TrendingTodayPostResponseDto.TrendingPostRank> getTodayTrendingGuestBook() {
@@ -34,4 +41,7 @@ public class GuestBookService {
         }
         return trendingPostsRank;
     }
+
+
+
 }

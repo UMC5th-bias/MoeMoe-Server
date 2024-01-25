@@ -1,6 +1,5 @@
 package com.favoriteplace.app.controller;
 
-import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.dto.community.CommentRequestDto;
 import com.favoriteplace.app.dto.community.PostRequestDto;
 import com.favoriteplace.app.dto.community.PostResponseDto;
@@ -8,10 +7,7 @@ import com.favoriteplace.app.service.CommentService;
 import com.favoriteplace.app.service.LikedPostService;
 import com.favoriteplace.app.service.MemberService;
 import com.favoriteplace.app.service.PostService;
-import com.favoriteplace.global.exception.RestApiException;
-import com.favoriteplace.global.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +23,6 @@ public class PostController {
     private final PostService postService;
     private final CommentService commentService;
     private final LikedPostService likedPostService;
-    private final SecurityUtil securityUtil;
 
     @GetMapping("/{post_id}")
     public PostResponseDto.PostDetailResponseDto getPostDetail(
@@ -70,7 +65,7 @@ public class PostController {
     ){
         return PostResponseDto.MyCommentDto.builder()
                 .size((long) size)
-                .comment(commentService.getMyComments(page, size))
+                .comment(commentService.getMyPostComments(page, size))
                 .build();
     }
 

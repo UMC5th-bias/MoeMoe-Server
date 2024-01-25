@@ -4,7 +4,6 @@ import com.favoriteplace.app.converter.PostConverter;
 import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.Post;
-import com.favoriteplace.app.dto.community.CommentRequestDto;
 import com.favoriteplace.app.dto.community.PostRequestDto;
 import com.favoriteplace.app.dto.community.PostResponseDto;
 import com.favoriteplace.app.dto.community.TrendingPostResponseDto;
@@ -17,8 +16,6 @@ import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.gcpImage.UploadImage;
 import com.favoriteplace.global.util.SecurityUtil;
-import com.google.cloud.storage.BlobInfo;
-import com.google.cloud.storage.Storage;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -109,7 +106,7 @@ public class PostService {
         List<PostResponseDto.MyPost> myPosts = new ArrayList<>();
         for(Post post : postPage.getContent()){
             Long comments = commentRepository.countByPostId(post.getId()) != null ? commentRepository.countByPostId(post.getId()) : 0L;
-            myPosts.add(PostConverter.myPostResponseConverter(post, member, comments));
+            myPosts.add(PostConverter.toMyPost(post, member, comments));
         }
         return myPosts;
     }
@@ -132,7 +129,7 @@ public class PostService {
         for(Post post : sortedPosts.getContent()){
             Member member = post.getMember();
             Long comments = commentRepository.countByPostId(post.getId()) != null ? commentRepository.countByPostId(post.getId()) : 0L;
-            totalPosts.add(PostConverter.myPostResponseConverter(post, member, comments));
+            totalPosts.add(PostConverter.toMyPost(post, member, comments));
         }
         return totalPosts;
     }
