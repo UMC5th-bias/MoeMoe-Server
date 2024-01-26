@@ -58,16 +58,14 @@ public class Post extends BaseTimeEntity {
         }
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    public void setTitle(String title) {this.title = title;}
 
-    public void setContent(String content) {
-        this.content = content;
-    }
+    public void setContent(String content) {this.content = content;}
 
-    public void increaseView(){
-        this.view++;
-    }
+    public void increaseView(){this.view++;}
+
+    public void increaseLikeCount(){this.likeCount++;}
+
+    public void decreaseLikeCount(){this.likeCount--;}
 
 }

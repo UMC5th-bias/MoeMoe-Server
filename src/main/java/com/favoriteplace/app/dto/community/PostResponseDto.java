@@ -89,7 +89,7 @@ public class PostResponseDto {
                     .likes(post.getLikeCount())
                     .isLike(isLike)
                     .isWrite(isWrite)
-                    .passedTime(DateTimeFormatUtils.convertDateToString(post.getCreatedAt()))
+                    .passedTime(DateTimeFormatUtils.getPassDateTime(post.getCreatedAt()))
                     .image(convertedImages)
                     .build();
         }

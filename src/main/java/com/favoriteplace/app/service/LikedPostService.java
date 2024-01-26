@@ -25,11 +25,13 @@ public class LikedPostService {
         Post post = postRepository.findById(postId).orElseThrow(() -> new RestApiException(ErrorCode.POST_NOT_FOUND));
         LikedPost likedPost = likedPostRepository.findByPostIdAndMemberId(post.getId(), member.getId());
         if(likedPost != null){
+            post.decreaseLikeCount();
             likedPostRepository.delete(likedPost);
             return "추천을 취소했습니다.";
         }else{
             likedPost = LikedPost.builder()
                     .member(member).post(post).build();
+            post.increaseLikeCount();
             likedPostRepository.save(likedPost);
             return "추천되었습니다.";
         }
