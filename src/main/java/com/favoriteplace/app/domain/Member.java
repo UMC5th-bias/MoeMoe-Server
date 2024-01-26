@@ -34,11 +34,11 @@ public class Member extends BaseTimeEntity {
     private Long id;
 
     @OneToOne(fetch = LAZY)
-    @JoinColumn(name = "profile_title")
+    @JoinColumn(name = "profile_title_id")
     private Item profileTitle;
 
     @OneToOne(fetch = LAZY)
-    @JoinColumn(name = "profile_icon")
+    @JoinColumn(name = "profile_icon_id")
     private Item profileIcon;
 
     @Column(nullable = false)

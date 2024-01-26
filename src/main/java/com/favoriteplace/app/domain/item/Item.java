@@ -6,6 +6,7 @@ import static lombok.AccessLevel.PROTECTED;
 
 import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.common.BaseTimeEntity;
+import com.favoriteplace.app.domain.enums.ItemCategory;
 import com.favoriteplace.app.domain.enums.ItemType;
 import com.favoriteplace.app.domain.enums.SaleStatus;
 import com.favoriteplace.app.domain.item.AcquiredItem;
@@ -54,8 +55,13 @@ public class Item extends BaseTimeEntity{
     @Column(nullable = false)
     private ItemType type;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ItemCategory category;
+
     private LocalDateTime saleDeadline;
 
+    @Column(nullable = false)
     private Long point;
 
     private String description;

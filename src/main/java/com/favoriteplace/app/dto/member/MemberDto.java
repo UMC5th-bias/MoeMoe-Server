@@ -86,5 +86,28 @@ public class MemberDto {
         private String accessToken;
         private String refreshToken;
     }
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    public static class MemberInfo {
+        private Integer id;
+        private String nickname;
+        private Integer point;
+        private String profileImageUrl;
+        private String profileTitleUrl;
+        private String profileIconUrl;
+
+        public static MemberInfo from(Member member) {
+            System.out.println(member.getProfileIcon());
+            return MemberInfo.builder()
+                .id(member == null ? null : member.getId().intValue())
+                .nickname(member == null ? null : member.getNickname())
+                .point(member == null ? null : member.getPoint().intValue())
+                .profileImageUrl(member.getProfileImageUrl() == null ? null : member.getProfileImageUrl())
+                .profileIconUrl(member.getProfileIcon() == null ? null : member.getProfileIcon().getImage().getUrl())
+                .profileTitleUrl(member.getProfileTitle() == null ? null : member.getProfileTitle().getImage().getUrl())
+                .build();
+        }
+    }
 
 }
