@@ -12,6 +12,7 @@ import com.favoriteplace.app.repository.GuestBookRepository;
 import com.favoriteplace.app.repository.HashtagRepository;
 import com.favoriteplace.app.repository.ImageRepository;
 import com.favoriteplace.app.repository.LikedPostRepository;
+import com.favoriteplace.app.service.sortStrategy.SortStrategy;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.gcpImage.ConvertUuidToUrl;
@@ -39,6 +40,8 @@ public class GuestBookService {
     private final LikedPostRepository likedPostRepository;
     private final ImageRepository imageRepository;
     private final HashtagRepository hashtagRepository;
+    private final SortStrategy<GuestBook> sortGuestBookByLatestStrategy;
+    private final SortStrategy<GuestBook> sortGuestBookByLikedStrategy;
     private final CountComments countComments;
     private final SecurityUtil securityUtil;
 
@@ -84,6 +87,32 @@ public class GuestBookService {
         return GuestBookConverter.toGuestBookInfo(guestBook, isLiked(guestBook.getId(), member.getId()), isWriter(guestBook.getId(), member.getId()), imagesUrl, hashTagsString);
     }
 
+    /**
+     * sort에 따라 전체 정시순례 인증글들을 페이징해서 보여주는 기능
+     * @param page
+     * @param size
+     * @param sort
+     * @return sort에 따라 전체 정시순례 인증글들
+     */
+    public Page<GuestBookResponseDto.TotalGuestBookInfo> getTotalGuestBooks(int page, int size, String sort) {
+        Pageable pageable = PageRequest.of(page-1, size);
+        SortStrategy<GuestBook> sortStrategy;
+        if("latest".equals(sort)){
+            sortStrategy = sortGuestBookByLatestStrategy;
+        }
+        else if("liked".equals(sort)){
+            sortStrategy = sortGuestBookByLikedStrategy;
+        }else{
+            throw new RestApiException(ErrorCode.SORT_KEYWORD_NOT_ALLOWED);
+        }
+        Page<GuestBook> guestBooks = sortStrategy.sort(pageable);
+        if(guestBooks.isEmpty()){return Page.empty();}
+        return guestBooks.map(guestBook -> GuestBookConverter.toTotalGuestBookInfo(guestBook,
+                imageRepository.findFirstByGuestBook(guestBook),
+                countComments.countGuestBookComments(guestBook.getId()),
+                hashtagRepository.findAllByGuestBookId(guestBook.getId())));
+    }
+
     private Boolean isLiked(Long guestBookId, Long memberId){
         return likedPostRepository.existsByGuestBookIdAndMemberId(guestBookId, memberId);
     }
@@ -103,4 +132,6 @@ public class GuestBookService {
         guestBook.increaseView();
         guestBookRepository.save(guestBook);
     }
+
+
 }

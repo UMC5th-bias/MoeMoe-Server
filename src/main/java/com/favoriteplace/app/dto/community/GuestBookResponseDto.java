@@ -83,4 +83,26 @@ public class GuestBookResponseDto {
         private List<String> image;
         private List<String> hashTag;
     }
+
+    @Getter
+    @Builder
+    public static class TotalGuestBookDto{
+        private Long page;
+        private Long size;
+        private List<TotalGuestBookInfo> guestBook;
+    }
+
+    @Getter
+    @Builder
+    public static class TotalGuestBookInfo{
+        private Long id;
+        private String title;
+        private String nickname;
+        private String thumbnail;
+        private Long views;
+        private Long likes;
+        private Long comments;
+        private String passedTime;
+        private List<String> hashTags;
+    }
 }

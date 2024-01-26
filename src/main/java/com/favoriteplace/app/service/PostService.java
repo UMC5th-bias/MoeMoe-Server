@@ -11,7 +11,7 @@ import com.favoriteplace.app.repository.CommentRepository;
 import com.favoriteplace.app.repository.ImageRepository;
 import com.favoriteplace.app.repository.LikedPostRepository;
 import com.favoriteplace.app.repository.PostRepository;
-import com.favoriteplace.app.service.strategy.SortStrategy;
+import com.favoriteplace.app.service.sortStrategy.SortStrategy;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.gcpImage.UploadImage;
@@ -40,8 +40,8 @@ public class PostService {
     private final ImageRepository imageRepository;
     private final LikedPostRepository likedPostRepository;
     private final CommentRepository commentRepository;
-    private final SortStrategy sortByLatestStrategy;
-    private final SortStrategy sortByLikedStrategy;
+    private final SortStrategy<Post> sortPostByLatestStrategy;
+    private final SortStrategy<Post> sortPostByLikedStrategy;
     private final UploadImage uploadImage;
     private final SecurityUtil securityUtil;
 
@@ -115,11 +115,11 @@ public class PostService {
 
     public List<PostResponseDto.MyPost> getTotalPostBySort(int page, int size, String sort) {
         Pageable pageable = PageRequest.of(page, size);
-        SortStrategy sortStrategy;
+        SortStrategy<Post> sortStrategy;
         if("latest".equals(sort)){
-            sortStrategy = sortByLatestStrategy;
+            sortStrategy = sortPostByLatestStrategy;
         }else if("liked".equals(sort)) {
-            sortStrategy = sortByLikedStrategy;
+            sortStrategy = sortPostByLikedStrategy;
         }else{
             throw new RestApiException(ErrorCode.SORT_KEYWORD_NOT_ALLOWED);
         }

@@ -23,6 +23,19 @@ public class GuestBookController {
     private final PilgrimageQueryService pilgrimageQueryService;
     private final SecurityUtil securityUtil;
 
+    @GetMapping()
+    public GuestBookResponseDto.TotalGuestBookDto getTotalGuestBooks(
+            @RequestParam(required = false, defaultValue = "1") int page,
+            @RequestParam(required = false, defaultValue = "10") int size,
+            @RequestParam(required = false, defaultValue = "latest") String sort
+    ){
+        Page<GuestBookResponseDto.TotalGuestBookInfo> guestBookInfos = guestBookService.getTotalGuestBooks(page, size, sort);
+        return GuestBookResponseDto.TotalGuestBookDto.builder()
+                .page((long)guestBookInfos.getNumber()+1)
+                .size((long)guestBookInfos.getSize())
+                .guestBook(guestBookInfos.getContent())
+                .build();
+    }
 
     @GetMapping("/my-comments")
     public GuestBookResponseDto.MyGuestBookCommentDto getMyComments(

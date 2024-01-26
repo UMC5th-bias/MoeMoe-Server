@@ -1,6 +1,8 @@
 package com.favoriteplace.app.converter;
 
+import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.community.GuestBook;
+import com.favoriteplace.app.domain.community.HashTag;
 import com.favoriteplace.app.domain.travel.Pilgrimage;
 import com.favoriteplace.app.dto.community.GuestBookResponseDto;
 import com.favoriteplace.global.gcpImage.ConvertUuidToUrl;
@@ -46,6 +48,20 @@ public class GuestBookConverter {
                 .longitude(pilgrimage.getLongitude())
                 .imageAnime(ConvertUuidToUrl.convertUuidToUrl(pilgrimage.getVirtualImage().getUrl()))
                 .imageReal(ConvertUuidToUrl.convertUuidToUrl(pilgrimage.getRealImage().getUrl()))
+                .build();
+    }
+
+    public static GuestBookResponseDto.TotalGuestBookInfo toTotalGuestBookInfo(GuestBook guestBook, Image image, Long comments, List<HashTag> hashTags){
+        return GuestBookResponseDto.TotalGuestBookInfo.builder()
+                .id(guestBook.getId())
+                .title(guestBook.getTitle())
+                .nickname(guestBook.getMember().getNickname())
+                .thumbnail(ConvertUuidToUrl.convertUuidToUrl(image != null ? image.getUrl() : null))
+                .views(guestBook.getView())
+                .likes(guestBook.getLikeCount())
+                .comments(comments)
+                .passedTime(DateTimeFormatUtils.getPassDateTime(guestBook.getCreatedAt()))
+                .hashTags(hashTags.stream().map(HashTag::getTagName).toList())
                 .build();
     }
 }
