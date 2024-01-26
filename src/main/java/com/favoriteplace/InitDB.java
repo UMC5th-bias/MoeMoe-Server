@@ -25,7 +25,7 @@ public class InitDB {
     @PostConstruct
     public void init(){
 //        initService.createMember("1");
-//        initService.initRallyAndPilgrimage();
+        initService.initRallyAndPilgrimage();
         initService.initDB();
     }
 
@@ -49,6 +49,7 @@ public class InitDB {
                     .image(image1).name("icon1")
                     .status(SaleStatus.NOT_FOR_SALE).type(ItemType.ICON)
                     .saleDeadline(null).point(10L).category(ItemCategory.NEW)
+                    .saleDeadline(null).point(null)
                     .description(null).build();
             Item item2 = Item.builder()
                     .image(image2).name("title1")
@@ -98,9 +99,10 @@ public class InitDB {
                     .likeCount(35L).view(35L).build();
             em.merge(post1); em.merge(post2); em.merge(post3); em.merge(post4); em.merge(post5); em.merge(post6); em.merge(post7);
 
-//            Address address = addressRepository.findByStateAndDistrict("도쿄도", "시부야구");
-            Address address = Address.builder().state("도쿄도").district("시부야구").build();
-            em.persist(address);
+
+            Address address = addressRepository.findByStateAndDistrict("도쿄도", "시부야구");
+            Address address2 = Address.builder().state("도쿄도").district("시부야구").build();
+            em.persist(address2);
 
             Rally rally1 = Rally.builder().id(0L)
                     .item(item1).image(image1).name("최애의 아이")
@@ -113,10 +115,10 @@ public class InitDB {
             em.merge(rally1); em.merge(rally2);
 
             Pilgrimage pilgrimage1 = Pilgrimage.builder()
-                    .address(address).rally(rally1).virtualImage(image1).realImage(image1)
+                    .address(address2).rally(rally1).virtualImage(image1).realImage(image1)
                     .rallyName("최애의 아이").detailAddress("스크램블 교차로1").latitude(1.1).longitude(1.1).build();
             Pilgrimage pilgrimage2 = Pilgrimage.builder()
-                    .address(address).rally(rally2).virtualImage(image2).realImage(image2)
+                    .address(address2).rally(rally2).virtualImage(image2).realImage(image2)
                     .rallyName("최애의 아이").detailAddress("스크램블 교차로2").latitude(1.1).longitude(1.1).build();
             em.merge(pilgrimage1); em.merge(pilgrimage2);
 
@@ -164,113 +166,114 @@ public class InitDB {
                     .member(member).post(post1).guestBook(null).content("P댓글6").build();
             em.merge(comment1); em.merge(comment2);em.merge(comment3);em.merge(comment4);em.merge(comment5);em.merge(comment6);
         }
-//        public void initMember(){
-//            createMember("1");
-//        }
-//
-//        public void initRallyAndPilgrimage(){
-//            Address addressSibuya = createAddress("도쿄도", "시부야구");
-//            Address addressShinjuku = createAddress("도쿄도", "신주쿠구");
-//            Address addressMinato = createAddress("도쿄도", "미나토구");
-//            Rally rally = createRally("날씨의 아이", "천비가 멈추지 않던 여름날, 고향을 떠나 도쿄로 온 가출 소년 호다카는 우연히 비를 멈추게 하는 능력을 가진 신비한 소녀 히나를 만난다. 히나의 능력을 알게 된 호다카는 그 능력을 사용해 돈을 벌 계획을 세운다. 매일 내리는 비로 우울해하는 도쿄 사람들은 히나의 능력으로 인해 행복감을 되찾게 되지만, 호다카와 히나는 뜻밖의 비밀을 마주하게 된다.");
-//            Pilgrimage pilgrimage1 = createPilgrimage(addressSibuya, rally, "시부야 스크램블교차로");
-//            Pilgrimage pilgrimage2 = createPilgrimage(addressMinato, rally, "롯폰기 힐즈 스카이덱 전망대");
-//            Pilgrimage pilgrimage3 = createPilgrimage(addressMinato, rally, "오다이바 해변공원");
-//            Pilgrimage pilgrimage4 = createPilgrimage(addressShinjuku, rally, "맥도날드 신주쿠 역전점");
-//        }
-//
-//        public Member createMember(String number){
-//            Image image1 = createImage("imgIcon"+number);
-//            Image image2 = createImage("imgTitle"+number);
-//
-//            Item item1 = createItem(image1, "icon"+number, ItemType.ICON);
-//            Item item2 = createItem(image2, "title"+number, ItemType.TITLE);
-//
-//            Member member = Member.builder()
-//                    .id(0L)
-//                    .profileIcon(item1)
-//                    .profileTitle(item2)
-//                    .email("user@naver.com")
-//                    .password("1234")
-//                    .birthday(null)
-//                    .nickname("user"+number)
-//                    .description("hi")
-//                    .profileImageUrl("")
-//                    .status(MemberStatus.Y)
-//                    .alarmAllowance(false)
-//                    .point(0L)
-//                    .loginType(LoginType.SELF)
-//                    .refreshToken("")
-//                    .build();
-//            em.merge(member);
-//            return member;
-//        }
-//
-//        public Rally createRally(String name, String description){
-//            Image image1 = createImage("rallyItemImg");
-//            Image animeImg = createImage("animeImg");
-//            Item item1 = createItem(image1, "rallyTitle", ItemType.TITLE);
-//            Rally rally = Rally.builder()
-//                    .item(item1)
-//                    .image(animeImg)
-//                    .name(name)
-//                    .description(description)
-//                    .achieveNumber(0L)
-//                    .pilgrimageNumber(0L)
-//                    .build();
-//            em.persist(rally);
-//            return rally;
-//        }
-//
-//        public Pilgrimage createPilgrimage(Address address, Rally rally, String detailAddress){
-//            Image realImg = createImage(rally.getName()+"PilRealImg");
-//            Image animeImg = createImage(rally.getName()+"PilAnimeImg");
-//            Pilgrimage pilgrimage = Pilgrimage.builder()
-//                    .address(address)
-//                    .rally(rally)
-//                    .virtualImage(animeImg)
-//                    .realImage(realImg)
-//                    .rallyName(rally.getName())
-//                    .detailAddress(detailAddress)
-//                    .latitude(0.0)
-//                    .longitude(0.0)
-//                    .build();
-//            rally.addPilgrimage();
-//            em.merge(rally);
-//            em.persist(pilgrimage);
-//            return pilgrimage;
-//        }
-//
-//        public Address createAddress(String state, String district){
-//            Address address = Address.builder()
-//                    .state(state)
-//                    .district(district)
-//                    .build();
-//            em.persist(address);
-//            return address;
-//        }
-//        private Item createItem(Image image1, String name, ItemType type) {
-//            Item item = Item.builder()
-//                    .image(image1)
-//                    .name(name)
-//                    .status(SaleStatus.NOT_FOR_SALE)
-//                    .type(type)
-//                    .saleDeadline(null)
-//                    .point(null)
-//                    .description(null)
-//                    .build();
-//            em.persist(item);
-//            return item;
-//        }
-//        private Image createImage(String url) {
-//            Image image1 = Image.builder()
-//                    .post(null)
-//                    .guestBook(null)
-//                    .url(url)
-//                    .build();
-//            em.persist(image1);
-//            return image1;
-//        }
+
+        public void initMember(){
+            createMember("1");
+        }
+
+        public void initRallyAndPilgrimage(){
+            Address addressSibuya = createAddress("도쿄도", "시부야구");
+            Address addressShinjuku = createAddress("도쿄도", "신주쿠구");
+            Address addressMinato = createAddress("도쿄도", "미나토구");
+            Rally rally = createRally("날씨의 아이", "천비가 멈추지 않던 여름날, 고향을 떠나 도쿄로 온 가출 소년 호다카는 우연히 비를 멈추게 하는 능력을 가진 신비한 소녀 히나를 만난다. 히나의 능력을 알게 된 호다카는 그 능력을 사용해 돈을 벌 계획을 세운다. 매일 내리는 비로 우울해하는 도쿄 사람들은 히나의 능력으로 인해 행복감을 되찾게 되지만, 호다카와 히나는 뜻밖의 비밀을 마주하게 된다.");
+            Pilgrimage pilgrimage1 = createPilgrimage(addressSibuya, rally, "시부야 스크램블교차로");
+            Pilgrimage pilgrimage2 = createPilgrimage(addressMinato, rally, "롯폰기 힐즈 스카이덱 전망대");
+            Pilgrimage pilgrimage3 = createPilgrimage(addressMinato, rally, "오다이바 해변공원");
+            Pilgrimage pilgrimage4 = createPilgrimage(addressShinjuku, rally, "맥도날드 신주쿠 역전점");
+        }
+
+        public Member createMember(String number){
+            Image image1 = createImage("imgIcon"+number);
+            Image image2 = createImage("imgTitle"+number);
+
+            Item item1 = createItem(image1, "icon"+number, ItemType.ICON);
+            Item item2 = createItem(image2, "title"+number, ItemType.TITLE);
+
+            Member member = Member.builder()
+                    .id(0L)
+                    .profileIcon(item1)
+                    .profileTitle(item2)
+                    .email("user@naver.com")
+                    .password("1234")
+                    .birthday(null)
+                    .nickname("user"+number)
+                    .description("hi")
+                    .profileImageUrl("")
+                    .status(MemberStatus.Y)
+                    .alarmAllowance(false)
+                    .point(0L)
+                    .loginType(LoginType.SELF)
+                    .refreshToken("")
+                    .build();
+            em.merge(member);
+            return member;
+        }
+
+        public Rally createRally(String name, String description){
+            Image image1 = createImage("rallyItemImg");
+            Image animeImg = createImage("animeImg");
+            Item item1 = createItem(image1, "rallyTitle", ItemType.TITLE);
+            Rally rally = Rally.builder()
+                    .item(item1)
+                    .image(animeImg)
+                    .name(name)
+                    .description(description)
+                    .achieveNumber(0L)
+                    .pilgrimageNumber(0L)
+                    .build();
+            em.persist(rally);
+            return rally;
+        }
+
+        public Pilgrimage createPilgrimage(Address address, Rally rally, String detailAddress){
+            Image realImg = createImage(rally.getName()+"PilRealImg");
+            Image animeImg = createImage(rally.getName()+"PilAnimeImg");
+            Pilgrimage pilgrimage = Pilgrimage.builder()
+                    .address(address)
+                    .rally(rally)
+                    .virtualImage(animeImg)
+                    .realImage(realImg)
+                    .rallyName(rally.getName())
+                    .detailAddress(detailAddress)
+                    .latitude(0.0)
+                    .longitude(0.0)
+                    .build();
+            rally.addPilgrimage();
+            em.merge(rally);
+            em.persist(pilgrimage);
+            return pilgrimage;
+        }
+
+        public Address createAddress(String state, String district){
+            Address address = Address.builder()
+                    .state(state)
+                    .district(district)
+                    .build();
+            em.persist(address);
+            return address;
+        }
+        private Item createItem(Image image1, String name, ItemType type) {
+            Item item = Item.builder()
+                    .image(image1)
+                    .name(name)
+                    .status(SaleStatus.NOT_FOR_SALE)
+                    .type(type)
+                    .saleDeadline(null)
+                    .point(null)
+                    .description(null)
+                    .build();
+            em.persist(item);
+            return item;
+        }
+        private Image createImage(String url) {
+            Image image1 = Image.builder()
+                    .post(null)
+                    .guestBook(null)
+                    .url(url)
+                    .build();
+            em.persist(image1);
+            return image1;
+        }
 
     }
 }
