@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class PostService {
+public class PostQueryService {
     private final PostRepository postRepository;
     private final ImageRepository imageRepository;
     private final LikedPostRepository likedPostRepository;
@@ -133,45 +133,6 @@ public class PostService {
         }
         return totalPosts;
     }
-
-    public void createPost(PostRequestDto data, List<MultipartFile> images) throws IOException {
-        Member member = securityUtil.getUser();
-        Post newPost = Post.builder()
-                .member(member).title(data.getTitle()).images(new ArrayList<>())
-                .content(data.getContent()).likeCount(0L).view(0L)
-                .build();
-
-         //이미지 업로드 관련
-        if(!images.isEmpty()){
-            List<Image> convertImages = new ArrayList<>();
-            for(MultipartFile image: images){
-                if(!image.isEmpty()){
-                    String uuid = uploadImage.uploadImageToCloud(image);
-                    Image newImage = Image.builder().url(uuid).build();
-                    convertImages.add(newImage);
-                }
-            }
-            if(!convertImages.isEmpty()){
-                newPost.addImages(convertImages);
-            }
-        }
-        postRepository.save(newPost);
-    }
-
-    public void deletePost(long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new RestApiException(ErrorCode.POST_NOT_FOUND));
-        postRepository.delete(post);
-    }
-
-    /*
-    public void modifyPost(long postId, PostRequestDto dto) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new RestApiException(ErrorCode.POST_NOT_FOUND));
-        Optional.ofNullable(dto.getData().getTitle()).ifPresent(post::setTitle);
-        Optional.ofNullable(dto.getData().getContent()).ifPresent(post::setContent);
-
-        //TODO
-
-    }*/
 
     /**
      * 게시글의 조회수를 증가하는 함수

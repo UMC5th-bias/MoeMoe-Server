@@ -47,8 +47,9 @@ public class Post extends BaseTimeEntity {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();
 
-    //이미지 리스트 추가 메소드
-    public void addImages(List<Image> imageList){
+    //이미지 리스트 새롭게 setting
+    public void setImages(List<Image> imageList){
+        this.images.clear();
         if(imageList != null){
             this.images.addAll(imageList);
             for(Image image:imageList){
@@ -63,6 +64,10 @@ public class Post extends BaseTimeEntity {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public void increaseView(){
+        this.view++;
     }
 
 }
