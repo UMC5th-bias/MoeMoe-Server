@@ -8,10 +8,12 @@ import com.favoriteplace.app.domain.enums.SaleStatus;
 import com.favoriteplace.app.domain.item.Item;
 import com.favoriteplace.app.dto.item.ItemDto;
 import com.favoriteplace.app.dto.item.ItemDto.ItemListDivideByCategory;
+import com.favoriteplace.app.dto.item.ItemDto.ItemListDivideBySaleStatus;
 import com.favoriteplace.app.repository.ItemRepository;
 import com.favoriteplace.global.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,13 +40,13 @@ public class ShopService {
         List<Item> limitedItemList = itemRepository.findAllByStatus(SaleStatus.LIMITED_SALE);
         itemCategories = getItemCategories();
 
-        List<Item> titleItems = getItemsByItemType(limitedItemList, ItemType.TITLE);
+        List<Item> titleItems = getItemsByItemType(limitedItemList, ItemType.TITLE); //한정판매 + 칭호
 
         if (titleItems.size() != 0) {
             titles = getItemListDivideByCategory(titleItems, itemCategories);
         }
 
-        List<Item> iconItems = getItemsByItemType(limitedItemList, ItemType.ICON);
+        List<Item> iconItems = getItemsByItemType(limitedItemList, ItemType.ICON); //한정판매 + 아이콘
 
         if(iconItems.size() != 0) {
             icons = getItemListDivideByCategory(iconItems, itemCategories);
@@ -81,6 +83,22 @@ public class ShopService {
         return ShopConverter.totalItemList(member, titles, icons);
     }
 
+    public ItemDto.NewItemListResDto getNewItemList() {
+        List<Item> titleItemList = itemRepository.findAllByNEWCategory(ItemType.TITLE);
+        List<Item> iconItemList = itemRepository.findAllByNEWCategory(ItemType.ICON);
+
+        List<ItemListDivideBySaleStatus> titles = null;
+        List<ItemListDivideBySaleStatus> icons = null;
+
+        List<SaleStatus> saleStatusList = new ArrayList<>(Arrays.asList(SaleStatus.LIMITED_SALE, SaleStatus.ALWAYS_ON_SALE));
+
+        titles = getItemListDivideBySaleStatus(titleItemList, saleStatusList);
+        icons = getItemListDivideBySaleStatus(iconItemList, saleStatusList);
+
+        return ShopConverter.totalNewItemList(titles, icons);
+
+    }
+
     public List<ItemCategory> getItemCategories() {
         return Arrays.stream(ItemCategory.values())
             .collect(Collectors.toList());
@@ -105,6 +123,23 @@ public class ShopService {
         return collect.stream()
             .filter(title -> !title.isEmpty())
             .map(titleitemList -> ShopConverter.itemListDivideByCategory(titleitemList)).collect(
+                Collectors.toList());
+    }
+
+    //SaleStauts별 아이템 조회
+    public List<ItemListDivideBySaleStatus> getItemListDivideBySaleStatus(List<Item> itemList, List<SaleStatus> saleStatusList) {
+        if (itemList.isEmpty()) {
+            return null;
+        }
+        List<List<Item>> collect = saleStatusList.stream()
+            .map(id -> itemList.stream()
+                .filter(item -> item.getStatus() == id)
+                .collect(Collectors.toList()))
+            .collect(Collectors.toList());
+
+        return collect.stream()
+            .filter(list -> !list.isEmpty())
+            .map(items -> ShopConverter.itemListDivideByStatus(items)).collect(
                 Collectors.toList());
     }
 }

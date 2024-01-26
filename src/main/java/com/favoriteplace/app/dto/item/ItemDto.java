@@ -1,6 +1,7 @@
 package com.favoriteplace.app.dto.item;
 
 import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.domain.item.Item;
 import com.favoriteplace.app.dto.member.MemberDto;
 import com.favoriteplace.app.dto.member.MemberDto.MemberInfo;
 import java.util.List;
@@ -26,6 +27,30 @@ public class ItemDto {
                 .icons(icons)
                 .build();
         }
+    }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    public static class NewItemListResDto {
+        private List<ItemListDivideBySaleStatus> titles;
+        private List<ItemListDivideBySaleStatus> icons;
+
+        public static NewItemListResDto from(List<ItemListDivideBySaleStatus> titles, List<ItemListDivideBySaleStatus> icons) {
+            return NewItemListResDto.builder()
+                .titles(titles)
+                .icons(icons)
+                .build();
+        }
+    }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    public static class ItemListDivideBySaleStatus {
+        private String status;
+        private List<ItemList> itemList;
+
     }
 
     @Builder
