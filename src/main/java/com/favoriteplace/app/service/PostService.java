@@ -149,16 +149,6 @@ public class PostService {
             for(MultipartFile image: uploadImages){
                 if(!image.isEmpty()){
                     String uuid = uploadImage.uploadImageToCloud(image);
-                    /*String uuid = UUID.randomUUID().toString();
-                    String ext = image.getContentType();
-
-                    //Cloud에 이미지 업로드
-                    BlobInfo blobInfo = storage.create(
-                            BlobInfo.newBuilder(bucketName, uuid)
-                                    .setContentType(ext)
-                                    .build(),
-                            image.getInputStream()
-                    );*/
                     Image newImage = Image.builder().url(uuid).build();
                     images.add(newImage);
                 }

@@ -2,7 +2,6 @@ package com.favoriteplace.app.service;
 
 import com.favoriteplace.app.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 @Service

@@ -1,5 +1,7 @@
 package com.favoriteplace.app.dto.community;
 
+import com.favoriteplace.app.dto.UserInfoResponseDto;
+import com.favoriteplace.app.dto.travel.PilgrimageDto;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -44,5 +46,41 @@ public class GuestBookResponseDto {
         private Long page;
         private Long size;
         private List<GuestBook> guestBook;
+    }
+
+    @Getter
+    @Builder
+    public static class DetailGuestBookDto{
+        private UserInfoResponseDto userInfo;
+        private PilgrimageInfo pilgrimage;
+        private GuestBookInfo guestBook;
+    }
+
+    @Getter
+    @Builder
+    public static class PilgrimageInfo{
+        private String name;
+        private Long pilgrimageNumber;
+        private Long completeNumber;
+        private String address;
+        private Double latitude;
+        private Double longitude;
+        private String imageAnime;
+        private String imageReal;
+    }
+
+    @Getter
+    @Builder
+    public static class GuestBookInfo{
+        private Long id;
+        private String title;
+        private String content;
+        private Long views;
+        private Long likes;
+        private Boolean isLike;
+        private Boolean isWrite;
+        private String passedTime;
+        private List<String> image;
+        private List<String> hashTag;
     }
 }

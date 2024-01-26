@@ -53,4 +53,8 @@ public class GuestBook extends BaseTimeEntity {
     private Double latitude;  //위도
     private Double longitude;  //경도
 
+    public void increaseView(){
+        this.view++;
+    }
+
 }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface LikedPostRepository extends JpaRepository<LikedPost, Long> {
     Boolean existsByPostIdAndMemberId(Long postId, Long memberId);
+    Boolean existsByGuestBookIdAndMemberId(Long guestBookId, Long memberId);
 
     LikedPost findByPostIdAndMemberId(Long postId, Long memberId);
 }

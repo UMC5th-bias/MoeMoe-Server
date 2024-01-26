@@ -1,14 +1,16 @@
 package com.favoriteplace.app.controller;
 
+import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.dto.community.GuestBookResponseDto;
 import com.favoriteplace.app.service.CommentService;
 import com.favoriteplace.app.service.GuestBookService;
+import com.favoriteplace.app.service.MemberService;
+import com.favoriteplace.app.service.PilgrimageQueryService;
+import com.favoriteplace.global.util.SecurityUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/posts/guestbooks")
@@ -16,6 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class GuestBookController {
     private final GuestBookService guestBookService;
     private final CommentService commentService;
+    private final MemberService memberService;
+    private final PilgrimageQueryService pilgrimageQueryService;
+    private final SecurityUtil securityUtil;
+
 
     @GetMapping("/my-comments")
     public GuestBookResponseDto.MyGuestBookCommentDto getMyComments(
@@ -40,6 +46,20 @@ public class GuestBookController {
                 .page((long)myGuestBooks.getNumber() + 1)
                 .size((long)myGuestBooks.getSize())
                 .guestBook(myGuestBooks.getContent())
+                .build();
+    }
+
+    @GetMapping("/{guestbook_id}")
+    public GuestBookResponseDto.DetailGuestBookDto getDetailGuestBook(
+            @PathVariable("guestbook_id") Long guestBookId,
+            HttpServletRequest request
+    ){
+        Member member = securityUtil.getUserFromHeader(request);
+        guestBookService.increaseGuestBookView(guestBookId);
+        return GuestBookResponseDto.DetailGuestBookDto.builder()
+                .userInfo(memberService.getUserInfoByGuestBookId(guestBookId))
+                .pilgrimage(pilgrimageQueryService.getPilgrimageDetailCommunity(member, guestBookId))
+                .guestBook(guestBookService.getDetailGuestBookInfo(guestBookId, request))
                 .build();
     }
 }
