@@ -27,7 +27,6 @@ public class InitDB {
 
     @PostConstruct
     public void init(){
-        initService.createMember("1");
         initService.initRallyAndPilgrimage();
         initService.initDB();
     }

@@ -17,7 +17,6 @@ public class MyPageController {
     private final MyPageQueryService myPageQueryService;
     private final SecurityUtil securityUtil;
 
-    // !!!마이페이지 내 모든 API 회원전용!!!! -> 필터 추가 완료
     // 내 정보 (메인)
     @GetMapping("")
     public MyPageDto.MyInfoDto getMyInfo(){
@@ -35,9 +34,16 @@ public class MyPageController {
     // 보유 아이템 조회
     // 쿼리스트링 필요
     @GetMapping("/items")
-    public MyPageDto.MyItemDto getMyItems(@RequestParam("type")String type){
+    public MyPageDto.MyItemDto getMyItems(@RequestParam(value = "type", defaultValue = "title")String type){
         Member member = securityUtil.getUser();
         return myPageQueryService.getMyItems(member, type);
+    }
+
+    // 차단한 사용자 목록
+    @GetMapping("/blocks")
+    public MyPageDto.MyBlockDto getMyBlock(){
+        Member member = securityUtil.getUser();
+        return myPageQueryService.getMyBlock(member);
     }
 
     // 찜한 성지순례
@@ -59,12 +65,5 @@ public class MyPageController {
     public MyPageDto.MyGuestBookDto getMyDoneBook(){
         Member member = securityUtil.getUser();
         return myPageQueryService.getMyDoneBook(member);
-    }
-
-    // 차단한 사용자 목록
-    @GetMapping("/blocks")
-    public MyPageDto.MyBlockDto getMyBlock(){
-        Member member = securityUtil.getUser();
-        return myPageQueryService.getMyBlock(member);
     }
 }

@@ -51,6 +51,7 @@ public class MyPageDto {
     public static class MyItemDetailDto {
         Long id;
         String imageUrl;
+        Boolean isWear;
     }
 
     @Builder
