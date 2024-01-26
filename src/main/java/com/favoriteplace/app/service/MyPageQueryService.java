@@ -6,13 +6,14 @@ import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.enums.ItemType;
 import com.favoriteplace.app.domain.enums.SaleStatus;
 import com.favoriteplace.app.domain.item.AcquiredItem;
+import com.favoriteplace.app.domain.travel.LikedRally;
+import com.favoriteplace.app.domain.travel.VisitedPilgrimage;
 import com.favoriteplace.app.dto.MyPageDto;
-import com.favoriteplace.app.repository.AcquiredItemRepository;
-import com.favoriteplace.app.repository.BlockRepository;
-import com.favoriteplace.app.repository.MemberRepository;
+import com.favoriteplace.app.repository.*;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -24,6 +25,8 @@ import java.util.stream.Collectors;
 public class MyPageQueryService {
     private final AcquiredItemRepository acquiredItemRepository;
     private final BlockRepository blockRespotiroy;
+    private final LikedRallyRepository likedRallyRepository;
+    private final VisitedPilgrimageRepository visitedPilgrimageRepository;
 
     public MyPageDto.MyInfoDto getMyInfo(Member member) {
         return null;
@@ -71,8 +74,13 @@ public class MyPageQueryService {
                 .collect(Collectors.toList());
     }
 
-    public MyPageDto.MyGuestBookDto getMyLikedBook(Member member) {
-        return null;
+    public List<MyPageDto.MyGuestBookDto> getMyLikedBook(Member member) {
+        List<LikedRally> rallyList = likedRallyRepository.findByMember(member);
+        return rallyList.stream().map(dummy -> {
+            List<VisitedPilgrimage> visited = visitedPilgrimageRepository
+                    .findDistinctByMemberAndPilgrimage_Rally(member, dummy.getRally());
+            return MyPageConverter.toMyGuestBookDto(dummy.getRally(), Long.valueOf(visited.size());
+        });
     }
 
     public MyPageDto.MyGuestBookDto getMyVisitedBook(Member member) {

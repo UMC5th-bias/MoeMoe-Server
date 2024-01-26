@@ -49,7 +49,7 @@ public class MyPageController {
 
     // 찜한 성지순례
     @GetMapping("/guestbooks/like")
-    public MyPageDto.MyGuestBookDto getMyLikedBook(){
+    public List<MyPageDto.MyGuestBookDto> getMyLikedBook(){
         Member member = securityUtil.getUser();
         return myPageQueryService.getMyLikedBook(member);
     }
