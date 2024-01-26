@@ -3,6 +3,7 @@ package com.favoriteplace.app.service;
 import static com.favoriteplace.global.exception.ErrorCode.USER_ALREADY_EXISTS;
 
 import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.Post;
 import com.favoriteplace.app.dto.UserInfoResponseDto;
 import com.favoriteplace.app.dto.member.MemberDto;
@@ -10,6 +11,7 @@ import com.favoriteplace.app.dto.member.MemberDto.EmailCheckReqDto;
 import com.favoriteplace.app.dto.member.MemberDto.EmailDuplicateResDto;
 import com.favoriteplace.app.dto.member.MemberDto.EmailSendReqDto;
 import com.favoriteplace.app.dto.member.MemberDto.MemberSignUpReqDto;
+import com.favoriteplace.app.repository.GuestBookRepository;
 import com.favoriteplace.app.repository.MemberRepository;
 import com.favoriteplace.app.repository.PostRepository;
 import com.favoriteplace.global.exception.ErrorCode;
@@ -30,6 +32,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final PostRepository postRepository;
+    private final GuestBookRepository guestBookRepository;
     private final PasswordEncoder passwordEncoder;
     public final SecurityUtil securityUtil;
 
@@ -67,6 +70,15 @@ public class MemberService {
             throw new RestApiException(ErrorCode.POST_NOT_FOUND);
         }
         return UserInfoResponseDto.of(optionalPost.get().getMember());
+    }
+
+    @Transactional
+    public UserInfoResponseDto getUserInfoByGuestBookId(Long guestBookId){
+        Optional<GuestBook> optionalGuestBook = guestBookRepository.findById(guestBookId);
+        if(optionalGuestBook.isEmpty()){
+            throw new RestApiException(ErrorCode.GUESTBOOK_NOT_FOUND);
+        }
+        return UserInfoResponseDto.of(optionalGuestBook.get().getMember());
     }
 
 }
