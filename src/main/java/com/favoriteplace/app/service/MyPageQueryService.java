@@ -83,7 +83,9 @@ public class MyPageQueryService {
         });
     }
 
+    // 성지순례 장소 중 중복 방문을 제외하고 방문한 장소의 횟수
     public MyPageDto.MyGuestBookDto getMyVisitedBook(Member member) {
+
         return null;
     }
 
