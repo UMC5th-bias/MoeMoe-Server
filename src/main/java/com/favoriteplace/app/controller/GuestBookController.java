@@ -1,6 +1,7 @@
 package com.favoriteplace.app.controller;
 
 import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.dto.community.CommentResponseDto;
 import com.favoriteplace.app.dto.community.GuestBookResponseDto;
 import com.favoriteplace.app.service.CommentService;
 import com.favoriteplace.app.service.GuestBookService;
@@ -60,6 +61,22 @@ public class GuestBookController {
                 .userInfo(memberService.getUserInfoByGuestBookId(guestBookId))
                 .pilgrimage(pilgrimageQueryService.getPilgrimageDetailCommunity(member, guestBookId))
                 .guestBook(guestBookService.getDetailGuestBookInfo(guestBookId, request))
+                .build();
+    }
+
+    @GetMapping("/{guestbook_id}/comments")
+    public CommentResponseDto.PostCommentDto getGuestBookComments(
+            @PathVariable("guestbook_id") Long guestbookId,
+            @RequestParam(required = false, defaultValue = "1") int page,
+            @RequestParam(required = false, defaultValue = "10") int size,
+            HttpServletRequest request
+    ){
+        Member member = securityUtil.getUserFromHeader(request);
+        Page<CommentResponseDto.PostComment> comments = commentService.getGuestBookComments(page, size, member, guestbookId);
+        return CommentResponseDto.PostCommentDto.builder()
+                .page((long) comments.getNumber() +1)
+                .size((long) comments.getSize())
+                .comment(comments.getContent())
                 .build();
     }
 }

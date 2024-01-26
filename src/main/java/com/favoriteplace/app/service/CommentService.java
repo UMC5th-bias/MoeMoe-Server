@@ -5,6 +5,7 @@ import com.favoriteplace.app.converter.PostConverter;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.Comment;
 import com.favoriteplace.app.domain.community.Post;
+import com.favoriteplace.app.dto.community.CommentResponseDto;
 import com.favoriteplace.app.dto.community.GuestBookResponseDto;
 import com.favoriteplace.app.dto.community.PostResponseDto;
 import com.favoriteplace.app.repository.CommentRepository;
@@ -27,6 +28,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
@@ -34,28 +36,42 @@ public class CommentService {
     private final MemberService memberService;
     private final SecurityUtil securityUtil;
 
-    @Transactional
-    public List<PostResponseDto.PostComment> getPostComments
+    //TODO 여기 수정 필요 (isWrite 수정 -> 내가 이 댓글을 작성자인지 확인하는 기능)
+    public List<CommentResponseDto.PostComment> getPostComments
             (int page, int size, Long postId) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Comment> commentPage = commentRepository.findAllByPostIdOrderByCreatedAtAsc(postId, pageable);
         if(commentPage.isEmpty()){
             return Collections.emptyList();
         }
-        List<PostResponseDto.PostComment> comments = new ArrayList<>();
+        List<CommentResponseDto.PostComment> comments = new ArrayList<>();
         for(Comment comment:commentPage.getContent()){
-            comments.add(PostResponseDto.PostComment.builder()
+            comments.add(CommentResponseDto.PostComment.builder()
                             .userInfo(memberService.getUserInfoByPostId(postId))
                             .id(comment.getId())
                             .content(comment.getContent())
                             .passedTime(DateTimeFormatUtils.getPassDateTime(comment.getCreatedAt()))
-                            .isWrite(isWriter(postId, comment)).build()
+                            .isWrite(isPostCommentWriter(postId, comment)).build()
             );
         }
         return comments;
     }
 
-    @Transactional
+    /**
+     * 커뷰니티 : 성지순례 인증글의 댓글 전부 보여주기 (페이징 적용)
+     * @param page
+     * @param size
+     * @param member
+     * @param guestbookId
+     * @return 페이징 된 댓글 리스트
+     */
+    public Page<CommentResponseDto.PostComment> getGuestBookComments(int page, int size, Member member, Long guestbookId) {
+        Pageable pageable = PageRequest.of(page-1, size);
+        Page<Comment> commentPage = commentRepository.findAllByGuestBookIdOrderByCreatedAtAsc(guestbookId, pageable);
+        if(commentPage.isEmpty()){return Page.empty();}
+        return commentPage.map(comment -> CommentConverter.toPostComment(comment, member, isCommentWriter(member, comment)));
+    }
+
     public List<PostResponseDto.MyComment> getMyPostComments(int page, int size) {
         Member member = securityUtil.getUser();
         Pageable pageable = PageRequest.of(page, size);
@@ -79,7 +95,6 @@ public class CommentService {
         return myComments;
     }
 
-    @Transactional
     public Page<GuestBookResponseDto.MyGuestBookComment> getMyGuestBookComments(int page, int size) {
         Member member = securityUtil.getUser();
         Pageable pageable = PageRequest.of(page - 1, size);
@@ -88,12 +103,24 @@ public class CommentService {
         return pageComment.map(comment -> CommentConverter.toMyGuestBookComment(comment, countComments.countGuestBookComments(comment.getGuestBook().getId())));
     }
 
-    private Boolean isWriter(Long postId, Comment comment){
+    //TODO : 이거 삭제 필요
+    private Boolean isPostCommentWriter(Long postId, Comment comment){
         Optional<Post> optionalPost = postRepository.findById(postId);
         if(optionalPost.isEmpty()){
             throw new RestApiException(ErrorCode.POST_NOT_FOUND);
         }
         return optionalPost.get().getMember().getId().equals(comment.getMember().getId());
+    }
+
+    /**
+     * 사용자(앱을 사용하는 유저)가 댓글 작성자가 맞는지 확인하는 함수
+     * @param member
+     * @param comment
+     * @return 댓글 작성자가 맞으면 true, 아니면 false
+     */
+    private Boolean isCommentWriter(Member member, Comment comment){
+        if(member == null){return false;}
+        return member.getId().equals(comment.getMember().getId());
     }
 
     public void createComment(long postId, String content) {

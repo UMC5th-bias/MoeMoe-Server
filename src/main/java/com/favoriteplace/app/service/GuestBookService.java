@@ -63,7 +63,7 @@ public class GuestBookService {
         Pageable pageable = PageRequest.of(page-1, size);
         Page<GuestBook> myGuestBooks = guestBookRepository.findAllByMemberIdOrderByCreatedAtDesc(member.getId(), pageable);
         if(myGuestBooks.isEmpty()){return Page.empty();}
-        return myGuestBooks.map(guestBook -> GuestBookConverter.toGuestBook(guestBook, member.getNickname(), countComments.countGuestBookComments(guestBook.getId()) ));
+        return myGuestBooks.map(guestBook -> GuestBookConverter.toGuestBook(guestBook, member.getNickname(), countComments.countGuestBookComments(guestBook.getId())));
     }
 
     public GuestBookResponseDto.GuestBookInfo getDetailGuestBookInfo(Long guestBookId, HttpServletRequest request) {

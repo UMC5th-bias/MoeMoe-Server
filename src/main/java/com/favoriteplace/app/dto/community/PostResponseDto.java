@@ -54,23 +54,6 @@ public class PostResponseDto {
 
     @Getter
     @Builder
-    public static class PostCommentResponseDto{
-        private Long size;
-        private List<PostComment> comment;
-    }
-
-    @Getter
-    @Builder
-    public static class PostComment{
-        private UserInfoResponseDto userInfo;
-        private Long id;
-        private String content;
-        private String passedTime;
-        private Boolean isWrite;
-    }
-
-    @Getter
-    @Builder
     public static class PostDetailResponseDto{
         private UserInfoResponseDto userInfo;
         private PostInfo postInfo;

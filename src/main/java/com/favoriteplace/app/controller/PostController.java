@@ -1,6 +1,7 @@
 package com.favoriteplace.app.controller;
 
 import com.favoriteplace.app.dto.community.CommentRequestDto;
+import com.favoriteplace.app.dto.community.CommentResponseDto;
 import com.favoriteplace.app.dto.community.PostRequestDto;
 import com.favoriteplace.app.dto.community.PostResponseDto;
 import com.favoriteplace.app.service.CommentService;
@@ -36,12 +37,12 @@ public class PostController {
     }
 
     @GetMapping("/{post_id}/comments")
-    public PostResponseDto.PostCommentResponseDto getPostComments(
+    public CommentResponseDto.PostCommentDto getPostComments(
             @PathVariable("post_id") Long postId,
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "10") int size
     ){
-        return PostResponseDto.PostCommentResponseDto.builder()
+        return CommentResponseDto.PostCommentDto.builder()
                 .size((long) size)
                 .comment(commentService.getPostComments(page, size, postId))
                 .build();
