@@ -38,4 +38,14 @@ public class MyPageConverter {
                 .pilgrimage(pilgrimage)
                 .build();
     }
+
+    public static MyPageDto.MyBlockDto toMyBlockDto(Member member){
+        return MyPageDto.MyBlockDto.builder()
+                .userId(member.getId())
+                .nickname(member.getNickname())
+                .profileImg(member.getProfileImageUrl())
+                .userTitleImg(member.getProfileTitle().getImage().getUrl())
+                .userIconImg(member.getProfileIcon().getImage().getUrl())
+                .build();
+    }
 }
