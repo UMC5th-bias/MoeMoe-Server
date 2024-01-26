@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class PostService {
     private final PostRepository postRepository;
     private final ImageRepository imageRepository;
@@ -48,7 +49,6 @@ public class PostService {
 //    @Value("${spring.cloud.gcp.storage.bucket}")
 //    private String bucketName;
 
-    @Transactional
     public List<TrendingPostResponseDto.TrendingTodayPostResponseDto.TrendingPostRank> getTodayTrendingPost() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startOfDay = now.toLocalDate().atStartOfDay();
@@ -65,7 +65,6 @@ public class PostService {
         return trendingPostRanks;
     }
 
-    @Transactional
     public PostResponseDto.PostInfo getPostDetail(Long postId, HttpServletRequest request) {
         Optional<Post> post = postRepository.findById(postId);
         if(post.isEmpty()){
@@ -97,7 +96,6 @@ public class PostService {
                 .orElse(Collections.emptyList());
     }
 
-    @Transactional
     public List<PostResponseDto.MyPost> getMyPosts(int page, int size) {
         Member member = securityUtil.getUser();
         Pageable pageable = PageRequest.of(page, size);
@@ -136,45 +134,54 @@ public class PostService {
         return totalPosts;
     }
 
-    @Transactional
-    public void createPost(PostRequestDto postRequestDto) throws IOException {
+    public void createPost(PostRequestDto data, List<MultipartFile> images) throws IOException {
         Member member = securityUtil.getUser();
         Post newPost = Post.builder()
-                .member(member).title(postRequestDto.getTitle()).images(new ArrayList<>())
-                .content(postRequestDto.getContent()).likeCount(0L).view(0L)
+                .member(member).title(data.getTitle()).images(new ArrayList<>())
+                .content(data.getContent()).likeCount(0L).view(0L)
                 .build();
 
          //이미지 업로드 관련
-        List<MultipartFile> uploadImages = postRequestDto.getImages();
-        if(!uploadImages.isEmpty()){
-            List<Image> images = new ArrayList<>();
-            for(MultipartFile image: uploadImages){
+        if(!images.isEmpty()){
+            List<Image> convertImages = new ArrayList<>();
+            for(MultipartFile image: images){
                 if(!image.isEmpty()){
                     String uuid = uploadImage.uploadImageToCloud(image);
                     Image newImage = Image.builder().url(uuid).build();
-                    images.add(newImage);
+                    convertImages.add(newImage);
                 }
             }
-            if(!images.isEmpty()){
-                newPost.addImages(images);
+            if(!convertImages.isEmpty()){
+                newPost.addImages(convertImages);
             }
         }
         postRepository.save(newPost);
     }
 
-    @Transactional
     public void deletePost(long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new RestApiException(ErrorCode.POST_NOT_FOUND));
         postRepository.delete(post);
     }
 
-    @Transactional
+    /*
     public void modifyPost(long postId, PostRequestDto dto) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new RestApiException(ErrorCode.POST_NOT_FOUND));
-        Optional.ofNullable(dto.getTitle()).ifPresent(post::setTitle);
-        Optional.ofNullable(dto.getContent()).ifPresent(post::setContent);
+        Optional.ofNullable(dto.getData().getTitle()).ifPresent(post::setTitle);
+        Optional.ofNullable(dto.getData().getContent()).ifPresent(post::setContent);
 
         //TODO
 
+    }*/
+
+    /**
+     * 게시글의 조회수를 증가하는 함수
+     * @param postId
+     */
+    public void increasePostView(Long postId) {
+        Optional<Post> postOptional = postRepository.findById(postId);
+        if(postOptional.isEmpty()){throw new RestApiException(ErrorCode.POST_NOT_FOUND);}
+        Post post = postOptional.get();
+        post.increaseView();
+        postRepository.save(post);
     }
 }
