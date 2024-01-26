@@ -2,10 +2,12 @@ package com.favoriteplace.app.dto.community;
 
 import com.favoriteplace.app.domain.community.Post;
 import com.favoriteplace.app.dto.UserInfoResponseDto;
+import com.favoriteplace.global.gcpImage.ConvertUuidToUrl;
 import com.favoriteplace.global.util.DateTimeFormatUtils;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -54,23 +56,6 @@ public class PostResponseDto {
 
     @Getter
     @Builder
-    public static class PostCommentResponseDto{
-        private Long size;
-        private List<PostComment> comment;
-    }
-
-    @Getter
-    @Builder
-    public static class PostComment{
-        private UserInfoResponseDto userInfo;
-        private Long id;
-        private String content;
-        private String passedTime;
-        private Boolean isWrite;
-    }
-
-    @Getter
-    @Builder
     public static class PostDetailResponseDto{
         private UserInfoResponseDto userInfo;
         private PostInfo postInfo;
@@ -86,10 +71,16 @@ public class PostResponseDto {
         private Long likes;
         private Boolean isLike;
         private Boolean isWrite;
-        private String createdAt;
+        private String passedTime;
         private List<String> image;
 
         public static PostInfo of(Post post, Boolean isLike, Boolean isWrite, List<String> images){
+            List<String> convertedImages;
+            if (images.isEmpty()) {
+                convertedImages = new ArrayList<>(); // 빈 리스트일 경우, 그대로 빈 리스트를 반환
+            } else {
+                convertedImages = images.stream().map(ConvertUuidToUrl::convertUuidToUrl).toList();
+            }
             return PostInfo.builder()
                     .id(post.getId())
                     .title(post.getTitle())
@@ -98,8 +89,8 @@ public class PostResponseDto {
                     .likes(post.getLikeCount())
                     .isLike(isLike)
                     .isWrite(isWrite)
-                    .createdAt(DateTimeFormatUtils.convertDateToString(post.getCreatedAt()))
-                    .image(images)
+                    .passedTime(DateTimeFormatUtils.getPassDateTime(post.getCreatedAt()))
+                    .image(convertedImages)
                     .build();
         }
     }

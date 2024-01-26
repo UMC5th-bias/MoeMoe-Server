@@ -1,4 +1,4 @@
-package com.favoriteplace.app.service.strategy;
+package com.favoriteplace.app.service.sortStrategy;
 
 import com.favoriteplace.app.domain.community.Post;
 import com.favoriteplace.app.repository.PostRepository;
@@ -9,10 +9,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class SortByLikedStrategy implements SortStrategy{
+public class SortPostByLatestStrategy implements SortStrategy<Post> {
     private final PostRepository postRepository;
     @Override
     public Page<Post> sort(Pageable pageable) {
-        return postRepository.findAllByOrderByLikeCountDesc(pageable);
+        return postRepository.findAllByOrderByCreatedAtDesc(pageable);
     }
 }

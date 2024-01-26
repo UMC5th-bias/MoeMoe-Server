@@ -28,14 +28,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         //인증이 필수인 경우 추가
         new ExcludePath("/auth/logout", HttpMethod.POST),
         new ExcludePath("/pilgrimage/**", HttpMethod.POST),
-        new ExcludePath("/posts/free/my-posts?page&size", HttpMethod.GET),
-        new ExcludePath("/posts/free/my-comments?page&size", HttpMethod.GET),
+        new ExcludePath("/posts/free/my-posts", HttpMethod.GET),
+        new ExcludePath("/posts/free/my-comments", HttpMethod.GET),
         new ExcludePath("/pilgrimage/detail/**", HttpMethod.GET),
         new ExcludePath("/posts/free", HttpMethod.POST),
         new ExcludePath("/posts/free/**", HttpMethod.DELETE),
         new ExcludePath("/posts/free/**", HttpMethod.POST),
         new ExcludePath("/posts/free/**", HttpMethod.PUT),
-            new ExcludePath("/posts/free/**", HttpMethod.PATCH)
+        new ExcludePath("/posts/free/**", HttpMethod.PATCH),
+        new ExcludePath("/posts/guestbooks/my-comments", HttpMethod.GET),
+        new ExcludePath("/posts/guestbooks/my-posts", HttpMethod.GET),
+        new ExcludePath("/posts/free/**", HttpMethod.PATCH),
+        new ExcludePath("/my", HttpMethod.GET),
+        new ExcludePath("/my/**", HttpMethod.GET)
         // Add more paths and methods as needed
     );
     @Override

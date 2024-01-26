@@ -42,7 +42,10 @@ public enum ErrorCode {
     SORT_KEYWORD_NOT_ALLOWED(HttpStatus.BAD_REQUEST, 7001, "존재하지 않는 정렬 방식입니다."),
 
     // 지역 (8000번대)
-    ADDRESS_NOT_FOUND(HttpStatus.BAD_REQUEST, 8001, "존재하지 않는 지역입니다.");
+    ADDRESS_NOT_FOUND(HttpStatus.BAD_REQUEST, 8001, "존재하지 않는 지역입니다."),
+
+    // 아이템 (9000번대)
+    ITEM_TYPE_NOT_FOUND(HttpStatus.BAD_REQUEST, 9001, "존재하지 않는 아이템 타입입니다.");
 
     private final HttpStatus httpStatus;
     private final int code;
