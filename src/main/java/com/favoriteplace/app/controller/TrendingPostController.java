@@ -2,7 +2,7 @@ package com.favoriteplace.app.controller;
 
 import com.favoriteplace.app.dto.community.TrendingPostResponseDto;
 import com.favoriteplace.app.service.GuestBookService;
-import com.favoriteplace.app.service.PostService;
+import com.favoriteplace.app.service.PostQueryService;
 import com.favoriteplace.app.service.TotalPostService;
 import com.favoriteplace.global.util.DateTimeFormatUtils;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ import java.util.List;
 @RequestMapping("/posts/trending")
 @RequiredArgsConstructor
 public class TrendingPostController {
-    private final PostService postService;
+    private final PostQueryService postService;
     private final GuestBookService guestBookService;
     private final TotalPostService totalPostService;
 

@@ -1,5 +1,6 @@
 package com.favoriteplace.app.service;
 
+import com.favoriteplace.app.converter.GuestBookConverter;
 import com.favoriteplace.app.converter.PilgrimageConverter;
 import com.favoriteplace.app.converter.RallyConverter;
 import com.favoriteplace.app.domain.Image;
@@ -7,22 +8,22 @@ import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.HashTag;
 import com.favoriteplace.app.domain.travel.*;
+import com.favoriteplace.app.dto.community.GuestBookResponseDto;
 import com.favoriteplace.app.dto.travel.PilgrimageDto;
 import com.favoriteplace.app.dto.travel.RallyDto;
 import com.favoriteplace.app.repository.*;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -264,5 +265,34 @@ public class PilgrimageQueryService {
                     return PilgrimageConverter.toPilgrimageCategoryRegionDetailDto(rally.getName(), pilgrimage);
                 })
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * 커뮤니티: 성지순례 인증글 상세 정보
+     * @param member
+     * @param guestBookId
+     * @return 성지순례 인증글 상세 정보
+     */
+    public GuestBookResponseDto.PilgrimageInfo getPilgrimageDetailCommunity(Member member, Long guestBookId) {
+        Optional<GuestBook> guestBookOptional = guestBookRepository.findById(guestBookId);
+        if(guestBookOptional.isEmpty()){throw new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND);}
+        GuestBook guestBook = guestBookOptional.get();
+        Long pilgrimageNumber = guestBook.getPilgrimage().getRally().getPilgrimageNumber();
+        Long completeNumber = getCompletePilgrimageCount(member, guestBook.getPilgrimage().getRally().getId());
+        return GuestBookConverter.toPilgrimageInfo(guestBook.getPilgrimage(), pilgrimageNumber, completeNumber);
+    }
+
+    /**
+     * 사용자가 해당 랠리에서 몇개의 성지순례를 완료했는지 알려주는 함수
+     * @param member
+     * @param rallyId
+     * @return
+     */
+    public long getCompletePilgrimageCount(Member member, Long rallyId){
+        if(member == null){return 0L;}
+        Long memberId = member.getId();
+        List<Pilgrimage> pilgrimages = pilgrimageRepository.findByRallyId(rallyId);
+        List<Long> pilgrimageIds = pilgrimages.stream().map(Pilgrimage::getId).toList();
+        return visitedPilgrimageRepository.countByMemberIdAndPilgrimageIdIn(memberId, pilgrimageIds);
     }
 }

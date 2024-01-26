@@ -20,13 +20,13 @@ import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class RallyService {
     private final SecurityUtil securityUtil;
     private final RallyRepository rallyRepository;
     private final VisitedPilgrimageRepository visitedPilgrimageRepository;
     private final PilgrimageRepository pilgrimageRepository;
 
-    @Transactional
     public HomeResponseDto.HomeRally getRecentRallyElseRandomRally(HttpServletRequest request) {
         Rally rally;
         long visitedCount = 0L;
@@ -47,7 +47,6 @@ public class RallyService {
         return HomeResponseDto.HomeRally.of(rally, visitedCount);
     }
 
-    @Transactional
     public Rally recommandRandomRally(){
         List<Rally> rallies = rallyRepository.findAll();
         if(rallies.isEmpty()){
@@ -58,13 +57,10 @@ public class RallyService {
         return rallies.get(index);
     }
 
-    @Transactional
     public long getCompletePilgrimageCount(Long memberId, Long rallyId){
         List<Pilgrimage> pilgrimages = pilgrimageRepository.findByRallyId(rallyId);
         List<Long> pilgrimageIds = pilgrimages.stream().map(Pilgrimage::getId).toList();
         return visitedPilgrimageRepository.countByMemberIdAndPilgrimageIdIn(memberId, pilgrimageIds);
     }
-
-
 
 }

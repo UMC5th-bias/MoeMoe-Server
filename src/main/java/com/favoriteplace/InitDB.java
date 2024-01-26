@@ -5,10 +5,7 @@ import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.Comment;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.Post;
-import com.favoriteplace.app.domain.enums.ItemType;
-import com.favoriteplace.app.domain.enums.LoginType;
-import com.favoriteplace.app.domain.enums.MemberStatus;
-import com.favoriteplace.app.domain.enums.SaleStatus;
+import com.favoriteplace.app.domain.enums.*;
 import com.favoriteplace.app.domain.item.Item;
 import com.favoriteplace.app.domain.travel.Address;
 import com.favoriteplace.app.domain.travel.Pilgrimage;
@@ -27,6 +24,7 @@ public class InitDB {
 
     @PostConstruct
     public void init(){
+//        initService.createMember("1");
         initService.initRallyAndPilgrimage();
         initService.initDB();
     }
@@ -50,14 +48,15 @@ public class InitDB {
             Item item1 = Item.builder()
                     .image(image1).name("icon1")
                     .status(SaleStatus.NOT_FOR_SALE).type(ItemType.ICON)
+                    .saleDeadline(null).point(10L).category(ItemCategory.NEW)
                     .saleDeadline(null).point(null)
                     .description(null).build();
             Item item2 = Item.builder()
                     .image(image2).name("title1")
                     .status(SaleStatus.NOT_FOR_SALE).type(ItemType.TITLE)
-                    .saleDeadline(null).point(null)
+                    .saleDeadline(null).point(10L).category(ItemCategory.NEW)
                     .description(null).build();
-            em.persist(item1); em.persist(item2);
+            em.merge(item1); em.merge(item2);
 
             Member member = Member.builder()
                     .id(0L).profileIcon(item1)
@@ -100,7 +99,10 @@ public class InitDB {
                     .likeCount(35L).view(35L).build();
             em.merge(post1); em.merge(post2); em.merge(post3); em.merge(post4); em.merge(post5); em.merge(post6); em.merge(post7);
 
+
             Address address = addressRepository.findByStateAndDistrict("도쿄도", "시부야구");
+            Address address2 = Address.builder().state("도쿄도").district("시부야구").build();
+            em.persist(address2);
 
             Rally rally1 = Rally.builder().id(0L)
                     .item(item1).image(image1).name("최애의 아이")
@@ -113,10 +115,10 @@ public class InitDB {
             em.merge(rally1); em.merge(rally2);
 
             Pilgrimage pilgrimage1 = Pilgrimage.builder()
-                    .address(address).rally(rally1).virtualImage(image1).realImage(image1)
+                    .address(address2).rally(rally1).virtualImage(image1).realImage(image1)
                     .rallyName("최애의 아이").detailAddress("스크램블 교차로1").latitude(1.1).longitude(1.1).build();
             Pilgrimage pilgrimage2 = Pilgrimage.builder()
-                    .address(address).rally(rally2).virtualImage(image2).realImage(image2)
+                    .address(address2).rally(rally2).virtualImage(image2).realImage(image2)
                     .rallyName("최애의 아이").detailAddress("스크램블 교차로2").latitude(1.1).longitude(1.1).build();
             em.merge(pilgrimage1); em.merge(pilgrimage2);
 
@@ -151,19 +153,20 @@ public class InitDB {
             em.merge(guestBook1);em.merge(guestBook2); em.merge(guestBook3); em.merge(guestBook4); em.merge(guestBook5); em.merge(guestBook6); em.merge(guestBook7);
 
             Comment comment1 = Comment.builder()
-                    .member(member).post(post1).guestBook(null).content("댓글1").build();
+                    .member(member).post(null).guestBook(guestBook1).content("G댓글1").build();
             Comment comment2 = Comment.builder()
-                    .member(member).post(post1).guestBook(null).content("댓글2").build();
+                    .member(member).post(null).guestBook(guestBook1).content("G댓글2").build();
             Comment comment3 = Comment.builder()
-                    .member(member).post(post1).guestBook(null).content("댓글3").build();
+                    .member(member).post(null).guestBook(guestBook1).content("G댓글3").build();
             Comment comment4 = Comment.builder()
-                    .member(member).post(post1).guestBook(null).content("댓글4").build();
+                    .member(member).post(post1).guestBook(null).content("P댓글4").build();
             Comment comment5 = Comment.builder()
-                    .member(member).post(post1).guestBook(null).content("댓글5").build();
+                    .member(member).post(post1).guestBook(null).content("P댓글5").build();
             Comment comment6 = Comment.builder()
-                    .member(member).post(post1).guestBook(null).content("댓글6").build();
+                    .member(member).post(post1).guestBook(null).content("P댓글6").build();
             em.merge(comment1); em.merge(comment2);em.merge(comment3);em.merge(comment4);em.merge(comment5);em.merge(comment6);
         }
+
         public void initMember(){
             createMember("1");
         }
