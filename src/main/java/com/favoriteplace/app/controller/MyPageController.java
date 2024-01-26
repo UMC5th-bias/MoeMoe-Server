@@ -32,7 +32,6 @@ public class MyPageController {
     }
 
     // 보유 아이템 조회
-    // 쿼리스트링 필요
     @GetMapping("/items")
     public MyPageDto.MyItemDto getMyItems(@RequestParam(value = "type", defaultValue = "title")String type){
         Member member = securityUtil.getUser();
