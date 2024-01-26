@@ -27,4 +27,9 @@ public class ShopController {
     public ResponseEntity<ItemDto.ItemListResDto> getAlwaysSellProduct(HttpServletRequest request) {
         return ResponseEntity.ok(shopService.getAlwaysSellProduct(request));
     }
+
+    @GetMapping("/new")
+    public ResponseEntity<ItemDto.NewItemListResDto> getNewItemList() {
+        return ResponseEntity.ok(shopService.getNewItemList());
+    }
 }
