@@ -5,7 +5,6 @@ import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.HashTag;
-import com.favoriteplace.app.domain.community.Post;
 import com.favoriteplace.app.dto.community.GuestBookResponseDto;
 import com.favoriteplace.app.dto.community.TrendingPostResponseDto;
 import com.favoriteplace.app.repository.GuestBookRepository;
@@ -25,17 +24,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.net.http.HttpRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class GuestBookService {
+public class GuestBookQueryService {
     private final GuestBookRepository guestBookRepository;
     private final LikedPostRepository likedPostRepository;
     private final ImageRepository imageRepository;
@@ -132,6 +129,4 @@ public class GuestBookService {
         guestBook.increaseView();
         guestBookRepository.save(guestBook);
     }
-
-
 }

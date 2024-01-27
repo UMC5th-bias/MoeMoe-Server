@@ -44,20 +44,6 @@ public class Post extends BaseTimeEntity {
     @Column(nullable = false)
     private Long view;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Image> images = new ArrayList<>();
-
-    //이미지 리스트 새롭게 setting
-    public void setImages(List<Image> imageList){
-        this.images.clear();
-        if(imageList != null){
-            this.images.addAll(imageList);
-            for(Image image:imageList){
-                image.setPost(this);
-            }
-        }
-    }
-
     public void setTitle(String title) {this.title = title;}
 
     public void setContent(String content) {this.content = content;}

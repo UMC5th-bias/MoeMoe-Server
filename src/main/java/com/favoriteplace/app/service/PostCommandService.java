@@ -38,9 +38,10 @@ public class PostCommandService {
     public void createPost(PostRequestDto data, List<MultipartFile> images) throws IOException {
         Member member = securityUtil.getUser();
         Post newPost = Post.builder()
-                .member(member).title(data.getTitle()).images(new ArrayList<>())
+                .member(member).title(data.getTitle())
                 .content(data.getContent()).likeCount(0L).view(0L)
                 .build();
+        postRepository.save(newPost);
         setImageList(newPost, images);
     }
 
@@ -50,6 +51,8 @@ public class PostCommandService {
      */
     @Transactional
     public void deletePost(long postId) {
+        //TODO : 이미지, 해시테그 어떻게 관리할건지
+        //securityUtil.getUser();
         Post post = postRepository.findById(postId).orElseThrow(() -> new RestApiException(ErrorCode.POST_NOT_FOUND));
         postRepository.delete(post);
     }
@@ -82,18 +85,13 @@ public class PostCommandService {
     public void setImageList(Post newPost, List<MultipartFile> images) throws IOException {
         //이미지 업로드 관련
         if(!images.isEmpty()){
-            List<Image> convertImages = new ArrayList<>();
             for(MultipartFile image: images){
                 if(!image.isEmpty()){
                     String uuid = uploadImage.uploadImageToCloud(image);
-                    Image newImage = Image.builder().url(uuid).build();
-                    convertImages.add(newImage);
+                    Image newImage = Image.builder().url(uuid).post(newPost).build();
+                    imageRepository.save(newImage);
                 }
             }
-            if(!convertImages.isEmpty()){
-                newPost.setImages(convertImages);
-            }
         }
-        postRepository.save(newPost);
     }
 }

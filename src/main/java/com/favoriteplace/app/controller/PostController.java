@@ -128,7 +128,6 @@ public class PostController {
         );
     }
 
-
     @PatchMapping("/{post_id}")
     public ResponseEntity<PostResponseDto.SuccessResponseDto> modifyPost(
             @PathVariable("post_id") Long postId,

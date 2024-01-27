@@ -25,7 +25,7 @@ public class InitDB {
     @PostConstruct
     public void init(){
 //        initService.createMember("1");
-        initService.initRallyAndPilgrimage();
+//        initService.initRallyAndPilgrimage();
         initService.initDB();
     }
 
@@ -49,7 +49,7 @@ public class InitDB {
                     .image(image1).name("icon1")
                     .status(SaleStatus.NOT_FOR_SALE).type(ItemType.ICON)
                     .saleDeadline(null).point(10L).category(ItemCategory.NEW)
-                    .saleDeadline(null).point(null)
+                    .saleDeadline(null).point(5L)
                     .description(null).build();
             Item item2 = Item.builder()
                     .image(image2).name("title1")

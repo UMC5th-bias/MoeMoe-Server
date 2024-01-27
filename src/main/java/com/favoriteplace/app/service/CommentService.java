@@ -28,7 +28,6 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
@@ -36,6 +35,7 @@ public class CommentService {
     private final MemberService memberService;
     private final SecurityUtil securityUtil;
 
+    @Transactional
     //TODO 여기 수정 필요 (isWrite 수정 -> 내가 이 댓글을 작성자인지 확인하는 기능)
     public List<CommentResponseDto.PostComment> getPostComments
             (int page, int size, Long postId) {
@@ -65,6 +65,7 @@ public class CommentService {
      * @param guestbookId
      * @return 페이징 된 댓글 리스트
      */
+    @Transactional
     public Page<CommentResponseDto.PostComment> getGuestBookComments(int page, int size, Member member, Long guestbookId) {
         Pageable pageable = PageRequest.of(page-1, size);
         Page<Comment> commentPage = commentRepository.findAllByGuestBookIdOrderByCreatedAtAsc(guestbookId, pageable);
@@ -72,6 +73,7 @@ public class CommentService {
         return commentPage.map(comment -> CommentConverter.toPostComment(comment, member, isCommentWriter(member, comment)));
     }
 
+    @Transactional
     public List<PostResponseDto.MyComment> getMyPostComments(int page, int size) {
         Member member = securityUtil.getUser();
         Pageable pageable = PageRequest.of(page, size);
@@ -95,6 +97,7 @@ public class CommentService {
         return myComments;
     }
 
+    @Transactional
     public Page<GuestBookResponseDto.MyGuestBookComment> getMyGuestBookComments(int page, int size) {
         Member member = securityUtil.getUser();
         Pageable pageable = PageRequest.of(page - 1, size);
@@ -123,6 +126,7 @@ public class CommentService {
         return member.getId().equals(comment.getMember().getId());
     }
 
+    @Transactional
     public void createComment(long postId, String content) {
         Member member = securityUtil.getUser();
         Comment comment = Comment.builder()
