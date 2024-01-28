@@ -47,7 +47,8 @@ public enum ErrorCode {
     ADDRESS_NOT_FOUND(HttpStatus.BAD_REQUEST, 8001, "존재하지 않는 지역입니다."),
 
     // 아이템 (9000번대)
-    ITEM_TYPE_NOT_FOUND(HttpStatus.BAD_REQUEST, 9001, "존재하지 않는 아이템 타입입니다.");
+    ITEM_TYPE_NOT_FOUND(HttpStatus.BAD_REQUEST, 9001, "존재하지 않는 아이템 타입입니다."),
+    ITEM_NOT_EXISTS(HttpStatus.BAD_REQUEST, 9002, "없는 아이템입니다.");
 
     private final HttpStatus httpStatus;
     private final int code;

@@ -35,6 +35,8 @@ public class SecurityUtil {
         String token = resolveToken(request);
 
         Authentication authentication = jwtTokenProvider.getAuthentication(token);
+
+        //TODO: 유저 없을 경우 예외처리
         return memberRepository.findByEmail(authentication.getName()).get();
     }
 

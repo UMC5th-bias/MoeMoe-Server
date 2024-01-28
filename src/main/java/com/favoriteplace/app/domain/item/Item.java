@@ -64,6 +64,7 @@ public class Item extends BaseTimeEntity{
     @Column(nullable = false)
     private Long point;
 
+    @Column(nullable = false)
     private String description;
 
 }
