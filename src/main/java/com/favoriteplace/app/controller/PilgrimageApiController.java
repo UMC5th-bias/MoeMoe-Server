@@ -26,6 +26,8 @@ public class PilgrimageApiController {
     private final PilgrimageCommandService pilgrimageCommandService;
     private final SecurityUtil securityUtil;
 
+    /* ================ GET ================ */
+
     // 내 성지순례 + 인증글 모아보기(메인)
     // 회원 + 비회원
     @GetMapping("")
@@ -91,6 +93,8 @@ public class PilgrimageApiController {
                 pilgrimageId, member);
     }
 
+    /* ================ POST ================ */
+
     // 랠리 찜하기
     @PostMapping("/{rally_id}")
     public CommonResponseDto.PostResponseDto likeToRally(@PathVariable("rally_id")Long rallyId){
@@ -100,9 +104,11 @@ public class PilgrimageApiController {
 
     // 성지순례 장소 방문 인증하기
     @PostMapping("/certified/{pilgrimage_id}")
-    public CommonResponseDto.PostResponseDto certifyToPilgrimage(@PathVariable("pilgrimage_id")Long pilgrimageId){
+    public CommonResponseDto.PostResponseDto certifyToPilgrimage(
+            @PathVariable("pilgrimage_id")Long pilgrimageId,
+            @RequestBody PilgrimageDto.PilgrimageCertifyRequestDto form){
         Member member = securityUtil.getUser();
-        return pilgrimageCommandService.certifyToPilgrimage(pilgrimageId, member);
+        return pilgrimageCommandService.certifyToPilgrimage(pilgrimageId, member, form);
     }
 
     // 성지순례 장소 방문 인증글 작성하기
