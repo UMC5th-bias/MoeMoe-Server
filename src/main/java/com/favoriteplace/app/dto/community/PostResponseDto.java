@@ -4,23 +4,29 @@ import com.favoriteplace.app.domain.community.Post;
 import com.favoriteplace.app.dto.UserInfoResponseDto;
 import com.favoriteplace.global.gcpImage.ConvertUuidToUrl;
 import com.favoriteplace.global.util.DateTimeFormatUtils;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.checkerframework.checker.units.qual.N;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
 public class PostResponseDto {
 
     @Builder
     @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class SuccessResponseDto{
         private String message;
     }
 
     @Builder
     @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class MyCommentDto{
         private Long size;
         private List<MyComment>comment;
@@ -28,6 +34,8 @@ public class PostResponseDto {
 
     @Getter
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class MyComment{
         private Long id;
         private String content;
@@ -37,6 +45,8 @@ public class PostResponseDto {
 
     @Getter
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class MyPostResponseDto{
         private Long size;
         private List<MyPost> post;
@@ -44,6 +54,8 @@ public class PostResponseDto {
 
     @Getter
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class MyPost{
         private Long id;
         private String title;
@@ -56,6 +68,8 @@ public class PostResponseDto {
 
     @Getter
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class PostDetailResponseDto{
         private UserInfoResponseDto userInfo;
         private PostInfo postInfo;
@@ -63,6 +77,8 @@ public class PostResponseDto {
 
     @Getter
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class PostInfo {
         private Long id;
         private String title;
@@ -94,9 +110,4 @@ public class PostResponseDto {
                     .build();
         }
     }
-
-
-
-
-
 }

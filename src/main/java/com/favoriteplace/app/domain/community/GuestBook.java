@@ -9,17 +9,13 @@ import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.common.BaseTimeEntity;
 import com.favoriteplace.app.domain.travel.Pilgrimage;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -56,11 +52,22 @@ public class GuestBook extends BaseTimeEntity {
     private Double latitude;  //위도
     private Double longitude;  //경도
 
+    @OneToMany(mappedBy = "guestBook", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Comment> comments = new ArrayList<>();
+
     public void increaseView(){
         this.view++;
     }
-
     public void setTitle(String title){this.title = title;}
     public void setContent(String content){this.content = content;}
 
+    public void addComment(Comment comment){
+        this.comments.add(comment);
+        comment.setGuestBook(this);
+    }
+
+    public void deleteComment(Comment comment){
+        this.comments.remove(comment);
+        comment.setGuestBook(null);
+    }
 }

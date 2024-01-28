@@ -1,10 +1,7 @@
 package com.favoriteplace.app.controller;
 
 import com.favoriteplace.app.domain.Member;
-import com.favoriteplace.app.dto.community.CommentResponseDto;
-import com.favoriteplace.app.dto.community.GuestBookRequestDto;
-import com.favoriteplace.app.dto.community.GuestBookResponseDto;
-import com.favoriteplace.app.dto.community.PostResponseDto;
+import com.favoriteplace.app.dto.community.*;
 import com.favoriteplace.app.service.*;
 import com.favoriteplace.global.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -102,13 +99,38 @@ public class GuestBookController {
     @PatchMapping("/{guestbook_id}")
     public ResponseEntity<PostResponseDto.SuccessResponseDto> modifyGuestBook(
             @PathVariable("guestbook_id") Long guestbookId,
-            @RequestPart GuestBookRequestDto data,
+            @RequestPart GuestBookRequestDto.ModifyGuestBookDto data,
             @RequestPart(required = false) List<MultipartFile> images
     ) throws IOException {
         Member member = securityUtil.getUser();
         guestBookCommandService.modifyGuestBook(member, guestbookId, data, images);
         return new ResponseEntity<>(
                 PostResponseDto.SuccessResponseDto.builder().message("성지순례 인증글을 성공적으로 수정했습니다.").build(),
+                HttpStatus.OK
+        );
+    }
+
+    @DeleteMapping("/{guestbook_id}")
+    public ResponseEntity<PostResponseDto.SuccessResponseDto> deleteGuestBook(
+            @PathVariable("guestbook_id") Long guestbookId
+    ){
+        Member member = securityUtil.getUser();
+        guestBookCommandService.deleteGuestBook(member, guestbookId);
+        return new ResponseEntity<>(
+                PostResponseDto.SuccessResponseDto.builder().message("성지순례 인증글을 성공적으로 삭제했습니다.").build(),
+                HttpStatus.OK
+        );
+    }
+
+    @PostMapping("/{guestbook_id}")
+    public ResponseEntity<PostResponseDto.SuccessResponseDto> createGuestBookComment(
+            @PathVariable("guestbook_id") Long guestbookId,
+            @RequestBody GuestBookRequestDto.GuestBookCommentDto guestBookCommentDto
+    ){
+        Member member = securityUtil.getUser();
+        guestBookCommandService.createGuestBookComment(member, guestbookId, guestBookCommentDto);
+        return new ResponseEntity<>(
+                PostResponseDto.SuccessResponseDto.builder().message("성지순례 인증글에 댓글이 성공적으로 추가되었습니다.").build(),
                 HttpStatus.OK
         );
     }

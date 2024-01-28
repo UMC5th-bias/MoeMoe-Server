@@ -42,7 +42,7 @@ public class GuestBookQueryService {
     private final CountComments countComments;
     private final SecurityUtil securityUtil;
 
-    public List<TrendingPostResponseDto.TrendingTodayPostResponseDto.TrendingPostRank> getTodayTrendingGuestBook() {
+    public List<TrendingPostResponseDto.TrendingPostRank> getTodayTrendingGuestBook() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startOfDay = now.toLocalDate().atStartOfDay();
         List<GuestBook> guestBooks = guestBookRepository.findByCreatedAtBetweenOrderByLikeCountDesc(startOfDay, now);
@@ -51,9 +51,9 @@ public class GuestBookQueryService {
         }
         guestBooks.subList(0, Math.min(5, guestBooks.size()));
 
-        List<TrendingPostResponseDto.TrendingTodayPostResponseDto.TrendingPostRank> trendingPostsRank = new ArrayList<>();
+        List<TrendingPostResponseDto.TrendingPostRank> trendingPostsRank = new ArrayList<>();
         for(int i = 0; (i < guestBooks.size()) && (i < 5); i++){
-            trendingPostsRank.add(TrendingPostResponseDto.TrendingTodayPostResponseDto.TrendingPostRank.of(guestBooks.get(i)));
+            trendingPostsRank.add(TrendingPostResponseDto.TrendingPostRank.of(guestBooks.get(i)));
         }
         return trendingPostsRank;
     }

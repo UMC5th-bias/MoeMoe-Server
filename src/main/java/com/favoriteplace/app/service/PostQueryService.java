@@ -49,7 +49,7 @@ public class PostQueryService {
 //    @Value("${spring.cloud.gcp.storage.bucket}")
 //    private String bucketName;
 
-    public List<TrendingPostResponseDto.TrendingTodayPostResponseDto.TrendingPostRank> getTodayTrendingPost() {
+    public List<TrendingPostResponseDto.TrendingPostRank> getTodayTrendingPost() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startOfDay = now.toLocalDate().atStartOfDay();
         List<Post> posts = postRepository.findByCreatedAtBetweenOrderByLikeCountDesc(startOfDay, now);
@@ -58,9 +58,9 @@ public class PostQueryService {
         }
         posts.subList(0, Math.min(5, posts.size()));
 
-        List<TrendingPostResponseDto.TrendingTodayPostResponseDto.TrendingPostRank> trendingPostRanks = new ArrayList<>();
+        List<TrendingPostResponseDto.TrendingPostRank> trendingPostRanks = new ArrayList<>();
         for(int i =0; i<posts.size() && i<5; i++){
-            trendingPostRanks.add(TrendingPostResponseDto.TrendingTodayPostResponseDto.TrendingPostRank.of(posts.get(i)));
+            trendingPostRanks.add(TrendingPostResponseDto.TrendingPostRank.of(posts.get(i)));
         }
         return trendingPostRanks;
     }

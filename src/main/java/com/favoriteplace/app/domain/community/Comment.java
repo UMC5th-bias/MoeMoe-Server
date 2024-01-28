@@ -46,4 +46,7 @@ public class Comment extends BaseTimeEntity {
     @Column(nullable = false)
     private String content;
 
+    public void setGuestBook(GuestBook guestBook) {
+        this.guestBook = guestBook;
+    }
 }

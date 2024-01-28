@@ -2,6 +2,7 @@ package com.favoriteplace.app.service;
 
 import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.domain.community.Comment;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.HashTag;
 import com.favoriteplace.app.dto.community.GuestBookRequestDto;
@@ -36,7 +37,7 @@ public class GuestBookCommandService {
      * @param images
      */
     @Transactional
-    public void modifyGuestBook(Member member, Long guestbookId, GuestBookRequestDto data, List<MultipartFile> images) throws IOException {
+    public void modifyGuestBook(Member member, Long guestbookId, GuestBookRequestDto.ModifyGuestBookDto data, List<MultipartFile> images) throws IOException {
         GuestBook guestBook = guestBookRepository.findById(guestbookId).orElseThrow(() -> new RestApiException(ErrorCode.GUESTBOOK_NOT_FOUND));
         checkAuthOfGuestBook(member, guestBook);
         Optional.ofNullable(data.getTitle()).ifPresent(guestBook::setTitle);
@@ -48,6 +49,32 @@ public class GuestBookCommandService {
             hashtags.forEach(hashtag -> setHashtagList(hashtag, guestBook));
         }
         setImageList(guestBook, images);
+    }
+
+    /**
+     * 성지순례 인증글 삭제 (이미지, 댓글, hashtag, 추천 목록도 삭제 필요)
+     * @param member
+     * @param guestbookId
+     */
+    //TODO
+    public void deleteGuestBook(Member member, Long guestbookId) {
+        GuestBook guestBook = guestBookRepository.findById(guestbookId).orElseThrow(() -> new RestApiException(ErrorCode.GUESTBOOK_NOT_FOUND));
+        checkAuthOfGuestBook(member, guestBook);
+
+    }
+
+    /**
+     * 성지순례 인증글에 댓글 추가
+     * @param member
+     * @param guestbookId
+     */
+    @Transactional
+    public void createGuestBookComment(Member member, Long guestbookId, GuestBookRequestDto.GuestBookCommentDto comment) {
+        GuestBook guestBook = guestBookRepository.findById(guestbookId).orElseThrow(() -> new RestApiException(ErrorCode.GUESTBOOK_NOT_FOUND));
+        checkAuthOfGuestBook(member, guestBook);
+        Comment newComment = Comment.builder().member(member).guestBook(guestBook).content(comment.getContent()).build();
+        guestBook.addComment(newComment);
+        guestBookRepository.save(guestBook);
     }
 
     /**
@@ -83,4 +110,6 @@ public class GuestBookCommandService {
             throw new RestApiException(ErrorCode.USER_NOT_AUTHOR);
         }
     }
+
+
 }
