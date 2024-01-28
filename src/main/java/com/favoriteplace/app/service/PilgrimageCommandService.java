@@ -78,12 +78,12 @@ public class PilgrimageCommandService {
                 throw new RestApiException(ErrorCode.PILGRIMAGE_CAN_NOT_CERTIFIED);
 
             // 성공 시 포인트 지급 -> 15p & visitedPilgrimage 추가
-            VisitedPilgrimage newVisited = VisitedPilgrimage.builder()
-                    .pilgrimage(pilgrimage)
-                    .member(member)
-                    .build();
+            VisitedPilgrimage newVisited = VisitedPilgrimage.builder().pilgrimage(pilgrimage).member(member).build();
             visitedPilgrimageRepository.save(newVisited);
-            PointHistoryConverter.toPointHistory(member, 15L, PointType.ACQUIRE);
+            pointHistoryRepository.save(PointHistoryConverter.toPointHistory(member, 15L, PointType.ACQUIRE));
+            // 전체 랠리를 성공했는지 조회 후 맞다면... ->
+
+
             return CommonConverter.toPostResponseDto(true, "인증에 성공했습니다.");
         } else throw new RestApiException(ErrorCode.PILGRIMAGE_ALREADY_CERTIFIED);
     }

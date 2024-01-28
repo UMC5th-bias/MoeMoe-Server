@@ -30,6 +30,7 @@ public class InitDB {
         initService.initAddress();
         initService.initWeatheringWithYou();
         initService.initOshiNoKo();
+        initService.initJujutsuKaisen();
 //        initService.initDB();
     }
 
@@ -201,6 +202,18 @@ public class InitDB {
             Pilgrimage pilgrimage3 = createPilgrimage(addressSibuya, rally, "에비스 미나미 2공원");
             Pilgrimage pilgrimage4 = createPilgrimage(addressSibuya, rally, "스타벅스 시부야 츠타야점");
             Pilgrimage pilgrimage5 = createPilgrimage(addressShinjuku, rally, "쿠시카츠 타나카 신주쿠산초메점");
+        }
+
+        public void initJujutsuKaisen(){
+            Address addressSibuya = addressRepository.findById(1L).orElse(null);
+            Address addressShinjuku = addressRepository.findById(2L).orElse(null);
+            Address addressMinato = addressRepository.findById(3L).orElse(null);
+            Rally rally = createRally("주술회전", "‘주술고전’이 도쿄와 교토에 하나씩 있는 만큼, 1기는 도쿄도와 교토부를 배경으로 하는 장면이 많다. 1기 오프닝의 배경 역시 도쿄 스카이트리, 신주쿠의 눈 등 다양한 도쿄의 장소를 담아내기도 하였다. 2기는 부제목이 ‘시부야 사변’인 만큼 도쿄도 시부야구를 배경으로 스토리가 진행되었기에 시부야의 실제 장소가 여럿 등장한다.");
+            Pilgrimage pilgrimage1 = createPilgrimage(addressShinjuku, rally, "KFC 니시신주쿠점 건너편");
+            Pilgrimage pilgrimage2 = createPilgrimage(addressSibuya, rally, "시부야 히카리에 입구");
+            Pilgrimage pilgrimage3 = createPilgrimage(addressMinato, rally, "롯폰기 힐즈 아레나");
+            Pilgrimage pilgrimage4 = createPilgrimage(addressMinato, rally, "도쿄 스카이트리");
+            Pilgrimage pilgrimage5 = createPilgrimage(addressMinato, rally, "신주쿠의 눈");
         }
 
         public Member createMember(String number){
