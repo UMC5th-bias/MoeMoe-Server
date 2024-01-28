@@ -4,11 +4,10 @@ import com.favoriteplace.app.converter.CommonConverter;
 import com.favoriteplace.app.converter.PointHistoryConverter;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.enums.PointType;
+import com.favoriteplace.app.domain.enums.RallyVersion;
+import com.favoriteplace.app.domain.item.AcquiredItem;
 import com.favoriteplace.app.domain.item.PointHistory;
-import com.favoriteplace.app.domain.travel.LikedRally;
-import com.favoriteplace.app.domain.travel.Pilgrimage;
-import com.favoriteplace.app.domain.travel.Rally;
-import com.favoriteplace.app.domain.travel.VisitedPilgrimage;
+import com.favoriteplace.app.domain.travel.*;
 import com.favoriteplace.app.dto.CommonResponseDto;
 import com.favoriteplace.app.dto.travel.PilgrimageDto;
 import com.favoriteplace.app.repository.*;
@@ -29,6 +28,8 @@ public class PilgrimageCommandService {
     private final LikedRallyRepository likedRallyRepository;
     private final VisitedPilgrimageRepository visitedPilgrimageRepository;
     private final PointHistoryRepository pointHistoryRepository;
+    private final CompleteRallyRepository completeRallyRepository;
+    private final AcquiredItemRepository acquiredItemRepository;
 
     /***
      * 랠리 찜하기
@@ -42,10 +43,7 @@ public class PilgrimageCommandService {
         LikedRally likedRally = likedRallyRepository.findByRallyAndMember(rally, member);
 
         if (likedRally == null) {
-            LikedRally newLikedRally = LikedRally.builder()
-                    .rally(rally)
-                    .member(member)
-                    .build();
+            LikedRally newLikedRally = LikedRally.builder().rally(rally).member(member).build();
             likedRallyRepository.save(newLikedRally);
             return CommonConverter.toPostResponseDto(true, "찜 목록에 추가됐습니다.");
         } else {
@@ -64,29 +62,57 @@ public class PilgrimageCommandService {
                                                                  Member member,
                                                                  PilgrimageDto.PilgrimageCertifyRequestDto form) {
         Pilgrimage pilgrimage = pilgrimageRepository.findById(pilgrimageId).orElseThrow(
-                ()->new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
+                () -> new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
 
-        // 24시간 이내 방문이력 확인
+
         List<VisitedPilgrimage> visitedPilgrimages = visitedPilgrimageRepository
                 .findByPilgrimageAndMemberOrderByCreatedAtDesc(pilgrimage, member);
 
+        // 24시간 이내 방문이력 확인
         if (visitedPilgrimages.isEmpty()
                 || (!visitedPilgrimages.isEmpty() && visitedPilgrimages.get(0).getPilgrimage().getCreatedAt().plusHours(24L).isBefore(LocalDateTime.now()))) {
             // 현재 좌표가 성지순례 장소 좌표 기준 +-0.00135 이내인지 확인
-            if (pilgrimage.getLatitude() + 0.00135 < form.getLatitude() || pilgrimage.getLatitude() - 0.00135 > form.getLatitude()
-                    || pilgrimage.getLongitude() + 0.00135 < form.getLongitude() || pilgrimage.getLongitude() - 0.00135 > form.getLongitude())
+            if (checkCoordinate(form, pilgrimage))
                 throw new RestApiException(ErrorCode.PILGRIMAGE_CAN_NOT_CERTIFIED);
-
             // 성공 시 포인트 지급 -> 15p & visitedPilgrimage 추가
-            VisitedPilgrimage newVisited = VisitedPilgrimage.builder().pilgrimage(pilgrimage).member(member).build();
-            visitedPilgrimageRepository.save(newVisited);
-            pointHistoryRepository.save(PointHistoryConverter.toPointHistory(member, 15L, PointType.ACQUIRE));
+            successVisitedAndPointProcess(member, pilgrimage);
 
-            // 전체 랠리를 성공했는지 조회 후 맞다면... ->
+            Long completeCount = visitedPilgrimageRepository.findByDistinctCount(member.getId(), pilgrimage.getRally().getId());
+            // 랠리를 완료했는지 확인
+            if (checkCompleteRally(member, pilgrimage, completeCount))
+                return CommonConverter.toPostResponseDto(true, "모든 랠리를 완료했습니다.");
+        } else
+            throw new RestApiException(ErrorCode.PILGRIMAGE_ALREADY_CERTIFIED);
+        return CommonConverter.toPostResponseDto(true, "인증에 성공했습니다.");
+    }
 
+    private boolean checkCompleteRally(Member member, Pilgrimage pilgrimage, Long completeCount) {
+        if (completeCount == pilgrimage.getRally().getPilgrimageNumber()) {
+            CompleteRally completeRally = completeRallyRepository.findByMemberAndRally(member, pilgrimage.getRally());
+            // 이전에 이미 랠리를 완료한 상태인지 확인
+            if (completeRally == null || !completeRally.getVersion().getVersion().equals(RallyVersion.v1)) {
+                // 최초 완료에 한해 칭호 획득
+                if (completeRally == null)
+                    acquiredItemRepository.save(AcquiredItem.builder().item(pilgrimage.getRally().getItem()).member(member).build());
+                // 포인트 획득
+                pointHistoryRepository.save(PointHistoryConverter.toPointHistory(member, 100L, PointType.ACQUIRE));
+                // 완료 랠리 추가
+                completeRallyRepository.save(CompleteRally.builder().rally(pilgrimage.getRally()).member(member).version(RallyVersion.v1).build());
+                return true;
+            }
+        }
+        return false;
+    }
 
-            return CommonConverter.toPostResponseDto(true, "인증에 성공했습니다.");
-        } else throw new RestApiException(ErrorCode.PILGRIMAGE_ALREADY_CERTIFIED);
+    private boolean checkCoordinate(PilgrimageDto.PilgrimageCertifyRequestDto form, Pilgrimage pilgrimage) {
+        return pilgrimage.getLatitude() + 0.00135 < form.getLatitude() || pilgrimage.getLatitude() - 0.00135 > form.getLatitude()
+                || pilgrimage.getLongitude() + 0.00135 < form.getLongitude() || pilgrimage.getLongitude() - 0.00135 > form.getLongitude();
+    }
+
+    private void successVisitedAndPointProcess(Member member, Pilgrimage pilgrimage) {
+        VisitedPilgrimage newVisited = VisitedPilgrimage.builder().pilgrimage(pilgrimage).member(member).build();
+        visitedPilgrimageRepository.save(newVisited);
+        pointHistoryRepository.save(PointHistoryConverter.toPointHistory(member, 15L, PointType.ACQUIRE));
     }
 
     /***
