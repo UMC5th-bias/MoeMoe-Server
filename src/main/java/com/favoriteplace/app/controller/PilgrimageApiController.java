@@ -89,8 +89,7 @@ public class PilgrimageApiController {
     public PilgrimageDto.PilgrimageDetailDto getPilgrimageDetail(@PathVariable("pilgrimageId")Long pilgrimageId){
         // Jwt AuthenticationFilter에 엔드포인트 추가
         Member member = securityUtil.getUser();
-        return pilgrimageQueryService.getPilgrimageDetail(
-                pilgrimageId, member);
+        return pilgrimageQueryService.getPilgrimageDetail(pilgrimageId, member);
     }
 
     /* ================ POST ================ */

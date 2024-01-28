@@ -81,6 +81,7 @@ public class PilgrimageCommandService {
             VisitedPilgrimage newVisited = VisitedPilgrimage.builder().pilgrimage(pilgrimage).member(member).build();
             visitedPilgrimageRepository.save(newVisited);
             pointHistoryRepository.save(PointHistoryConverter.toPointHistory(member, 15L, PointType.ACQUIRE));
+
             // 전체 랠리를 성공했는지 조회 후 맞다면... ->
 
 
