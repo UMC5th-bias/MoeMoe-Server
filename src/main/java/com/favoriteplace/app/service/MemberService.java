@@ -58,7 +58,6 @@ public class MemberService {
         Item titleItem = itemRepository.findByName("새싹회원").get();
 
         Member member = memberSignUpReqDto.toEntity(password, uuid, titleItem);
-
         memberRepository.save(member);
 
         return MemberDetailResDto.from(member);
