@@ -23,4 +23,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     @Query("SELECT it from Item it join fetch it.image im where it.id = :item_id")
     Optional<Item> findAllByIdWithImage(@Param("item_id") Long itemID);
 
+    Optional<Item> findByName(String name);
+
 }
