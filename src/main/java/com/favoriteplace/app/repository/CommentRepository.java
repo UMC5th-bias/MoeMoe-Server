@@ -1,5 +1,6 @@
 package com.favoriteplace.app.repository;
 
+import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.Comment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,4 +18,5 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
 
     Page<Comment> findAllByGuestBookIdOrderByCreatedAtAsc(Long guestbookId, Pageable pageable);
+    Long countByMember(Member member);
 }

@@ -23,6 +23,14 @@ public interface VisitedPilgrimageRepository extends JpaRepository<VisitedPilgri
     and vp.member.id = :memberId and r.id = :rallyId
     """)
     Long findByDistinctCount(@Param("memberId") Long memberId, @Param("rallyId") Long rallyId);
+    @Query("""
+    select count(distinct p.id)
+    from Rally r
+    join Pilgrimage p on r.id = p.rally.id
+    join VisitedPilgrimage vp on p.id = vp.pilgrimage.id
+    and vp.member.id = :memberId
+    """)
+    Long findByVisitedCount(@Param("memberId")Long memberId);
     List<VisitedPilgrimage> findByPilgrimageAndMemberOrderByCreatedAtDesc(Pilgrimage pilgrimage, Member member);
     Long countByMemberIdAndPilgrimageIdIn(Long memberId, List<Long> pilgrimageIds);
 }
