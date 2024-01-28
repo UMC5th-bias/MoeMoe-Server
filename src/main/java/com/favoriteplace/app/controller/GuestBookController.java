@@ -32,7 +32,7 @@ public class GuestBookController {
             @RequestParam(required = false, defaultValue = "10") int size,
             @RequestParam(required = false, defaultValue = "latest") String sort
     ){
-        Page<GuestBookResponseDto.TotalGuestBookInfo> guestBookInfos = guestBookQueryService.getTotalGuestBooks(page, size, sort);
+        Page<GuestBookResponseDto.TotalGuestBookInfo> guestBookInfos = guestBookQueryService.getTotalGuestBooksBySort(page, size, sort);
         return GuestBookResponseDto.TotalGuestBookDto.builder()
                 .page((long)guestBookInfos.getNumber()+1)
                 .size((long)guestBookInfos.getSize())

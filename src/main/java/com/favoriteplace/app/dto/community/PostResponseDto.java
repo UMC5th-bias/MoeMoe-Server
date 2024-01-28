@@ -28,6 +28,7 @@ public class PostResponseDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class MyCommentDto{
+        private Long page;
         private Long size;
         private List<MyComment>comment;
     }
@@ -48,6 +49,7 @@ public class PostResponseDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class MyPostResponseDto{
+        private Long page;
         private Long size;
         private List<MyPost> post;
     }

@@ -91,7 +91,7 @@ public class GuestBookQueryService {
      * @param sort
      * @return sort에 따라 전체 정시순례 인증글들
      */
-    public Page<GuestBookResponseDto.TotalGuestBookInfo> getTotalGuestBooks(int page, int size, String sort) {
+    public Page<GuestBookResponseDto.TotalGuestBookInfo> getTotalGuestBooksBySort(int page, int size, String sort) {
         Pageable pageable = PageRequest.of(page-1, size);
         SortStrategy<GuestBook> sortStrategy;
         if("latest".equals(sort)){

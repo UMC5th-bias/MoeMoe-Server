@@ -32,29 +32,21 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final CountComments countComments;
-    private final MemberService memberService;
     private final SecurityUtil securityUtil;
 
+    /**
+     * 특정 자유게시글에 작성된 댓글들을 페이징해서 보여주는 함수
+     * @param page
+     * @param size
+     * @param postId
+     * @return
+     */
     @Transactional
-    //TODO 여기 수정 필요 (isWrite 수정 -> 내가 이 댓글을 작성자인지 확인하는 기능)
-    public List<CommentResponseDto.PostComment> getPostComments
-            (int page, int size, Long postId) {
-        Pageable pageable = PageRequest.of(page, size);
+    public Page<CommentResponseDto.PostComment> getPostComments(Member member, int page, int size, Long postId) {
+        Pageable pageable = PageRequest.of(page-1, size);
         Page<Comment> commentPage = commentRepository.findAllByPostIdOrderByCreatedAtAsc(postId, pageable);
-        if(commentPage.isEmpty()){
-            return Collections.emptyList();
-        }
-        List<CommentResponseDto.PostComment> comments = new ArrayList<>();
-        for(Comment comment:commentPage.getContent()){
-            comments.add(CommentResponseDto.PostComment.builder()
-                            .userInfo(memberService.getUserInfoByPostId(postId))
-                            .id(comment.getId())
-                            .content(comment.getContent())
-                            .passedTime(DateTimeFormatUtils.getPassDateTime(comment.getCreatedAt()))
-                            .isWrite(isPostCommentWriter(postId, comment)).build()
-            );
-        }
-        return comments;
+        if(commentPage.isEmpty()){return Page.empty();}
+        return commentPage.map(comment -> CommentConverter.toPostComment(comment, isCommentWriter(member, comment)));
     }
 
     /**
@@ -70,33 +62,29 @@ public class CommentService {
         Pageable pageable = PageRequest.of(page-1, size);
         Page<Comment> commentPage = commentRepository.findAllByGuestBookIdOrderByCreatedAtAsc(guestbookId, pageable);
         if(commentPage.isEmpty()){return Page.empty();}
-        return commentPage.map(comment -> CommentConverter.toPostComment(comment, member, isCommentWriter(member, comment)));
+        return commentPage.map(comment -> CommentConverter.toPostComment(comment, isCommentWriter(member, comment)));
     }
 
+    /**
+     * 자유게시판에서 내가 작성한 댓글을 불려오는 기능
+     * @param page
+     * @param size
+     * @return
+     */
     @Transactional
-    public List<PostResponseDto.MyComment> getMyPostComments(int page, int size) {
-        Member member = securityUtil.getUser();
-        Pageable pageable = PageRequest.of(page, size);
+    public Page<PostResponseDto.MyComment> getMyPostComments(Member member, int page, int size) {
+        Pageable pageable = PageRequest.of(page-1, size);
         Page<Comment> pageComment = commentRepository.findAllByMemberIdAndPostIsNotNullAndGuestBookIsNullOrderByCreatedAtDesc(member.getId(), pageable);
-        if(pageComment.isEmpty()){
-            return Collections.emptyList();
-        }
-        List<PostResponseDto.MyComment> myComments = new ArrayList<>();
-        for(Comment comment: pageComment.getContent()){
-            Post post = comment.getPost();
-            Long comments = countComments.countPostComments(post.getId());
-            myComments.add(
-                    PostResponseDto.MyComment.builder()
-                            .id(comment.getId())
-                            .content(comment.getContent())
-                            .passedTime(DateTimeFormatUtils.getPassDateTime(comment.getCreatedAt()))
-                            .post(PostConverter.toMyPost(post, member, comments))
-                            .build()
-            );
-        }
-        return myComments;
+        if(pageComment.isEmpty()){return Page.empty();}
+        return pageComment.map(comment -> CommentConverter.toMyGuestBookComment(comment, member, comment.getPost(), countComments.countPostComments(comment.getPost().getId())));
     }
 
+    /**
+     * 사용자가 성지순례 인증글에서 작성한 댓글들을 모두 보여주는 함수
+     * @param page
+     * @param size
+     * @return
+     */
     @Transactional
     public Page<GuestBookResponseDto.MyGuestBookComment> getMyGuestBookComments(int page, int size) {
         Member member = securityUtil.getUser();
@@ -104,15 +92,6 @@ public class CommentService {
         Page<Comment> pageComment = commentRepository.findAllByMemberIdAndPostIsNullAndGuestBookIsNotNullOrderByCreatedAtDesc(member.getId(), pageable);
         if(pageComment.isEmpty()){return Page.empty();}
         return pageComment.map(comment -> CommentConverter.toMyGuestBookComment(comment, countComments.countGuestBookComments(comment.getGuestBook().getId())));
-    }
-
-    //TODO : 이거 삭제 필요
-    private Boolean isPostCommentWriter(Long postId, Comment comment){
-        Optional<Post> optionalPost = postRepository.findById(postId);
-        if(optionalPost.isEmpty()){
-            throw new RestApiException(ErrorCode.POST_NOT_FOUND);
-        }
-        return optionalPost.get().getMember().getId().equals(comment.getMember().getId());
     }
 
     /**
