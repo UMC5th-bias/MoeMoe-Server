@@ -8,6 +8,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/shop")
 public class ShopController {
     private final ShopService shopService;
+    private final SecurityUtil securityUtil;
 
     @GetMapping("/limited")
     public ResponseEntity<ItemDto.ItemListResDto> getLimitedProduct(HttpServletRequest request) {
@@ -31,5 +34,10 @@ public class ShopController {
     @GetMapping("/new")
     public ResponseEntity<ItemDto.NewItemListResDto> getNewItemList() {
         return ResponseEntity.ok(shopService.getNewItemList());
+    }
+
+    @GetMapping("/detail/{item_id}")
+    public ResponseEntity<ItemDto.ItemDetailResDto> getItemDetail(HttpServletRequest request, @PathVariable("item_id")Long itemId) {
+        return ResponseEntity.ok(shopService.getItemDetail(request, itemId));
     }
 }

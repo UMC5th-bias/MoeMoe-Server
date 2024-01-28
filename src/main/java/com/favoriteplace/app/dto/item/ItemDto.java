@@ -4,6 +4,7 @@ import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.item.Item;
 import com.favoriteplace.app.dto.member.MemberDto;
 import com.favoriteplace.app.dto.member.MemberDto.MemberInfo;
+import com.favoriteplace.global.util.DateTimeFormatUtils;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,6 +29,36 @@ public class ItemDto {
                 .build();
         }
     }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    public static class ItemDetailResDto {
+        private Integer userPoint;
+        private String category;
+        private String imageUrl;
+        private String saleDeadline;
+        private String status;
+        private String name;
+        private Integer point;
+        private String description;
+        private Boolean alreadyBought;
+
+        public static ItemDetailResDto from(Item item, Member member, Boolean alreadyBought) {
+            return ItemDetailResDto.builder()
+                .userPoint(member == null ? null : member.getPoint().intValue())
+                .category(item.getCategory().getName())
+                .imageUrl(item.getImage().getUrl())
+                .saleDeadline(item.getSaleDeadline() == null ? null : DateTimeFormatUtils.convertDateToString(item.getSaleDeadline()))
+                .status(item.getStatus().toString())
+                .name(item.getName())
+                .point(item.getPoint().intValue())
+                .description(item.getDescription())
+                .alreadyBought(alreadyBought)
+                .build();
+        }
+    }
+
 
     @Builder
     @Getter
