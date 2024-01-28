@@ -4,6 +4,7 @@ import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.dto.CommonResponseDto;
 import com.favoriteplace.app.dto.travel.PilgrimageDto;
 import com.favoriteplace.app.dto.travel.RallyDto;
+import com.favoriteplace.app.service.PilgrimageCommandService;
 import com.favoriteplace.app.service.PilgrimageQueryService;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
@@ -22,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PilgrimageApiController {
     private final PilgrimageQueryService pilgrimageQueryService;
+    private final PilgrimageCommandService pilgrimageCommandService;
     private final SecurityUtil securityUtil;
 
     // 내 성지순례 + 인증글 모아보기(메인)
@@ -92,18 +94,21 @@ public class PilgrimageApiController {
     // 랠리 찜하기
     @PostMapping("/{rally_id}")
     public CommonResponseDto.PostResponseDto likeToRally(@PathVariable("rally_id")Long rallyId){
-        return null;
+        Member member = securityUtil.getUser();
+        return pilgrimageCommandService.likeToRally(rallyId, member);
     }
 
     // 성지순례 장소 방문 인증하기
-    @PostMapping("/certified/{pilgrimage_id")
+    @PostMapping("/certified/{pilgrimage_id}")
     public CommonResponseDto.PostResponseDto certifyToPilgrimage(@PathVariable("pilgrimage_id")Long pilgrimageId){
-        return null;
+        Member member = securityUtil.getUser();
+        return pilgrimageCommandService.certifyToPilgrimage(pilgrimageId, member);
     }
 
     // 성지순례 장소 방문 인증글 작성하기
     @PostMapping("/guestbooks/{pilgrimage_id}")
     public CommonResponseDto.PostResponseDto postToPilgrimage(@PathVariable("pilgrimage_id")Long pilgrimageId){
-        return null;
+        Member member = securityUtil.getUser();
+        return pilgrimageCommandService.postToPilgrimage(pilgrimageId, member);
     }
 }

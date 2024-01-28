@@ -13,6 +13,7 @@ import com.favoriteplace.app.domain.travel.Rally;
 import com.favoriteplace.app.repository.AddressRepository;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
+import jdk.jfr.Category;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,8 +50,7 @@ public class InitDB {
                     .image(image1).name("icon1")
                     .status(SaleStatus.NOT_FOR_SALE).type(ItemType.ICON)
                     .saleDeadline(null).point(10L).category(ItemCategory.NEW)
-                    .saleDeadline(null).point(null)
-                    .description(null).build();
+                    .saleDeadline(null).description(null).build();
             Item item2 = Item.builder()
                     .image(image2).name("title1")
                     .status(SaleStatus.NOT_FOR_SALE).type(ItemType.TITLE)
@@ -186,8 +186,8 @@ public class InitDB {
             Image image1 = createImage("imgIcon"+number);
             Image image2 = createImage("imgTitle"+number);
 
-            Item item1 = createItem(image1, "icon"+number, ItemType.ICON);
-            Item item2 = createItem(image2, "title"+number, ItemType.TITLE);
+            Item item1 = createItem(image1, "icon"+number, ItemType.ICON, ItemCategory.NEW);
+            Item item2 = createItem(image2, "title"+number, ItemType.TITLE, ItemCategory.NEW);
 
             Member member = Member.builder()
                     .id(0L)
@@ -212,7 +212,7 @@ public class InitDB {
         public Rally createRally(String name, String description){
             Image image1 = createImage("rallyItemImg");
             Image animeImg = createImage("animeImg");
-            Item item1 = createItem(image1, "rallyTitle", ItemType.TITLE);
+            Item item1 = createItem(image1, "rallyTitle", ItemType.TITLE, ItemCategory.NEW);
             Rally rally = Rally.builder()
                     .item(item1)
                     .image(animeImg)
@@ -252,15 +252,16 @@ public class InitDB {
             em.persist(address);
             return address;
         }
-        private Item createItem(Image image1, String name, ItemType type) {
+        private Item createItem(Image image1, String name, ItemType type, ItemCategory itemCategory) {
             Item item = Item.builder()
                     .image(image1)
                     .name(name)
                     .status(SaleStatus.NOT_FOR_SALE)
                     .type(type)
                     .saleDeadline(null)
-                    .point(null)
+                    .point(0L)
                     .description(null)
+                    .category(itemCategory)
                     .build();
             em.persist(item);
             return item;
