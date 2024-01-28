@@ -1,5 +1,7 @@
 package com.favoriteplace.app.service;
 
+import static com.favoriteplace.global.exception.ErrorCode.ITEM_NOT_EXISTS;
+
 import com.favoriteplace.app.converter.ShopConverter;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.enums.ItemCategory;
@@ -10,6 +12,7 @@ import com.favoriteplace.app.dto.item.ItemDto;
 import com.favoriteplace.app.dto.item.ItemDto.ItemListDivideByCategory;
 import com.favoriteplace.app.dto.item.ItemDto.ItemListDivideBySaleStatus;
 import com.favoriteplace.app.repository.ItemRepository;
+import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import java.lang.reflect.Array;
@@ -26,6 +29,18 @@ import org.springframework.stereotype.Service;
 public class ShopService {
     private final SecurityUtil securityUtil;
     private final ItemRepository itemRepository;
+
+    public ItemDto.ItemDetailResDto getItemDetail(HttpServletRequest request, Long itemId) {
+        Member member = securityUtil.getUserFromHeader(request);
+
+        Item item = itemRepository.findAllByIdWithImage(itemId)
+            .orElseThrow(() -> new RestApiException(ITEM_NOT_EXISTS));
+
+
+
+
+
+    }
 
     public ItemDto.ItemListResDto getLimitedProduct(HttpServletRequest request) {
         Member member = securityUtil.getUserFromHeader(request);
