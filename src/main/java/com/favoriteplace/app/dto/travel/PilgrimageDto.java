@@ -23,6 +23,7 @@ public class PilgrimageDto {
         String address;
         Double latitude;
         Double longitude;
+        Boolean isCertified;
         Boolean isWritable;
         Boolean isMultiWritable;
     }

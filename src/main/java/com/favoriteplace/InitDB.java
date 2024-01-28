@@ -293,7 +293,7 @@ public class InitDB {
                     .type(type)
                     .saleDeadline(null)
                     .point(0L)
-                    .description(null)
+                    .description("item 설명")
                     .category(itemCategory)
                     .build();
             em.persist(item);

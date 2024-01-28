@@ -129,9 +129,13 @@ public class PilgrimageQueryService {
                 .findByDistinctCount(member.getId(), pilgrimage.getRally().getId());
         PilgrimageDto.PilgrimageDetailDto result = PilgrimageConverter.toPilgrimageDetailDto(pilgrimage, visitedPilgrimages);
 
-        // 이 성지순례에 인증 기록이 있다면 isWritable -> true
         List<VisitedPilgrimage> visitedLog = visitedPilgrimageRepository
                 .findByPilgrimageAndMemberOrderByCreatedAtDesc(pilgrimage, member);
+        // 24시간 이내 인증 기록이 있는지 확인
+        if (!visitedLog.isEmpty() && visitedLog.get(0).getCreatedAt().plusHours(24L).isAfter(LocalDateTime.now())) {
+            result.setIsCertified(false);
+        }
+        // 이 성지순례에 인증 기록이 있다면 isWritable -> true
         if (visitedLog.size() >= 1) {
             result.setIsWritable(true);
         }
