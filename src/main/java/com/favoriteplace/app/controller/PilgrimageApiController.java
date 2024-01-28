@@ -103,7 +103,7 @@ public class PilgrimageApiController {
 
     // 성지순례 장소 방문 인증하기
     @PostMapping("/certified/{pilgrimage_id}")
-    public CommonResponseDto.PostResponseDto certifyToPilgrimage(
+    public CommonResponseDto.RallyResponseDto certifyToPilgrimage(
             @PathVariable("pilgrimage_id")Long pilgrimageId,
             @RequestBody PilgrimageDto.PilgrimageCertifyRequestDto form){
         Member member = securityUtil.getUser();

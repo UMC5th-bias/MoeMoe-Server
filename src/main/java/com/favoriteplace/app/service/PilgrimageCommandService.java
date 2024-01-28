@@ -13,6 +13,7 @@ import com.favoriteplace.app.dto.travel.PilgrimageDto;
 import com.favoriteplace.app.repository.*;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,7 @@ public class PilgrimageCommandService {
     private final PointHistoryRepository pointHistoryRepository;
     private final CompleteRallyRepository completeRallyRepository;
     private final AcquiredItemRepository acquiredItemRepository;
+    private final EntityManager em;
 
     /***
      * 랠리 찜하기
@@ -58,7 +60,7 @@ public class PilgrimageCommandService {
      * @param member 인증한 사용자
      * @return
      */
-    public CommonResponseDto.PostResponseDto certifyToPilgrimage(Long pilgrimageId,
+    public CommonResponseDto.RallyResponseDto certifyToPilgrimage(Long pilgrimageId,
                                                                  Member member,
                                                                  PilgrimageDto.PilgrimageCertifyRequestDto form) {
         Pilgrimage pilgrimage = pilgrimageRepository.findById(pilgrimageId).orElseThrow(
@@ -80,10 +82,10 @@ public class PilgrimageCommandService {
             Long completeCount = visitedPilgrimageRepository.findByDistinctCount(member.getId(), pilgrimage.getRally().getId());
             // 랠리를 완료했는지 확인
             if (checkCompleteRally(member, pilgrimage, completeCount))
-                return CommonConverter.toPostResponseDto(true, "모든 랠리를 완료했습니다.");
+                return CommonConverter.toRallyResponseDto(true, true,"<"+pilgrimage.getRally().getItem().getName()+"> 칭호를 얻었습니다!");
         } else
             throw new RestApiException(ErrorCode.PILGRIMAGE_ALREADY_CERTIFIED);
-        return CommonConverter.toPostResponseDto(true, "인증에 성공했습니다.");
+        return CommonConverter.toRallyResponseDto(true, false,"성지순례 인증하기 15P를 얻으셨습니다!");
     }
 
     private boolean checkCompleteRally(Member member, Pilgrimage pilgrimage, Long completeCount) {
@@ -98,6 +100,9 @@ public class PilgrimageCommandService {
                 pointHistoryRepository.save(PointHistoryConverter.toPointHistory(member, 100L, PointType.ACQUIRE));
                 // 완료 랠리 추가
                 completeRallyRepository.save(CompleteRally.builder().rally(pilgrimage.getRally()).member(member).version(RallyVersion.v1).build());
+                // 랠리 완료자 목록에 추가
+                pilgrimage.getRally().addAchieveNumber();
+                rallyRepository.save(pilgrimage.getRally());
                 return true;
             }
         }

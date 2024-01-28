@@ -31,7 +31,6 @@ public class InitDB {
         initService.initWeatheringWithYou();
         initService.initOshiNoKo();
         initService.initJujutsuKaisen();
-//        initService.initDB();
     }
 
     @Component

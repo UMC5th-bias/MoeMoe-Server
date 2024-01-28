@@ -14,4 +14,13 @@ public class CommonResponseDto {
         Boolean success;
         String message;
     }
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class RallyResponseDto {
+        Boolean success;
+        String message;
+        Boolean isComplete;
+    }
 }

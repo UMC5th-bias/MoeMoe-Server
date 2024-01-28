@@ -9,4 +9,12 @@ public class CommonConverter {
                 .message(message)
                 .build();
     }
+
+    public static CommonResponseDto.RallyResponseDto toRallyResponseDto(Boolean success, Boolean isComplete, String message){
+        return CommonResponseDto.RallyResponseDto.builder()
+                .success(success)
+                .isComplete(isComplete)
+                .message(message)
+                .build();
+    }
 }
