@@ -52,7 +52,7 @@ public class ItemDto {
                 .saleDeadline(item.getSaleDeadline() == null ? null : DateTimeFormatUtils.convertDateToString(item.getSaleDeadline()))
                 .status(item.getStatus().toString())
                 .name(item.getName())
-                .point(member.getPoint().intValue())
+                .point(item.getPoint().intValue())
                 .description(item.getDescription())
                 .alreadyBought(alreadyBought)
                 .build();

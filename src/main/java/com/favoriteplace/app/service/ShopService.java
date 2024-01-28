@@ -9,8 +9,10 @@ import com.favoriteplace.app.domain.enums.ItemType;
 import com.favoriteplace.app.domain.enums.SaleStatus;
 import com.favoriteplace.app.domain.item.Item;
 import com.favoriteplace.app.dto.item.ItemDto;
+import com.favoriteplace.app.dto.item.ItemDto.ItemDetailResDto;
 import com.favoriteplace.app.dto.item.ItemDto.ItemListDivideByCategory;
 import com.favoriteplace.app.dto.item.ItemDto.ItemListDivideBySaleStatus;
+import com.favoriteplace.app.repository.AcquiredItemRepository;
 import com.favoriteplace.app.repository.ItemRepository;
 import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.util.SecurityUtil;
@@ -29,6 +31,7 @@ import org.springframework.stereotype.Service;
 public class ShopService {
     private final SecurityUtil securityUtil;
     private final ItemRepository itemRepository;
+    private final AcquiredItemRepository acquiredItemRepository;
 
     public ItemDto.ItemDetailResDto getItemDetail(HttpServletRequest request, Long itemId) {
         Member member = securityUtil.getUserFromHeader(request);
@@ -36,9 +39,10 @@ public class ShopService {
         Item item = itemRepository.findAllByIdWithImage(itemId)
             .orElseThrow(() -> new RestApiException(ITEM_NOT_EXISTS));
 
-
-
-
+        Boolean alreadyBought = acquiredItemRepository.findByMemberAndItem(member, item)
+            .isPresent();
+        System.out.println(member);
+        return ItemDetailResDto.from(item, member, alreadyBought);
 
     }
 
