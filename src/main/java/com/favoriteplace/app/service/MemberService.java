@@ -107,5 +107,4 @@ public class MemberService {
         }
         return UserInfoResponseDto.of(optionalGuestBook.get().getMember());
     }
-
 }
