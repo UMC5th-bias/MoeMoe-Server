@@ -32,7 +32,6 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final CountComments countComments;
-    private final SecurityUtil securityUtil;
 
     /**
      * 특정 자유게시글에 작성된 댓글들을 페이징해서 보여주는 함수
@@ -86,8 +85,7 @@ public class CommentService {
      * @return
      */
     @Transactional
-    public Page<GuestBookResponseDto.MyGuestBookComment> getMyGuestBookComments(int page, int size) {
-        Member member = securityUtil.getUser();
+    public Page<GuestBookResponseDto.MyGuestBookComment> getMyGuestBookComments(Member member, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Comment> pageComment = commentRepository.findAllByMemberIdAndPostIsNullAndGuestBookIsNotNullOrderByCreatedAtDesc(member.getId(), pageable);
         if(pageComment.isEmpty()){return Page.empty();}
@@ -106,13 +104,14 @@ public class CommentService {
     }
 
     @Transactional
-    public void createComment(long postId, String content) {
-        Member member = securityUtil.getUser();
+    public void createComment(Member member, long postId, String content) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new RestApiException(ErrorCode.POST_NOT_FOUND));
         Comment comment = Comment.builder()
                 .member(member)
-                .post(postRepository.findById(postId).orElseThrow(() -> new RestApiException(ErrorCode.POST_NOT_FOUND)))
+                .post(post)
                 .content(content)
                 .build();
-        commentRepository.save(comment);
+        post.getComments().add(comment);
+        postRepository.save(post);
     }
 }

@@ -17,11 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class LikedPostService {
     private final LikedPostRepository likedPostRepository;
     private final PostRepository postRepository;
-    private final SecurityUtil securityUtil;
 
     @Transactional
-    public String modifyPostLike(long postId) {
-        Member member = securityUtil.getUser();
+    public String modifyPostLike(Member member, long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new RestApiException(ErrorCode.POST_NOT_FOUND));
         LikedPost likedPost = likedPostRepository.findByPostIdAndMemberId(post.getId(), member.getId());
         if(likedPost != null){

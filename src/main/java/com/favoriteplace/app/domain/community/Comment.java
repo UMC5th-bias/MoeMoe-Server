@@ -49,4 +49,8 @@ public class Comment extends BaseTimeEntity {
     public void setGuestBook(GuestBook guestBook) {
         this.guestBook = guestBook;
     }
+
+    public void setPost(Post post){
+        this.post = post;
+    }
 }

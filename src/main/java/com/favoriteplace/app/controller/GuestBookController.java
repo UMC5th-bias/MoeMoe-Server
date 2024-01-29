@@ -45,7 +45,8 @@ public class GuestBookController {
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false, defaultValue = "10") int size
     ){
-        Page<GuestBookResponseDto.MyGuestBookComment> myComments = commentService.getMyGuestBookComments(page, size);
+        Member member = securityUtil.getUser();
+        Page<GuestBookResponseDto.MyGuestBookComment> myComments = commentService.getMyGuestBookComments(member, page, size);
         return GuestBookResponseDto.MyGuestBookCommentDto.builder()
                 .page((long) (myComments.getNumber()+1))
                 .size((long) myComments.getSize())

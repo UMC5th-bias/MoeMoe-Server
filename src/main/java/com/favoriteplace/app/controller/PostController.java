@@ -104,7 +104,8 @@ public class PostController {
             @RequestPart PostRequestDto data,
             @RequestPart(required = false) List<MultipartFile> images
     ) throws IOException {
-        postCommandService.createPost(data, images);
+        Member member = securityUtil.getUser();
+        postCommandService.createPost(data, images, member);
         return new ResponseEntity<>(
                 PostResponseDto.SuccessResponseDto.builder().message("게시글을 성공적으로 등록했습니다.").build(),
                 HttpStatus.OK);
@@ -114,7 +115,8 @@ public class PostController {
     public ResponseEntity<PostResponseDto.SuccessResponseDto> deletePost(
             @PathVariable("post_id") long postId
     ){
-        postCommandService.deletePost(postId);
+        Member member = securityUtil.getUser();
+        postCommandService.deletePost(postId, member);
         return new ResponseEntity<>(
                 PostResponseDto.SuccessResponseDto.builder().message("게시글이 성공적으로 삭제되었습니다.").build(),
                 HttpStatus.OK
@@ -126,7 +128,8 @@ public class PostController {
             @PathVariable("post_id") long postId,
             @RequestBody CommentRequestDto dto
     ){
-        commentService.createComment(postId, dto.getContent());
+        Member member = securityUtil.getUser();
+        commentService.createComment(member, postId, dto.getContent());
         return new ResponseEntity<>(
                 PostResponseDto.SuccessResponseDto.builder().message("댓글을 성공적으로 등록했습니다.").build(),
                 HttpStatus.OK
@@ -137,7 +140,8 @@ public class PostController {
     public ResponseEntity<PostResponseDto.SuccessResponseDto> modifyPostLike(
             @PathVariable("post_id") long postId
     ){
-        String message = likedPostService.modifyPostLike(postId);
+        Member member = securityUtil.getUser();
+        String message = likedPostService.modifyPostLike(member, postId);
         return new ResponseEntity<>(
                 PostResponseDto.SuccessResponseDto.builder().message(message).build(),
                 HttpStatus.OK
@@ -150,7 +154,8 @@ public class PostController {
             @RequestPart PostRequestDto data,
             @RequestPart(required = false) List<MultipartFile> images
     ) throws IOException {
-        postCommandService.modifyPost(postId, data, images);
+        Member member = securityUtil.getUser();
+        postCommandService.modifyPost(postId, data, images, member);
         return new ResponseEntity<>(
                 PostResponseDto.SuccessResponseDto.builder().message("게시글이 수정되었습니다.").build(),
                 HttpStatus.OK

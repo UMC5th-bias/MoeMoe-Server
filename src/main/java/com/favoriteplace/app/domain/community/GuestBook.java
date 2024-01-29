@@ -52,7 +52,8 @@ public class GuestBook extends BaseTimeEntity {
     private Double latitude;  //위도
     private Double longitude;  //경도
 
-    @OneToMany(mappedBy = "guestBook", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "guestBook", cascade = CascadeType.ALL)
+    @Builder.Default
     List<Comment> comments = new ArrayList<>();
 
     public void increaseView(){
