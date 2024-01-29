@@ -1,5 +1,6 @@
 package com.favoriteplace.app.repository;
 
+import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,4 +19,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
     Page<Post> findAllByOrderByLikeCountDesc(Pageable pageable);
+    Long countByMember(Member member);
 }

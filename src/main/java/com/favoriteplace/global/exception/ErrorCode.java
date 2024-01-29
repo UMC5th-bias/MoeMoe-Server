@@ -26,6 +26,8 @@ public enum ErrorCode {
 
     //Pilgrimage (3000번대)
     PILGRIMAGE_NOT_FOUND(HttpStatus.BAD_REQUEST, 3001, "성지순례 정보를 찾을 수 없습니다."),
+    PILGRIMAGE_ALREADY_CERTIFIED(HttpStatus.BAD_REQUEST, 3002, "인증 후 24시간이 지나야 재인증할 수 있습니다."),
+    PILGRIMAGE_CAN_NOT_CERTIFIED(HttpStatus.BAD_REQUEST, 3003, "인증 장소와 현재 위치의 거리가 너무 멉니다."),
 
     //Rally (4000번대)
     RALLY_NOT_FOUND(HttpStatus.BAD_REQUEST, 4001, "랠리 정보를 찾을 수 없습니다."),
@@ -44,7 +46,8 @@ public enum ErrorCode {
     ADDRESS_NOT_FOUND(HttpStatus.BAD_REQUEST, 8001, "존재하지 않는 지역입니다."),
 
     // 아이템 (9000번대)
-    ITEM_TYPE_NOT_FOUND(HttpStatus.BAD_REQUEST, 9001, "존재하지 않는 아이템 타입입니다.");
+    ITEM_TYPE_NOT_FOUND(HttpStatus.BAD_REQUEST, 9001, "존재하지 않는 아이템 타입입니다."),
+    ITEM_NOT_EXISTS(HttpStatus.BAD_REQUEST, 9002, "없는 아이템입니다.");
 
     private final HttpStatus httpStatus;
     private final int code;

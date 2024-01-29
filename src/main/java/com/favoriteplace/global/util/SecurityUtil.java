@@ -24,7 +24,6 @@ public class SecurityUtil {
 
     public Member getUser(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        //return memberRepository.findByEmail(authentication.getName()).orElseThrow(() -> new RestApiException(ErrorCode.USER_NOT_FOUND));
         return memberRepository.findByEmail(authentication.getName()).get();
     }
 
@@ -37,7 +36,8 @@ public class SecurityUtil {
         String token = resolveToken(request);
 
         Authentication authentication = jwtTokenProvider.getAuthentication(token);
-        //return memberRepository.findByEmail(authentication.getName()).orElseThrow(() -> new RestApiException(ErrorCode.USER_NOT_FOUND));
+
+        //TODO: 유저 없을 경우 예외처리
         return memberRepository.findByEmail(authentication.getName()).get();
     }
 
