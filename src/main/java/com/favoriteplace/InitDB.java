@@ -223,21 +223,21 @@ public class InitDB {
             Item item2 = createItem(image2, "title"+number, ItemType.TITLE, ItemCategory.NEW);
 
             Member member = Member.builder()
-                    .id(0L)
-                    .profileIcon(item1)
-                    .profileTitle(item2)
-                    .email("user@naver.com")
-                    .password("1234")
-                    .birthday(null)
-                    .nickname("user"+number)
-                    .description("hi")
-                    .profileImageUrl("")
-                    .status(MemberStatus.Y)
-                    .alarmAllowance(false)
-                    .point(0L)
-                    .loginType(LoginType.SELF)
-                    .refreshToken("")
-                    .build();
+                .id(0L)
+                .profileIcon(item1)
+                .profileTitle(item2)
+                .email("user@naver.com")
+                .password("1234")
+                .birthday(null)
+                .nickname("user"+number)
+                .description("hi")
+                .profileImageUrl("")
+                .status(MemberStatus.Y)
+                .alarmAllowance(false)
+                .point(0L)
+                .loginType(LoginType.SELF)
+                .refreshToken("")
+                .build();
             em.merge(member);
             return member;
         }
@@ -247,13 +247,13 @@ public class InitDB {
             Image animeImg = createImage("animeImg");
             Item item1 = createItem(image1, "rallyTitle", ItemType.TITLE, ItemCategory.NEW);
             Rally rally = Rally.builder()
-                    .item(item1)
-                    .image(animeImg)
-                    .name(name)
-                    .description(description)
-                    .achieveNumber(0L)
-                    .pilgrimageNumber(0L)
-                    .build();
+                .item(item1)
+                .image(animeImg)
+                .name(name)
+                .description(description)
+                .achieveNumber(0L)
+                .pilgrimageNumber(0L)
+                .build();
             em.persist(rally);
             return rally;
         }
@@ -262,15 +262,15 @@ public class InitDB {
             Image realImg = createImage(rally.getName()+"PilRealImg");
             Image animeImg = createImage(rally.getName()+"PilAnimeImg");
             Pilgrimage pilgrimage = Pilgrimage.builder()
-                    .address(address)
-                    .rally(rally)
-                    .virtualImage(animeImg)
-                    .realImage(realImg)
-                    .rallyName(rally.getName())
-                    .detailAddress(detailAddress)
-                    .latitude(0.0)
-                    .longitude(0.0)
-                    .build();
+                .address(address)
+                .rally(rally)
+                .virtualImage(animeImg)
+                .realImage(realImg)
+                .rallyName(rally.getName())
+                .detailAddress(detailAddress)
+                .latitude(0.0)
+                .longitude(0.0)
+                .build();
             rally.addPilgrimage();
             em.merge(rally);
             em.persist(pilgrimage);
@@ -279,32 +279,32 @@ public class InitDB {
 
         public Address createAddress(String state, String district){
             Address address = Address.builder()
-                    .state(state)
-                    .district(district)
-                    .build();
+                .state(state)
+                .district(district)
+                .build();
             em.persist(address);
             return address;
         }
         private Item createItem(Image image1, String name, ItemType type, ItemCategory itemCategory) {
             Item item = Item.builder()
-                    .image(image1)
-                    .name(name)
-                    .status(SaleStatus.NOT_FOR_SALE)
-                    .type(type)
-                    .saleDeadline(null)
-                    .point(0L)
-                    .description("item 설명")
-                    .category(itemCategory)
-                    .build();
+                .image(image1)
+                .name(name)
+                .status(SaleStatus.NOT_FOR_SALE)
+                .type(type)
+                .saleDeadline(null)
+                .point(0L)
+                .description("item 설명")
+                .category(itemCategory)
+                .build();
             em.persist(item);
             return item;
         }
         private Image createImage(String url) {
             Image image1 = Image.builder()
-                    .post(null)
-                    .guestBook(null)
-                    .url(url)
-                    .build();
+                .post(null)
+                .guestBook(null)
+                .url(url)
+                .build();
             em.persist(image1);
             return image1;
         }

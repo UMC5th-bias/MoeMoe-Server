@@ -3,6 +3,8 @@ package com.favoriteplace.app.dto.member;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.enums.LoginType;
 import com.favoriteplace.app.domain.enums.MemberStatus;
+import com.favoriteplace.app.domain.item.Item;
+import com.favoriteplace.global.gcpImage.ConvertUuidToUrl;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -24,17 +26,37 @@ public class MemberDto {
         public Boolean snsAllow;
         public String introduction;
 
-        public Member toEntity(String encodedPassword, String profileImg) {
+        public Member toEntity(String encodedPassword, String profileImg, Item titleItem) {
             return Member.builder()
                 .nickname(nickname)
                 .email(email)
                 .password(encodedPassword)
                 .alarmAllowance(snsAllow)
                 .description(introduction)
-                .profileImageUrl(profileImg)
+                .profileImageUrl(profileImg == null ? null : ConvertUuidToUrl.convertUuidToUrl(profileImg))
                 .point(0L)
                 .loginType(LoginType.SELF)
+                .profileTitle(titleItem)
                 .status(MemberStatus.Y)
+                .build();
+        }
+    }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    public static class MemberDetailResDto {
+        private String nickname;
+        private String introduction;
+        private String profileImage;
+        private String profileTitleItem;
+
+        public static MemberDetailResDto from(Member member) {
+            return MemberDetailResDto.builder()
+                .nickname(member.getNickname())
+                .introduction(member.getDescription())
+                .profileImage(member.getProfileImageUrl())
+                .profileTitleItem(member.getProfileTitle().getImage().getUrl())
                 .build();
         }
     }
