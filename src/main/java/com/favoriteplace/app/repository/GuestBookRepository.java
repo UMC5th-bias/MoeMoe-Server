@@ -21,4 +21,5 @@ public interface GuestBookRepository extends JpaRepository<GuestBook, Long> {
     Page<GuestBook> findAllByOrderByLikeCountDesc(Pageable pageable);
 
     Page<GuestBook> findAllByOrderByCreatedAtDesc(Pageable pageable);
+    Long countByMember(Member member);
 }
