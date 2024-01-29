@@ -77,4 +77,7 @@ public class Member extends BaseTimeEntity {
         this.refreshToken = refreshToken;
     }
 
+    public void updatePoint(Long point) {
+        this.point += point;
+    }
 }
