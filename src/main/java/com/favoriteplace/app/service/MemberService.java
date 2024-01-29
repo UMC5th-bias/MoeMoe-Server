@@ -48,6 +48,16 @@ public class MemberService {
     @Transactional
     public MemberDto.MemberDetailResDto signup(MemberSignUpReqDto memberSignUpReqDto, List<MultipartFile> images)
         throws IOException {
+        memberRepository.findByEmail(memberSignUpReqDto.getEmail())
+            .ifPresentOrElse(
+                existingMember -> {
+                    throw new RestApiException(USER_ALREADY_EXISTS);
+                },
+                () -> {
+                    // 값이 없을 때 수행할 동작 (예외를 발생시키지 않는 경우)
+                }
+            );
+
         String uuid = null;
         String password = passwordEncoder.encode(memberSignUpReqDto.getPassword());
 
