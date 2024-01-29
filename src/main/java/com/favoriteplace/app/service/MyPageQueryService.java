@@ -6,10 +6,10 @@ import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.enums.ItemType;
 import com.favoriteplace.app.domain.enums.SaleStatus;
 import com.favoriteplace.app.domain.item.AcquiredItem;
+import com.favoriteplace.app.domain.travel.CompleteRally;
+import com.favoriteplace.app.dto.CommonResponseDto;
 import com.favoriteplace.app.dto.MyPageDto;
-import com.favoriteplace.app.repository.AcquiredItemRepository;
-import com.favoriteplace.app.repository.BlockRepository;
-import com.favoriteplace.app.repository.MemberRepository;
+import com.favoriteplace.app.repository.*;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
@@ -24,9 +24,20 @@ import java.util.stream.Collectors;
 public class MyPageQueryService {
     private final AcquiredItemRepository acquiredItemRepository;
     private final BlockRepository blockRespotiroy;
+    private final CompleteRallyRepository completeRallyRepository;
+    private final VisitedPilgrimageRepository visitedPilgrimageRepository;
+    private final CommentRepository commentRepository;
+    private final GuestBookRepository guestBookRepository;
+    private final PostRepository postRepository;
 
     public MyPageDto.MyInfoDto getMyInfo(Member member) {
-        return null;
+        Long completeRalliesCount = Long.valueOf(completeRallyRepository.findByMember(member).size());
+        Long visitedPilgrimagesCount = visitedPilgrimageRepository.findByVisitedCount(member.getId());
+        Long postedCount = postRepository.countByMember(member)
+                + guestBookRepository.countByMember(member);
+        Long commentsCount = commentRepository.countByMember(member);
+        return MyPageConverter
+                .toMyInfoDto(completeRalliesCount, visitedPilgrimagesCount, postedCount, commentsCount);
     }
 
     public MyPageDto.MyProfileDto getMyProfile(Member member) {

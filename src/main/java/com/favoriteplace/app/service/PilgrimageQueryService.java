@@ -54,12 +54,12 @@ public class PilgrimageQueryService {
             return RallyConverter.toRallyDetailResponseDto(rally, 0L, false, false);
         }
         LikedRally isLikeList = likedRallyRepository.findByRallyAndMember(rally, member);
-        List<VisitedPilgrimage> pilgrimageNumber = visitedPilgrimageRepository
-                .findByMemberAndPilgrimage_Rally(member, rally);
+        Long pilgrimageNumber = visitedPilgrimageRepository
+                .findByDistinctCount(member.getId(), rally.getId());
         if (isLikeList == null) {
-            return RallyConverter.toRallyDetailResponseDto(rally, Long.valueOf(pilgrimageNumber.size()), false, true);
+            return RallyConverter.toRallyDetailResponseDto(rally, pilgrimageNumber, false, true);
         }
-        return RallyConverter.toRallyDetailResponseDto(rally, Long.valueOf(pilgrimageNumber.size()), true, true);
+        return RallyConverter.toRallyDetailResponseDto(rally, pilgrimageNumber, true, true);
     }
 
     /***
@@ -88,12 +88,12 @@ public class PilgrimageQueryService {
                     .stream()
                     .forEach(rallyAddressPilgrimageDto ->
                             checkVisitedPilgrimage(rallyAddressPilgrimageDto, member)));
-            return RallyConverter.toRallyAddressListDto(rally, addressDtoList, 0L);
+            Long myPilgrimageNumber = visitedPilgrimageRepository
+                    .findByDistinctCount(member.getId(), rally.getId());
+            return RallyConverter.toRallyAddressListDto(rally, addressDtoList, myPilgrimageNumber);
         }
         // RallyAddressListDto 생성 후 반환하기
-        Long myPilgrimageNumber = Long.valueOf(visitedPilgrimageRepository
-                .findDistinctByMemberAndPilgrimage_Rally(member, rally).size());
-        return RallyConverter.toRallyAddressListDto(rally, addressDtoList, myPilgrimageNumber);
+        return RallyConverter.toRallyAddressListDto(rally, addressDtoList, 0L);
     }
 
     private void checkVisitedPilgrimage(RallyDto.RallyAddressPilgrimageDto dto, Member member){
@@ -126,13 +126,17 @@ public class PilgrimageQueryService {
     public PilgrimageDto.PilgrimageDetailDto getPilgrimageDetail(Long pilgrimageId, Member member) {
         Pilgrimage pilgrimage = pilgrimageRepository.findById(pilgrimageId)
                 .orElseThrow(() -> new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
-        List<VisitedPilgrimage> visitedPilgrimages = visitedPilgrimageRepository
-                .findDistinctByMemberAndPilgrimage_Rally(member, pilgrimage.getRally());
-        PilgrimageDto.PilgrimageDetailDto result = PilgrimageConverter.toPilgrimageDetailDto(pilgrimage, Long.valueOf(visitedPilgrimages.size()));
+        Long visitedPilgrimages = visitedPilgrimageRepository
+                .findByDistinctCount(member.getId(), pilgrimage.getRally().getId());
+        PilgrimageDto.PilgrimageDetailDto result = PilgrimageConverter.toPilgrimageDetailDto(pilgrimage, visitedPilgrimages);
 
-        // 이 성지순례에 인증 기록이 있다면 isWritable -> true
         List<VisitedPilgrimage> visitedLog = visitedPilgrimageRepository
                 .findByPilgrimageAndMemberOrderByCreatedAtDesc(pilgrimage, member);
+        // 24시간 이내 인증 기록이 있는지 확인
+        if (!visitedLog.isEmpty() && visitedLog.get(0).getCreatedAt().plusHours(24L).isAfter(LocalDateTime.now())) {
+            result.setIsCertified(false);
+        }
+        // 이 성지순례에 인증 기록이 있다면 isWritable -> true
         if (visitedLog.size() >= 1) {
             result.setIsWritable(true);
         }
@@ -198,9 +202,9 @@ public class PilgrimageQueryService {
         if (member == null) {
             return RallyConverter.toRallyTrendingDto(rallys.get(0),0L);
         }
-        List<VisitedPilgrimage> visited = visitedPilgrimageRepository
-                .findDistinctByMemberAndPilgrimage_Rally(member, rallys.get(0));
-        return RallyConverter.toRallyTrendingDto(rallys.get(0), Long.valueOf(visited.size()));
+        Long visited = visitedPilgrimageRepository
+                .findByDistinctCount(member.getId(), rallys.get(0).getId());
+        return RallyConverter.toRallyTrendingDto(rallys.get(0), visited);
     }
 
     /***
@@ -217,8 +221,8 @@ public class PilgrimageQueryService {
                     .collect(Collectors.toList());
         }
         return rallyList.stream().map(rally->{
-            List<VisitedPilgrimage> visitedPilgrimages = visitedPilgrimageRepository.findDistinctByMemberAndPilgrimage_Rally(member, rally);
-            return RallyConverter.toPilgrimageCategoryAnimeDto(rally, Long.valueOf(visitedPilgrimages.size()));
+            Long visitedPilgrimages = visitedPilgrimageRepository.findByDistinctCount(member.getId(), rally.getId());
+            return RallyConverter.toPilgrimageCategoryAnimeDto(rally, visitedPilgrimages);
         }).collect(Collectors.toList());
     }
 

@@ -22,6 +22,7 @@ public class PilgrimageConverter {
                 .address(pilgrimage.getDetailAddress())
                 .latitude(pilgrimage.getLatitude())
                 .longitude(pilgrimage.getLongitude())
+                .isCertified(true)
                 .isWritable(false)
                 .isMultiWritable(false)
                 .build();
