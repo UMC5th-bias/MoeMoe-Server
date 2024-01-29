@@ -11,6 +11,7 @@ import com.favoriteplace.app.repository.HashtagRepository;
 import com.favoriteplace.app.repository.ImageRepository;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
+import com.favoriteplace.global.gcpImage.ConvertUuidToUrl;
 import com.favoriteplace.global.gcpImage.UploadImage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -88,7 +89,7 @@ public class GuestBookCommandService {
             for(MultipartFile image:images){
                 if(!image.isEmpty()){
                     String uuid = uploadImage.uploadImageToCloud(image);
-                    Image newImage = Image.builder().url(uuid).guestBook(guestBook).build();
+                    Image newImage = Image.builder().url(ConvertUuidToUrl.convertUuidToUrl(uuid)).guestBook(guestBook).build();
                     imageRepository.save(newImage);
                 }
             }
@@ -110,6 +111,4 @@ public class GuestBookCommandService {
             throw new RestApiException(ErrorCode.USER_NOT_AUTHOR);
         }
     }
-
-
 }

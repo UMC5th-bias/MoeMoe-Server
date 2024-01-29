@@ -74,7 +74,7 @@ public class GuestBookQueryService {
         GuestBook guestBook = optionalGuestBook.get();
         //Image
         List<Image> images = imageRepository.findAllByGuestBookId(guestBook.getId());
-        List<String> imagesUrl = images.stream().map(Image::getUrl).map(ConvertUuidToUrl::convertUuidToUrl).toList();
+        List<String> imagesUrl = images.stream().map(Image::getUrl).toList();
         //HashTag
         List<HashTag> hashTags = hashtagRepository.findAllByGuestBookId(guestBook.getId());
         List<String> hashTagsString = hashTags.stream().map(HashTag::getTagName).toList();

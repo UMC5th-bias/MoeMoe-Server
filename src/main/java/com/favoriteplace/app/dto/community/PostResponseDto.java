@@ -1,5 +1,6 @@
 package com.favoriteplace.app.dto.community;
 
+import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.community.Post;
 import com.favoriteplace.app.dto.UserInfoResponseDto;
 import com.favoriteplace.global.gcpImage.ConvertUuidToUrl;
@@ -93,12 +94,6 @@ public class PostResponseDto {
         private List<String> image;
 
         public static PostInfo of(Post post, Boolean isLike, Boolean isWrite, List<String> images){
-            List<String> convertedImages;
-            if (images.isEmpty()) {
-                convertedImages = new ArrayList<>(); // 빈 리스트일 경우, 그대로 빈 리스트를 반환
-            } else {
-                convertedImages = images.stream().map(ConvertUuidToUrl::convertUuidToUrl).toList();
-            }
             return PostInfo.builder()
                     .id(post.getId())
                     .title(post.getTitle())
@@ -108,7 +103,7 @@ public class PostResponseDto {
                     .isLike(isLike)
                     .isWrite(isWrite)
                     .passedTime(DateTimeFormatUtils.getPassDateTime(post.getCreatedAt()))
-                    .image(convertedImages)
+                    .image(images)
                     .build();
         }
     }

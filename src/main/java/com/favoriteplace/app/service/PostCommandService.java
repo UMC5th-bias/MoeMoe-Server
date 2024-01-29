@@ -94,13 +94,11 @@ public class PostCommandService {
         //기존의 이미지 삭제 필요
         post.getImages().clear();
         imageRepository.deleteByPostId(post.getId());
-        //post.disconnectImages();
         if(!images.isEmpty()){
             post.getImages().addAll(setImageList(post, images));
         }
         postRepository.save(post);
     }
-
 
     /**
      * guestBook의 작성자가 맞는지 확인하는 로직
