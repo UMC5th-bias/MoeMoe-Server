@@ -14,4 +14,5 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
     Image findFirstByGuestBook(GuestBook guestBook);
     List<Image> findAllByGuestBookId(Long GuestBookId);
     void deleteByPostId(long postId);
+    void deleteByGuestBookId(Long guestbookId);
 }

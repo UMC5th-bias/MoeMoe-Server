@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface HashtagRepository extends JpaRepository<HashTag, Long> {
     List<HashTag> findAllByGuestBookId(Long guestBookId);
+
+    void deleteByGuestBookId(Long guestbookId);
 }
