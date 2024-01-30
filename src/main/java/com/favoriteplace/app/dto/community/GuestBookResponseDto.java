@@ -1,18 +1,19 @@
 package com.favoriteplace.app.dto.community;
 
 import com.favoriteplace.app.dto.UserInfoResponseDto;
-import com.favoriteplace.app.dto.travel.PilgrimageDto;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Getter
-@Builder
 public class GuestBookResponseDto {
 
     @Builder
     @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class MyGuestBookCommentDto{
         private Long page;
         private Long size;
@@ -21,6 +22,8 @@ public class GuestBookResponseDto {
 
     @Builder
     @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class MyGuestBookComment{
         private Long id;
         private String content;
@@ -30,6 +33,8 @@ public class GuestBookResponseDto {
 
     @Builder
     @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class GuestBook{
         private Long id;
         private String title;
@@ -42,6 +47,8 @@ public class GuestBookResponseDto {
 
     @Getter
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class MyGuestBookDto{
         private Long page;
         private Long size;
@@ -50,6 +57,8 @@ public class GuestBookResponseDto {
 
     @Getter
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class DetailGuestBookDto{
         private UserInfoResponseDto userInfo;
         private PilgrimageInfo pilgrimage;
@@ -58,6 +67,8 @@ public class GuestBookResponseDto {
 
     @Getter
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class PilgrimageInfo{
         private String name;
         private Long pilgrimageNumber;
@@ -71,6 +82,8 @@ public class GuestBookResponseDto {
 
     @Getter
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class GuestBookInfo{
         private Long id;
         private String title;
@@ -86,6 +99,8 @@ public class GuestBookResponseDto {
 
     @Getter
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class TotalGuestBookDto{
         private Long page;
         private Long size;
@@ -94,6 +109,8 @@ public class GuestBookResponseDto {
 
     @Getter
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class TotalGuestBookInfo{
         private Long id;
         private String title;

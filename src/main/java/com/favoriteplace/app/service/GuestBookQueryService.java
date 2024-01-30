@@ -5,7 +5,6 @@ import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.HashTag;
-import com.favoriteplace.app.domain.community.Post;
 import com.favoriteplace.app.dto.community.GuestBookResponseDto;
 import com.favoriteplace.app.dto.community.TrendingPostResponseDto;
 import com.favoriteplace.app.repository.GuestBookRepository;
@@ -25,17 +24,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.net.http.HttpRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class GuestBookService {
+public class GuestBookQueryService {
     private final GuestBookRepository guestBookRepository;
     private final LikedPostRepository likedPostRepository;
     private final ImageRepository imageRepository;
@@ -45,7 +42,7 @@ public class GuestBookService {
     private final CountComments countComments;
     private final SecurityUtil securityUtil;
 
-    public List<TrendingPostResponseDto.TrendingTodayPostResponseDto.TrendingPostRank> getTodayTrendingGuestBook() {
+    public List<TrendingPostResponseDto.TrendingPostRank> getTodayTrendingGuestBook() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startOfDay = now.toLocalDate().atStartOfDay();
         List<GuestBook> guestBooks = guestBookRepository.findByCreatedAtBetweenOrderByLikeCountDesc(startOfDay, now);
@@ -54,9 +51,9 @@ public class GuestBookService {
         }
         guestBooks.subList(0, Math.min(5, guestBooks.size()));
 
-        List<TrendingPostResponseDto.TrendingTodayPostResponseDto.TrendingPostRank> trendingPostsRank = new ArrayList<>();
+        List<TrendingPostResponseDto.TrendingPostRank> trendingPostsRank = new ArrayList<>();
         for(int i = 0; (i < guestBooks.size()) && (i < 5); i++){
-            trendingPostsRank.add(TrendingPostResponseDto.TrendingTodayPostResponseDto.TrendingPostRank.of(guestBooks.get(i)));
+            trendingPostsRank.add(TrendingPostResponseDto.TrendingPostRank.of(guestBooks.get(i)));
         }
         return trendingPostsRank;
     }
@@ -77,7 +74,7 @@ public class GuestBookService {
         GuestBook guestBook = optionalGuestBook.get();
         //Image
         List<Image> images = imageRepository.findAllByGuestBookId(guestBook.getId());
-        List<String> imagesUrl = images.stream().map(Image::getUrl).map(ConvertUuidToUrl::convertUuidToUrl).toList();
+        List<String> imagesUrl = images.stream().map(Image::getUrl).toList();
         //HashTag
         List<HashTag> hashTags = hashtagRepository.findAllByGuestBookId(guestBook.getId());
         List<String> hashTagsString = hashTags.stream().map(HashTag::getTagName).toList();
@@ -94,7 +91,7 @@ public class GuestBookService {
      * @param sort
      * @return sort에 따라 전체 정시순례 인증글들
      */
-    public Page<GuestBookResponseDto.TotalGuestBookInfo> getTotalGuestBooks(int page, int size, String sort) {
+    public Page<GuestBookResponseDto.TotalGuestBookInfo> getTotalGuestBooksBySort(int page, int size, String sort) {
         Pageable pageable = PageRequest.of(page-1, size);
         SortStrategy<GuestBook> sortStrategy;
         if("latest".equals(sort)){
@@ -132,6 +129,4 @@ public class GuestBookService {
         guestBook.increaseView();
         guestBookRepository.save(guestBook);
     }
-
-
 }
