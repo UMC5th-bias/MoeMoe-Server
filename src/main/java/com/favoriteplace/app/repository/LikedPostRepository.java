@@ -10,4 +10,6 @@ public interface LikedPostRepository extends JpaRepository<LikedPost, Long> {
     Boolean existsByGuestBookIdAndMemberId(Long guestBookId, Long memberId);
 
     LikedPost findByPostIdAndMemberId(Long postId, Long memberId);
+
+    void deleteByPostIdAndMemberId(long postId, Long memberId);
 }

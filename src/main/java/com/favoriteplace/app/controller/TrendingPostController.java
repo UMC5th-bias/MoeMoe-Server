@@ -1,7 +1,7 @@
 package com.favoriteplace.app.controller;
 
 import com.favoriteplace.app.dto.community.TrendingPostResponseDto;
-import com.favoriteplace.app.service.GuestBookService;
+import com.favoriteplace.app.service.GuestBookQueryService;
 import com.favoriteplace.app.service.PostQueryService;
 import com.favoriteplace.app.service.TotalPostService;
 import com.favoriteplace.global.util.DateTimeFormatUtils;
@@ -18,7 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TrendingPostController {
     private final PostQueryService postService;
-    private final GuestBookService guestBookService;
+    private final GuestBookQueryService guestBookQueryService;
     private final TotalPostService totalPostService;
 
     @GetMapping("/today/free")
@@ -33,7 +33,7 @@ public class TrendingPostController {
     public TrendingPostResponseDto.TrendingTodayPostResponseDto getTodayTrendingGuestBook(){
         return TrendingPostResponseDto.TrendingTodayPostResponseDto.builder()
                 .date(DateTimeFormatUtils.convertDateToString(LocalDateTime.now()))
-                .rank(guestBookService.getTodayTrendingGuestBook())
+                .rank(guestBookQueryService.getTodayTrendingGuestBook())
                 .build();
     }
 

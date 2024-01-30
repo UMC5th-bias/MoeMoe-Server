@@ -1,14 +1,18 @@
 package com.favoriteplace.app.dto.community;
 
 import com.favoriteplace.app.dto.UserInfoResponseDto;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 public class CommentResponseDto {
     @Getter
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class PostCommentDto {
         private Long page;
         private Long size;
@@ -17,6 +21,8 @@ public class CommentResponseDto {
 
     @Getter
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class PostComment{
         private UserInfoResponseDto userInfo;
         private Long id;
