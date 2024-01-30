@@ -22,7 +22,7 @@ public class GoogleCloudStorageConfig {
     @Bean
     public Storage storage() throws IOException {
 
-        InputStream inputStream = getClass().getResourceAsStream("file:/home/ubuntu/app/studious-matrix-412103-04030f986b9b.yml");
+        InputStream inputStream = getClass().getResourceAsStream("/home/ubuntu/app/studious-matrix-412103-04030f986b9b.yml");
         InputStreamReader reader = new InputStreamReader(inputStream);
         Map<String, Object> credentialsMap = new Yaml().load(reader);
         GoogleCredentials credentials = GoogleCredentials.fromStream(new ByteArrayInputStream(new ObjectMapper().writeValueAsBytes(credentialsMap)));
