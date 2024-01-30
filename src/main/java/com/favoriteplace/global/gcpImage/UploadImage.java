@@ -14,7 +14,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UploadImage {
 
-    private final Storage storage;
+    private final Storage storage =null;
 
     @Value("${spring.cloud.gcp.storage.bucket}")
     private String bucketName;
