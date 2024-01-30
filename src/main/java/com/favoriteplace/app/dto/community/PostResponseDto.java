@@ -1,17 +1,13 @@
 package com.favoriteplace.app.dto.community;
 
-import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.community.Post;
 import com.favoriteplace.app.dto.UserInfoResponseDto;
-import com.favoriteplace.global.gcpImage.ConvertUuidToUrl;
 import com.favoriteplace.global.util.DateTimeFormatUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.checkerframework.checker.units.qual.N;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class PostResponseDto {

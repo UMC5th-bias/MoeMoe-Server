@@ -23,6 +23,7 @@ public enum ErrorCode {
     USER_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, 2003, "해당 이메일로 가입한 유저가 존재합니다."),
     NOT_VAILD_EMAIL_AUTHCODE(HttpStatus.BAD_REQUEST, 2004, "이메일 인증번호가 일치하지 않습니다."),
     USER_NOT_AUTHOR(HttpStatus.FORBIDDEN, 2005, "해당 게시글의 작성자가 아닙니다."),
+    CANT_BLOCK_SELF(HttpStatus.FORBIDDEN, 2006, "스스로를 차단할 수 없습니다."),
 
     //Pilgrimage (3000번대)
     PILGRIMAGE_NOT_FOUND(HttpStatus.BAD_REQUEST, 3001, "성지순례 정보를 찾을 수 없습니다."),
@@ -48,6 +49,7 @@ public enum ErrorCode {
     // 아이템 (9000번대)
     ITEM_TYPE_NOT_FOUND(HttpStatus.BAD_REQUEST, 9001, "존재하지 않는 아이템 타입입니다."),
     ITEM_NOT_EXISTS(HttpStatus.BAD_REQUEST, 9002, "없는 아이템입니다.");
+
 
     private final HttpStatus httpStatus;
     private final int code;

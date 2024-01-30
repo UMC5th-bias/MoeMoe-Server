@@ -55,14 +55,14 @@ public class InitDB {
             Item item1 = Item.builder()
                     .image(image1).name("icon1")
                     .status(SaleStatus.NOT_FOR_SALE).type(ItemType.ICON)
-                    .saleDeadline(null).point(10L).category(ItemCategory.NEW)
+                    .saleDeadline(null).point(10L).category(ItemCategory.NEW).description("아이템1번")
                     .saleDeadline(null).point(5L)
-                    .description(null).build();
+                    .build();
             Item item2 = Item.builder()
-                    .image(image2).name("title1")
+                    .image(image2).name("새싹회원")
                     .status(SaleStatus.NOT_FOR_SALE).type(ItemType.TITLE)
-                    .saleDeadline(null).point(10L).category(ItemCategory.NEW)
-                    .description(null).build();
+                    .saleDeadline(null).point(10L).category(ItemCategory.NEW).description("아이템2번")
+                    .build();
             em.merge(item1); em.merge(item2);
 
             Member member = Member.builder()

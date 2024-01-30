@@ -101,7 +101,7 @@ public class PostCommandService {
     }
 
     /**
-     * guestBook의 작성자가 맞는지 확인하는 로직
+     * post의 작성자가 맞는지 확인하는 로직
      * @param member
      * @param post
      */

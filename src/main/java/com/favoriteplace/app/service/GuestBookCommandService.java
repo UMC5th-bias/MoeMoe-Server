@@ -5,10 +5,12 @@ import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.Comment;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.HashTag;
+import com.favoriteplace.app.domain.community.LikedPost;
 import com.favoriteplace.app.dto.community.GuestBookRequestDto;
 import com.favoriteplace.app.repository.GuestBookRepository;
 import com.favoriteplace.app.repository.HashtagRepository;
 import com.favoriteplace.app.repository.ImageRepository;
+import com.favoriteplace.app.repository.LikedPostRepository;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.gcpImage.ConvertUuidToUrl;
@@ -26,8 +28,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class GuestBookCommandService {
     private final GuestBookRepository guestBookRepository;
-    private final HashtagRepository hashtagRepository;
     private final ImageRepository imageRepository;
+    private final LikedPostRepository likedPostRepository;
     private final UploadImage uploadImage;
 
     /**
@@ -43,25 +45,28 @@ public class GuestBookCommandService {
         checkAuthOfGuestBook(member, guestBook);
         Optional.ofNullable(data.getTitle()).ifPresent(guestBook::setTitle);
         Optional.ofNullable(data.getContent()).ifPresent(guestBook::setContent);
-        hashtagRepository.deleteByGuestBookId(guestbookId);  //기존에 있던 hashtag 삭제
-        imageRepository.deleteByGuestBookId(guestbookId);  //기존에 있던 이미지 제거
+        guestBook.getHashTags().clear();  //기존에 있던 hashtag 제거
+        guestBook.getImages().clear();  //기존에 있던 이미지 제거
+        imageRepository.deleteByGuestBookId(guestbookId);
         List<String> hashtags = data.getHashtags();
         if(!hashtags.isEmpty()){
-            hashtags.forEach(hashtag -> setHashtagList(hashtag, guestBook));
+            hashtags.forEach(hashtag -> guestBook.setHashTag(HashTag.builder().tagName(hashtag).build()));
         }
         setImageList(guestBook, images);
+        guestBookRepository.save(guestBook);
     }
 
     /**
-     * 성지순례 인증글 삭제 (이미지, 댓글, hashtag, 추천 목록도 삭제 필요)
+     * 성지순례 인증글 삭제 (추천 목록도 삭제 필요)
      * @param member
      * @param guestbookId
      */
-    //TODO
+    @Transactional
     public void deleteGuestBook(Member member, Long guestbookId) {
         GuestBook guestBook = guestBookRepository.findById(guestbookId).orElseThrow(() -> new RestApiException(ErrorCode.GUESTBOOK_NOT_FOUND));
         checkAuthOfGuestBook(member, guestBook);
-
+        likedPostRepository.deleteByGuestBookIdAndMemberId(guestBook.getId(), member.getId());
+        guestBookRepository.deleteById(guestbookId);
     }
 
     /**
@@ -72,7 +77,6 @@ public class GuestBookCommandService {
     @Transactional
     public void createGuestBookComment(Member member, Long guestbookId, GuestBookRequestDto.GuestBookCommentDto comment) {
         GuestBook guestBook = guestBookRepository.findById(guestbookId).orElseThrow(() -> new RestApiException(ErrorCode.GUESTBOOK_NOT_FOUND));
-        checkAuthOfGuestBook(member, guestBook);
         Comment newComment = Comment.builder().member(member).guestBook(guestBook).content(comment.getContent()).build();
         guestBook.addComment(newComment);
         guestBookRepository.save(guestBook);
@@ -89,26 +93,41 @@ public class GuestBookCommandService {
             for(MultipartFile image:images){
                 if(!image.isEmpty()){
                     String uuid = uploadImage.uploadImageToCloud(image);
-                    Image newImage = Image.builder().url(ConvertUuidToUrl.convertUuidToUrl(uuid)).guestBook(guestBook).build();
-                    imageRepository.save(newImage);
+                    Image newImage = Image.builder().url(ConvertUuidToUrl.convertUuidToUrl(uuid)).build();
+                    guestBook.setImage(newImage);
                 }
             }
         }
     }
 
     /**
-     * 해시테그 처리하는 로직
-     * @param hashtag
+     * 성지순례 인증글의 작성자가 맞는지 판단하는 함수
+     * @param member
      * @param guestBook
      */
-    private void setHashtagList(String hashtag, GuestBook guestBook){
-        HashTag hashTag = HashTag.builder().guestBook(guestBook).tagName(hashtag).build();
-        hashtagRepository.save(hashTag);
-    }
-
     private void checkAuthOfGuestBook(Member member, GuestBook guestBook){
         if(!member.getId().equals(guestBook.getMember().getId())){
             throw new RestApiException(ErrorCode.USER_NOT_AUTHOR);
+        }
+    }
+
+    /**
+     * 성지순례 인증글 추천(좋아요) 함수
+     * @param member
+     * @param guestbookId
+     * @return
+     */
+    @Transactional
+    public String modifyGuestBookLike(Member member, Long guestbookId) {
+        GuestBook guestBook = guestBookRepository.findById(guestbookId).orElseThrow(() -> new RestApiException(ErrorCode.GUESTBOOK_NOT_FOUND));
+        Boolean likeExists = likedPostRepository.existsByGuestBookIdAndMemberId(guestBook.getId(), member.getId());
+        if(likeExists){
+            likedPostRepository.deleteByGuestBookIdAndMemberId(guestBook.getId(), member.getId());
+            return "추천을 취소했습니다.";
+        }else{
+            LikedPost likedPost = LikedPost.builder().member(member).guestBook(guestBook).build();
+            likedPostRepository.save(likedPost);
+            return "추천을 완료했습니다.";
         }
     }
 }

@@ -124,7 +124,7 @@ public class PostController {
     }
 
     @PostMapping("/{post_id}")
-    public ResponseEntity<PostResponseDto.SuccessResponseDto> createComment(
+    public ResponseEntity<PostResponseDto.SuccessResponseDto> createPostComment(
             @PathVariable("post_id") long postId,
             @RequestBody CommentRequestDto dto
     ){

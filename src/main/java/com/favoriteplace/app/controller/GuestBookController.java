@@ -1,9 +1,13 @@
 package com.favoriteplace.app.controller;
 
 import com.favoriteplace.app.domain.Member;
-import com.favoriteplace.app.dto.community.*;
+import com.favoriteplace.app.dto.community.CommentResponseDto;
+import com.favoriteplace.app.dto.community.GuestBookRequestDto;
+import com.favoriteplace.app.dto.community.GuestBookResponseDto;
+import com.favoriteplace.app.dto.community.PostResponseDto;
 import com.favoriteplace.app.service.*;
 import com.favoriteplace.global.util.SecurityUtil;
+import com.google.api.Http;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -132,6 +136,18 @@ public class GuestBookController {
         guestBookCommandService.createGuestBookComment(member, guestbookId, guestBookCommentDto);
         return new ResponseEntity<>(
                 PostResponseDto.SuccessResponseDto.builder().message("성지순례 인증글에 댓글이 성공적으로 추가되었습니다.").build(),
+                HttpStatus.OK
+        );
+    }
+
+    @PostMapping("/{guestbook_id}/like")
+    public ResponseEntity<PostResponseDto.SuccessResponseDto> modifyGuestBookLike(
+            @PathVariable("guestbook_id") Long guestbookId
+    ){
+        Member member = securityUtil.getUser();
+        String message = guestBookCommandService.modifyGuestBookLike(member, guestbookId);
+        return new ResponseEntity<>(
+                PostResponseDto.SuccessResponseDto.builder().message(message).build(),
                 HttpStatus.OK
         );
     }
