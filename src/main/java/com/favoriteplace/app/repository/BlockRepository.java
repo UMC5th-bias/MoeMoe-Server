@@ -10,4 +10,8 @@ import java.util.List;
 @Repository
 public interface BlockRepository extends JpaRepository<Block, Long> {
     List<Block> findByMember(Member member);
+
+    Boolean existsByMemberIdAndBlockedMemberId(Long memberId, Long blockedMemberId);
+
+    void deleteByMemberIdAndBlockedMemberId(Long memberId, Long blockedMemberId);
 }

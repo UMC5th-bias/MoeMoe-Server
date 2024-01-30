@@ -47,4 +47,5 @@ public class Image {
     public void setPost(Post post) {
         this.post = post;
     }
+    public void setGuestBook(GuestBook guestBook){this.guestBook = guestBook;}
 }
