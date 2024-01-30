@@ -17,7 +17,7 @@ cp $PROJECT_ROOT/build/libs/*.jar $JAR_FILE
 # jar 파일 실행
 echo "$TIME_NOW > $JAR_FILE 파일 실행" >> $DEPLOY_LOG
 nohup sudo java -jar \
-        -Dspring.config.location=/home/ubuntu/app/application.yml \
+#        -Dspring.config.location=/home/ubuntu/app/application.yml \
 #        -Dspring.config.additional-location=/home/ubuntu/app/studious-matrix-412103-04030f986b9b.json \
         -Duser.timezone=Asia/Seoul\
         $JAR_FILE > $APP_LOG 2> $ERROR_LOG &
