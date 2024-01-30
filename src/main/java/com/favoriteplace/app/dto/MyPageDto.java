@@ -77,4 +77,12 @@ public class MyPageDto {
         String userTitleImg;
         String userIconImg;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class MyModifyBlockDto{
+        Boolean isBlocked;
+    }
 }
