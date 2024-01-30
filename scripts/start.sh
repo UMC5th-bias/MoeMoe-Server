@@ -16,7 +16,6 @@ cp $PROJECT_ROOT/build/libs/*.jar $JAR_FILE
 
 # jar 파일 실행
 echo "$TIME_NOW > $JAR_FILE 파일 실행" >> $DEPLOY_LOG
-source ~/.bashrc
 nohup sudo java -jar \
         -Dspring.config.location=/home/ubuntu/app/application.yml \
         -Duser.timezone=Asia/Seoul\
