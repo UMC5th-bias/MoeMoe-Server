@@ -1,4 +1,4 @@
-package com.favoriteplace.app.service;
+package com.favoriteplace.app.service.community;
 
 import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.Member;

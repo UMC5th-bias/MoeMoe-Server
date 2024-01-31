@@ -6,8 +6,11 @@ import com.favoriteplace.app.dto.community.GuestBookRequestDto;
 import com.favoriteplace.app.dto.community.GuestBookResponseDto;
 import com.favoriteplace.app.dto.community.PostResponseDto;
 import com.favoriteplace.app.service.*;
+import com.favoriteplace.app.service.community.CommentQueryService;
+import com.favoriteplace.app.service.community.GuestBookCommandService;
+import com.favoriteplace.app.service.community.GuestBookQueryService;
+import com.favoriteplace.app.service.community.LikedPostService;
 import com.favoriteplace.global.util.SecurityUtil;
-import com.google.api.Http;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -25,9 +28,10 @@ import java.util.List;
 public class GuestBookController {
     private final GuestBookQueryService guestBookQueryService;
     private final GuestBookCommandService guestBookCommandService;
-    private final CommentService commentService;
+    private final CommentQueryService commentQueryService;
     private final MemberService memberService;
     private final PilgrimageQueryService pilgrimageQueryService;
+    private final LikedPostService likedPostService;
     private final SecurityUtil securityUtil;
 
     @GetMapping()
@@ -50,7 +54,7 @@ public class GuestBookController {
             @RequestParam(required = false, defaultValue = "10") int size
     ){
         Member member = securityUtil.getUser();
-        Page<GuestBookResponseDto.MyGuestBookComment> myComments = commentService.getMyGuestBookComments(member, page, size);
+        Page<GuestBookResponseDto.MyGuestBookComment> myComments = commentQueryService.getMyGuestBookComments(member, page, size);
         return GuestBookResponseDto.MyGuestBookCommentDto.builder()
                 .page((long) (myComments.getNumber()+1))
                 .size((long) myComments.getSize())
@@ -93,7 +97,7 @@ public class GuestBookController {
             HttpServletRequest request
     ){
         Member member = securityUtil.getUserFromHeader(request);
-        Page<CommentResponseDto.PostComment> comments = commentService.getGuestBookComments(page, size, member, guestbookId);
+        Page<CommentResponseDto.PostComment> comments = commentQueryService.getGuestBookComments(page, size, member, guestbookId);
         return CommentResponseDto.PostCommentDto.builder()
                 .page((long) comments.getNumber() +1)
                 .size((long) comments.getSize())
@@ -145,7 +149,7 @@ public class GuestBookController {
             @PathVariable("guestbook_id") Long guestbookId
     ){
         Member member = securityUtil.getUser();
-        String message = guestBookCommandService.modifyGuestBookLike(member, guestbookId);
+        String message = likedPostService.modifyGuestBookLike(member, guestbookId);
         return new ResponseEntity<>(
                 PostResponseDto.SuccessResponseDto.builder().message(message).build(),
                 HttpStatus.OK

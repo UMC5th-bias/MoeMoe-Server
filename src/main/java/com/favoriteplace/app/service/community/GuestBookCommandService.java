@@ -1,4 +1,4 @@
-package com.favoriteplace.app.service;
+package com.favoriteplace.app.service.community;
 
 import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.Member;
@@ -111,23 +111,5 @@ public class GuestBookCommandService {
         }
     }
 
-    /**
-     * 성지순례 인증글 추천(좋아요) 함수
-     * @param member
-     * @param guestbookId
-     * @return
-     */
-    @Transactional
-    public String modifyGuestBookLike(Member member, Long guestbookId) {
-        GuestBook guestBook = guestBookRepository.findById(guestbookId).orElseThrow(() -> new RestApiException(ErrorCode.GUESTBOOK_NOT_FOUND));
-        Boolean likeExists = likedPostRepository.existsByGuestBookIdAndMemberId(guestBook.getId(), member.getId());
-        if(likeExists){
-            likedPostRepository.deleteByGuestBookIdAndMemberId(guestBook.getId(), member.getId());
-            return "추천을 취소했습니다.";
-        }else{
-            LikedPost likedPost = LikedPost.builder().member(member).guestBook(guestBook).build();
-            likedPostRepository.save(likedPost);
-            return "추천을 완료했습니다.";
-        }
-    }
+
 }
