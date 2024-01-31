@@ -51,9 +51,16 @@ public class CommentCommandService {
         commentRepository.save(comment);
     }
 
+    /**
+     * 자유게시글 댓글 삭제
+     * @param member
+     * @param commendId
+     */
     @Transactional
     public void deletePostComment(Member member, long commendId){
-
+        Comment comment = commentRepository.findById(commendId).orElseThrow(() -> new RestApiException(ErrorCode.COMMENT_NOT_FOUND));
+        checkAuthOfComment(member, comment);
+        commentRepository.delete(comment);
     }
 
     /**

@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.config.crypto.RsaKeyConversionServicePostProcessor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -79,7 +80,17 @@ public class PostCommentController {
         );
     }
 
-    @DeleteMapping()
+    @DeleteMapping("/comments/{comment_id}")
+    public ResponseEntity<PostResponseDto.SuccessResponseDto> deletePostComment(
+            @PathVariable("comment_id") long commentId
+    ){
+        Member member = securityUtil.getUser();
+        commentCommandService.deletePostComment(member, commentId);
+        return new ResponseEntity<>(
+                PostResponseDto.SuccessResponseDto.builder().message("댓글을 성공적으로 삭제했습니다.").build(),
+                HttpStatus.OK
+        );
+    }
 
 
 }
