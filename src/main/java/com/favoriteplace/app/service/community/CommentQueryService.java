@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class CommentQueryService {
     private final CommentRepository commentRepository;
-    private final PostRepository postRepository;
     private final CountCommentsService countCommentsService;
 
     /**

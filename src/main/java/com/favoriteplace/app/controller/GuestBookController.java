@@ -1,11 +1,11 @@
 package com.favoriteplace.app.controller;
 
 import com.favoriteplace.app.domain.Member;
-import com.favoriteplace.app.dto.community.CommentResponseDto;
 import com.favoriteplace.app.dto.community.GuestBookRequestDto;
 import com.favoriteplace.app.dto.community.GuestBookResponseDto;
 import com.favoriteplace.app.dto.community.PostResponseDto;
-import com.favoriteplace.app.service.*;
+import com.favoriteplace.app.service.MemberService;
+import com.favoriteplace.app.service.PilgrimageQueryService;
 import com.favoriteplace.app.service.community.CommentQueryService;
 import com.favoriteplace.app.service.community.GuestBookCommandService;
 import com.favoriteplace.app.service.community.GuestBookQueryService;
@@ -28,7 +28,6 @@ import java.util.List;
 public class GuestBookController {
     private final GuestBookQueryService guestBookQueryService;
     private final GuestBookCommandService guestBookCommandService;
-    private final CommentQueryService commentQueryService;
     private final MemberService memberService;
     private final PilgrimageQueryService pilgrimageQueryService;
     private final LikedPostService likedPostService;
@@ -48,22 +47,8 @@ public class GuestBookController {
                 .build();
     }
 
-    @GetMapping("/my-comments")
-    public GuestBookResponseDto.MyGuestBookCommentDto getMyComments(
-            @RequestParam(required = false, defaultValue = "1") int page,
-            @RequestParam(required = false, defaultValue = "10") int size
-    ){
-        Member member = securityUtil.getUser();
-        Page<GuestBookResponseDto.MyGuestBookComment> myComments = commentQueryService.getMyGuestBookComments(member, page, size);
-        return GuestBookResponseDto.MyGuestBookCommentDto.builder()
-                .page((long) (myComments.getNumber()+1))
-                .size((long) myComments.getSize())
-                .comment(myComments.getContent())
-                .build();
-    }
-
     @GetMapping("/my-posts")
-    public GuestBookResponseDto.MyGuestBookDto getMyPosts(
+    public GuestBookResponseDto.MyGuestBookDto getMyGuestBooks(
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false, defaultValue = "10") int size
     ){
@@ -89,22 +74,6 @@ public class GuestBookController {
                 .build();
     }
 
-    @GetMapping("/{guestbook_id}/comments")
-    public CommentResponseDto.PostCommentDto getGuestBookComments(
-            @PathVariable("guestbook_id") Long guestbookId,
-            @RequestParam(required = false, defaultValue = "1") int page,
-            @RequestParam(required = false, defaultValue = "10") int size,
-            HttpServletRequest request
-    ){
-        Member member = securityUtil.getUserFromHeader(request);
-        Page<CommentResponseDto.PostComment> comments = commentQueryService.getGuestBookComments(page, size, member, guestbookId);
-        return CommentResponseDto.PostCommentDto.builder()
-                .page((long) comments.getNumber() +1)
-                .size((long) comments.getSize())
-                .comment(comments.getContent())
-                .build();
-    }
-
     @PatchMapping("/{guestbook_id}")
     public ResponseEntity<PostResponseDto.SuccessResponseDto> modifyGuestBook(
             @PathVariable("guestbook_id") Long guestbookId,
@@ -127,19 +96,6 @@ public class GuestBookController {
         guestBookCommandService.deleteGuestBook(member, guestbookId);
         return new ResponseEntity<>(
                 PostResponseDto.SuccessResponseDto.builder().message("성지순례 인증글을 성공적으로 삭제했습니다.").build(),
-                HttpStatus.OK
-        );
-    }
-
-    @PostMapping("/{guestbook_id}")
-    public ResponseEntity<PostResponseDto.SuccessResponseDto> createGuestBookComment(
-            @PathVariable("guestbook_id") Long guestbookId,
-            @RequestBody GuestBookRequestDto.GuestBookCommentDto guestBookCommentDto
-    ){
-        Member member = securityUtil.getUser();
-        guestBookCommandService.createGuestBookComment(member, guestbookId, guestBookCommentDto);
-        return new ResponseEntity<>(
-                PostResponseDto.SuccessResponseDto.builder().message("성지순례 인증글에 댓글이 성공적으로 추가되었습니다.").build(),
                 HttpStatus.OK
         );
     }

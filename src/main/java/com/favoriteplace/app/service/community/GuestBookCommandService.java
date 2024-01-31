@@ -70,19 +70,6 @@ public class GuestBookCommandService {
     }
 
     /**
-     * 성지순례 인증글에 댓글 추가
-     * @param member
-     * @param guestbookId
-     */
-    @Transactional
-    public void createGuestBookComment(Member member, Long guestbookId, GuestBookRequestDto.GuestBookCommentDto comment) {
-        GuestBook guestBook = guestBookRepository.findById(guestbookId).orElseThrow(() -> new RestApiException(ErrorCode.GUESTBOOK_NOT_FOUND));
-        Comment newComment = Comment.builder().member(member).guestBook(guestBook).content(comment.getContent()).build();
-        guestBook.addComment(newComment);
-        guestBookRepository.save(guestBook);
-    }
-
-    /**
      * 이미지가 여러개일 때, 이미지 처리하는 로직 (새로운 이미지 저장)
      * @param guestBook
      * @param images
