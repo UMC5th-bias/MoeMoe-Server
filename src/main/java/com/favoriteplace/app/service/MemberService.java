@@ -5,25 +5,32 @@ import static com.favoriteplace.global.exception.ErrorCode.USER_ALREADY_EXISTS;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.Post;
+import com.favoriteplace.app.domain.item.Item;
 import com.favoriteplace.app.dto.UserInfoResponseDto;
 import com.favoriteplace.app.dto.member.MemberDto;
 import com.favoriteplace.app.dto.member.MemberDto.EmailCheckReqDto;
 import com.favoriteplace.app.dto.member.MemberDto.EmailDuplicateResDto;
 import com.favoriteplace.app.dto.member.MemberDto.EmailSendReqDto;
+import com.favoriteplace.app.dto.member.MemberDto.MemberDetailResDto;
 import com.favoriteplace.app.dto.member.MemberDto.MemberSignUpReqDto;
 import com.favoriteplace.app.repository.GuestBookRepository;
+import com.favoriteplace.app.repository.ItemRepository;
 import com.favoriteplace.app.repository.MemberRepository;
 import com.favoriteplace.app.repository.PostRepository;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
+import com.favoriteplace.global.gcpImage.UploadImage;
 import com.favoriteplace.global.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional(readOnly = true)
@@ -35,15 +42,35 @@ public class MemberService {
     private final GuestBookRepository guestBookRepository;
     private final PasswordEncoder passwordEncoder;
     public final SecurityUtil securityUtil;
+    private final UploadImage uploadImage;
+    private final ItemRepository itemRepository;
 
     @Transactional
-    public MemberDto.TokenInfo signup(MemberSignUpReqDto memberSignUpReqDto) {
-        String password = passwordEncoder.encode(memberSignUpReqDto.getPassword());
-        Member member = memberSignUpReqDto.toEntity(password, null);
+    public MemberDto.MemberDetailResDto signup(MemberSignUpReqDto memberSignUpReqDto, List<MultipartFile> images)
+        throws IOException {
+        memberRepository.findByEmail(memberSignUpReqDto.getEmail())
+            .ifPresentOrElse(
+                existingMember -> {
+                    throw new RestApiException(USER_ALREADY_EXISTS);
+                },
+                () -> {
+                    // 값이 없을 때 수행할 동작 (예외를 발생시키지 않는 경우)
+                }
+            );
 
-        //TODO 유저 프로필 이미지 + 새싹회원 칭호 저장
+        String uuid = null;
+        String password = passwordEncoder.encode(memberSignUpReqDto.getPassword());
+
+        if(!(images == null)) {
+            uuid = uploadImage.uploadImageToCloud(images.get(0));
+        }
+
+        Item titleItem = itemRepository.findByName("새싹회원").get();
+
+        Member member = memberSignUpReqDto.toEntity(password, uuid, titleItem);
         memberRepository.save(member);
-        return null;
+
+        return MemberDetailResDto.from(member);
     }
 
     @Transactional
@@ -80,5 +107,4 @@ public class MemberService {
         }
         return UserInfoResponseDto.of(optionalGuestBook.get().getMember());
     }
-
 }

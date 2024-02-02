@@ -44,19 +44,13 @@ public class Post extends BaseTimeEntity {
     @Column(nullable = false)
     private Long view;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<Image> images = new ArrayList<>();
 
-    //이미지 리스트 새롭게 setting
-    public void setImages(List<Image> imageList){
-        this.images.clear();
-        if(imageList != null){
-            this.images.addAll(imageList);
-            for(Image image:imageList){
-                image.setPost(this);
-            }
-        }
-    }
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<Comment> comments = new ArrayList<>();
 
     public void setTitle(String title) {this.title = title;}
 
@@ -67,5 +61,12 @@ public class Post extends BaseTimeEntity {
     public void increaseLikeCount(){this.likeCount++;}
 
     public void decreaseLikeCount(){this.likeCount--;}
+
+    public void disconnectImages(){
+        for(Image image:this.images){
+            image.setPost(null);
+        }
+        this.images = new ArrayList<>();
+    }
 
 }
