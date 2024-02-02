@@ -55,14 +55,14 @@ public class MyPageController {
 
     // 인증한 성지순례
     @GetMapping("/guestbooks/visited")
-    public MyPageDto.MyGuestBookDto getMyVisitedBook(){
+    public List<MyPageDto.MyGuestBookDto> getMyVisitedBook(){
         Member member = securityUtil.getUser();
         return myPageQueryService.getMyVisitedBook(member);
     }
 
     // 완료한 성지순례
     @GetMapping("/guestbooks/done")
-    public MyPageDto.MyGuestBookDto getMyDoneBook(){
+    public List<MyPageDto.MyGuestBookDto> getMyDoneBook(){
         Member member = securityUtil.getUser();
         return myPageQueryService.getMyDoneBook(member);
     }

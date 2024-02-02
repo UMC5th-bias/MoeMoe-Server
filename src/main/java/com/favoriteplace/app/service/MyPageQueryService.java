@@ -6,10 +6,8 @@ import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.enums.ItemType;
 import com.favoriteplace.app.domain.enums.SaleStatus;
 import com.favoriteplace.app.domain.item.AcquiredItem;
-import com.favoriteplace.app.domain.travel.CompleteRally;
+import com.favoriteplace.app.domain.travel.*;
 import com.favoriteplace.app.dto.CommonResponseDto;
-import com.favoriteplace.app.domain.travel.LikedRally;
-import com.favoriteplace.app.domain.travel.VisitedPilgrimage;
 import com.favoriteplace.app.dto.MyPageDto;
 import com.favoriteplace.app.repository.*;
 import com.favoriteplace.global.exception.ErrorCode;
@@ -26,12 +24,12 @@ import java.util.stream.Collectors;
 public class MyPageQueryService {
     private final AcquiredItemRepository acquiredItemRepository;
     private final BlockRepository blockRespotiroy;
-    private final LikedRallyRepository likedRallyRepository;
-    private final VisitedPilgrimageRepository visitedPilgrimageRepository;
     private final CompleteRallyRepository completeRallyRepository;
+    private final VisitedPilgrimageRepository visitedPilgrimageRepository;
     private final CommentRepository commentRepository;
     private final GuestBookRepository guestBookRepository;
     private final PostRepository postRepository;
+    private final LikedRallyRepository likedRallyRepository;
 
     public MyPageDto.MyInfoDto getMyInfo(Member member) {
         Long completeRalliesCount = Long.valueOf(completeRallyRepository.findByMember(member).size());
@@ -64,9 +62,9 @@ public class MyPageQueryService {
                     .filter(item -> item.getItem().getStatus().equals(sale))
                     .map(item -> item.getItem())
                     .map(item->MyPageConverter.toMyItemDetailDto(item,
-                                    type=="title"
-                                            ?((member.getProfileTitle() != null && member.getProfileTitle().getId() == item.getId())?true:false)
-                                            :((member.getProfileIcon() != null && member.getProfileIcon().getId() == item.getId())?true:false)))
+                            type=="title"
+                                    ?((member.getProfileTitle() != null && member.getProfileTitle().getId() == item.getId())?true:false)
+                                    :((member.getProfileIcon() != null && member.getProfileIcon().getId() == item.getId())?true:false)))
                     .collect(Collectors.toList());
             result.add(list);
         }
@@ -88,19 +86,27 @@ public class MyPageQueryService {
     public List<MyPageDto.MyGuestBookDto> getMyLikedBook(Member member) {
         List<LikedRally> rallyList = likedRallyRepository.findByMember(member);
         return rallyList.stream().map(dummy -> {
-            List<VisitedPilgrimage> visited = visitedPilgrimageRepository
-                    .findDistinctByMemberAndPilgrimage_Rally(member, dummy.getRally());
-            return MyPageConverter.toMyGuestBookDto(dummy.getRally(), Long.valueOf(visited.size());
-        });
+            Long visited = visitedPilgrimageRepository
+                    .findByDistinctCount(member.getId(), dummy.getRally().getId());
+            return MyPageConverter.toMyGuestBookDto(dummy.getRally(), visited);
+        }).collect(Collectors.toList());
     }
 
-    // 성지순례 장소 중 중복 방문을 제외하고 방문한 장소의 횟수
-    public MyPageDto.MyGuestBookDto getMyVisitedBook(Member member) {
-
-        return null;
+    public List<MyPageDto.MyGuestBookDto> getMyVisitedBook(Member member) {
+        List<Rally> rallyList = visitedPilgrimageRepository.findByDistinctPilgrimage(member.getId());
+        return rallyList.stream().map(rally -> {
+            Long visited = visitedPilgrimageRepository
+                    .findByDistinctCount(member.getId(), rally.getId());
+            return MyPageConverter.toMyGuestBookDto(rally, visited);
+        }).collect(Collectors.toList());
     }
 
-    public MyPageDto.MyGuestBookDto getMyDoneBook(Member member) {
-        return null;
+    public List<MyPageDto.MyGuestBookDto> getMyDoneBook(Member member) {
+        List<CompleteRally> rallyList = completeRallyRepository.findByMember(member);
+        return rallyList.stream().map(dummy -> {
+            Long visited = visitedPilgrimageRepository
+                    .findByDistinctCount(member.getId(), dummy.getRally().getId());
+            return MyPageConverter.toMyGuestBookDto(dummy.getRally(), visited);
+        }).collect(Collectors.toList());
     }
 }
