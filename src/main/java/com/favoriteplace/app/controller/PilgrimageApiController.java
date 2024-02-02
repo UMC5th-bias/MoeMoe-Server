@@ -1,8 +1,10 @@
 package com.favoriteplace.app.controller;
 
 import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.dto.CommonResponseDto;
 import com.favoriteplace.app.dto.travel.PilgrimageDto;
 import com.favoriteplace.app.dto.travel.RallyDto;
+import com.favoriteplace.app.service.PilgrimageCommandService;
 import com.favoriteplace.app.service.PilgrimageQueryService;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
@@ -11,10 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,7 +23,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PilgrimageApiController {
     private final PilgrimageQueryService pilgrimageQueryService;
+    private final PilgrimageCommandService pilgrimageCommandService;
     private final SecurityUtil securityUtil;
+
+    /* ================ GET ================ */
 
     // 내 성지순례 + 인증글 모아보기(메인)
     // 회원 + 비회원
@@ -84,10 +86,34 @@ public class PilgrimageApiController {
     // 성지순례 랠리 장소 상세
     // 회원
     @GetMapping("/detail/{pilgrimageId}")
-        public PilgrimageDto.PilgrimageDetailDto getPilgrimageDetail(@PathVariable("pilgrimageId")Long pilgrimageId){
+    public PilgrimageDto.PilgrimageDetailDto getPilgrimageDetail(@PathVariable("pilgrimageId")Long pilgrimageId){
         // Jwt AuthenticationFilter에 엔드포인트 추가
         Member member = securityUtil.getUser();
-        return pilgrimageQueryService.getPilgrimageDetail(
-                pilgrimageId, member);
+        return pilgrimageQueryService.getPilgrimageDetail(pilgrimageId, member);
+    }
+
+    /* ================ POST ================ */
+
+    // 랠리 찜하기
+    @PostMapping("/{rally_id}")
+    public CommonResponseDto.PostResponseDto likeToRally(@PathVariable("rally_id")Long rallyId){
+        Member member = securityUtil.getUser();
+        return pilgrimageCommandService.likeToRally(rallyId, member);
+    }
+
+    // 성지순례 장소 방문 인증하기
+    @PostMapping("/certified/{pilgrimage_id}")
+    public CommonResponseDto.RallyResponseDto certifyToPilgrimage(
+            @PathVariable("pilgrimage_id")Long pilgrimageId,
+            @RequestBody PilgrimageDto.PilgrimageCertifyRequestDto form){
+        Member member = securityUtil.getUser();
+        return pilgrimageCommandService.certifyToPilgrimage(pilgrimageId, member, form);
+    }
+
+    // 성지순례 장소 방문 인증글 작성하기
+    @PostMapping("/guestbooks/{pilgrimage_id}")
+    public CommonResponseDto.PostResponseDto postToPilgrimage(@PathVariable("pilgrimage_id")Long pilgrimageId){
+        Member member = securityUtil.getUser();
+        return pilgrimageCommandService.postToPilgrimage(pilgrimageId, member);
     }
 }

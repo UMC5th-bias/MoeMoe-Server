@@ -34,4 +34,8 @@ public class HashTag {
 
     @Column(nullable = false)
     private String tagName;
+
+    public void setGuestBook(GuestBook guestBook){
+        this.guestBook = guestBook;
+    }
 }

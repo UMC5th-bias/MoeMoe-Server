@@ -39,4 +39,5 @@ out/
 .vscode/
 *.json
 *.yml
-*.json
+# Ignore application.yml
+application.yml

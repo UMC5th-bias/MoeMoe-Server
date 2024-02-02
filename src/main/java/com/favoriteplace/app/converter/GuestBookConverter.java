@@ -46,8 +46,8 @@ public class GuestBookConverter {
                 .address(pilgrimage.getDetailAddress())
                 .latitude(pilgrimage.getLatitude())
                 .longitude(pilgrimage.getLongitude())
-                .imageAnime(ConvertUuidToUrl.convertUuidToUrl(pilgrimage.getVirtualImage().getUrl()))
-                .imageReal(ConvertUuidToUrl.convertUuidToUrl(pilgrimage.getRealImage().getUrl()))
+                .imageAnime(pilgrimage.getVirtualImage().getUrl())
+                .imageReal(pilgrimage.getRealImage().getUrl())
                 .build();
     }
 
@@ -56,7 +56,7 @@ public class GuestBookConverter {
                 .id(guestBook.getId())
                 .title(guestBook.getTitle())
                 .nickname(guestBook.getMember().getNickname())
-                .thumbnail(ConvertUuidToUrl.convertUuidToUrl(image != null ? image.getUrl() : null))
+                .thumbnail(image != null ? image.getUrl() : null)
                 .views(guestBook.getView())
                 .likes(guestBook.getLikeCount())
                 .comments(comments)

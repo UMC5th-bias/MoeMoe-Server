@@ -5,12 +5,15 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static lombok.AccessLevel.PRIVATE;
+import static lombok.AccessLevel.PROTECTED;
+
 public class PilgrimageDto {
     @Builder
     @Getter
     @Setter
-    @AllArgsConstructor
-    @NoArgsConstructor
+    @NoArgsConstructor(access = PROTECTED)
+    @AllArgsConstructor(access = PRIVATE)
     public static class PilgrimageDetailDto {
         String rallyName;
         Long pilgrimageNumber;
@@ -20,14 +23,15 @@ public class PilgrimageDto {
         String address;
         Double latitude;
         Double longitude;
+        Boolean isCertified;
         Boolean isWritable;
         Boolean isMultiWritable;
     }
 
     @Builder
     @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
+    @NoArgsConstructor(access = PROTECTED)
+    @AllArgsConstructor(access = PRIVATE)
     public static class MyPilgrimageDto {
         Long likedRallySize;
         List<LikedRallyDto> likedRally = new ArrayList<>();
@@ -37,8 +41,8 @@ public class PilgrimageDto {
 
     @Builder
     @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
+    @NoArgsConstructor(access = PROTECTED)
+    @AllArgsConstructor(access = PRIVATE)
     public static class LikedRallyDto {
         Long id;
         String name;
@@ -47,8 +51,8 @@ public class PilgrimageDto {
 
     @Builder
     @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
+    @NoArgsConstructor(access = PROTECTED)
+    @AllArgsConstructor(access = PRIVATE)
     public static class MyGuestBookDto {
         Long id;
         String title;
@@ -59,17 +63,17 @@ public class PilgrimageDto {
 
     @Builder
     @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
+    @NoArgsConstructor(access = PROTECTED)
+    @AllArgsConstructor(access = PRIVATE)
     public static class PilgrimageCategoryRegionDto {
         String state;
-        List<PilgrimageAddressDetailDto> detail = new ArrayList<>();
+        List<PilgrimageAddressDetailDto> detail;
     }
 
     @Builder
     @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
+    @NoArgsConstructor(access = PROTECTED)
+    @AllArgsConstructor(access = PRIVATE)
     public static class PilgrimageAddressDetailDto {
         Long id;
         String district;
@@ -77,13 +81,21 @@ public class PilgrimageDto {
 
     @Builder
     @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
+    @NoArgsConstructor(access = PROTECTED)
+    @AllArgsConstructor(access = PRIVATE)
     public static class PilgrimageCategoryRegionDetailDto {
         Long id;
         String title;
         String detailAddress;
         Double latitude;
         Double longitude;
+    }
+
+    @Getter
+    @NoArgsConstructor(access = PROTECTED)
+    @AllArgsConstructor(access = PRIVATE)
+    public static class PilgrimageCertifyRequestDto{
+        Long longitude;
+        Long latitude;
     }
 }

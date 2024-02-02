@@ -8,6 +8,14 @@ import com.favoriteplace.app.dto.MyPageDto;
 import java.util.List;
 
 public class MyPageConverter {
+    public static MyPageDto.MyInfoDto toMyInfoDto(Long doneRally, Long visitedPlace, Long posts, Long comments){
+        return MyPageDto.MyInfoDto.builder()
+                .doneRally(doneRally)
+                .visitedPlace(visitedPlace)
+                .posts(posts)
+                .comments(comments)
+                .build();
+    }
     public static MyPageDto.MyProfileDto toMyProfileDto (Member member){
         return MyPageDto.MyProfileDto.builder()
                 .nickname(member.getNickname())

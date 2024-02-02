@@ -41,7 +41,7 @@ public class PointHistory {
     private Long point;
 
     @Column(nullable = false)
-    private LocalDateTime dealt_at;
+    private LocalDateTime dealtAt;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

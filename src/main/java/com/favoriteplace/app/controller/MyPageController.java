@@ -2,13 +2,11 @@ package com.favoriteplace.app.controller;
 
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.dto.MyPageDto;
+import com.favoriteplace.app.service.MyPageCommandService;
 import com.favoriteplace.app.service.MyPageQueryService;
 import com.favoriteplace.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -17,6 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MyPageController {
     private final MyPageQueryService myPageQueryService;
+    private final MyPageCommandService myPageCommandService;
     private final SecurityUtil securityUtil;
 
     // 내 정보 (메인)
@@ -66,5 +65,14 @@ public class MyPageController {
     public MyPageDto.MyGuestBookDto getMyDoneBook(){
         Member member = securityUtil.getUser();
         return myPageQueryService.getMyDoneBook(member);
+    }
+
+    //사용자 block하기
+    @PostMapping("/blocks/{member_id}")
+    public MyPageDto.MyModifyBlockDto modifyMemberBlock(
+            @PathVariable("member_id") Long blockedMember
+    ){
+        Member member = securityUtil.getUser();
+        return myPageCommandService.modifyMemberBlock(member, blockedMember);
     }
 }

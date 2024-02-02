@@ -51,4 +51,5 @@ public class Rally extends BaseTimeEntity {
     public void addPilgrimage(){
         this.pilgrimageNumber += 1;
     }
+    public void addAchieveNumber() { this.achieveNumber += 1; }
 }

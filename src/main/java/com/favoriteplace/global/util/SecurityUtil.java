@@ -2,6 +2,8 @@ package com.favoriteplace.global.util;
 
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.repository.MemberRepository;
+import com.favoriteplace.global.exception.ErrorCode;
+import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.security.provider.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +24,6 @@ public class SecurityUtil {
 
     public Member getUser(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
         return memberRepository.findByEmail(authentication.getName()).get();
     }
 
@@ -35,6 +36,8 @@ public class SecurityUtil {
         String token = resolveToken(request);
 
         Authentication authentication = jwtTokenProvider.getAuthentication(token);
+
+        //TODO: 유저 없을 경우 예외처리
         return memberRepository.findByEmail(authentication.getName()).get();
     }
 
