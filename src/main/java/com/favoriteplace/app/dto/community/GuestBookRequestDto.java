@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 public class GuestBookRequestDto {
-
     @Getter
     @Builder
     @AllArgsConstructor

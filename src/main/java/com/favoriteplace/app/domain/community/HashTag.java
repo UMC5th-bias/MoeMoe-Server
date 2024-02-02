@@ -29,7 +29,7 @@ public class HashTag {
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "guest_book_id", nullable = false)
+    @JoinColumn(name = "guest_book_id", nullable = true)
     private GuestBook guestBook;
 
     @Column(nullable = false)

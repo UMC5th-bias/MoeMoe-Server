@@ -41,4 +41,5 @@ public interface VisitedPilgrimageRepository extends JpaRepository<VisitedPilgri
     Long findByVisitedCount(@Param("memberId")Long memberId);
     List<VisitedPilgrimage> findByPilgrimageAndMemberOrderByCreatedAtDesc(Pilgrimage pilgrimage, Member member);
     Long countByMemberIdAndPilgrimageIdIn(Long memberId, List<Long> pilgrimageIds);
+
 }
