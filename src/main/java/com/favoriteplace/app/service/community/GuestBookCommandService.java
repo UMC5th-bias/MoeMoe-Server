@@ -103,11 +103,14 @@ public class GuestBookCommandService {
         }
     }
 
-    /***
+    /**
      * 성지순례 방문 인증글 작성
-     * @param pilgrimageId 성지순례 아이디
      * @param member 인증한 사용자
+     * @param pilgrimageId 성지순례 아이디
+     * @param data json 폼
+     * @param images 이미지
      * @return
+     * @throws IOException
      */
     public PostResponseDto.SuccessResponseDto postGuestBook(Member member, Long pilgrimageId, GuestBookRequestDto.ModifyGuestBookDto data, List<MultipartFile> images) throws IOException {
         Pilgrimage pilgrimage = pilgrimageRepository
