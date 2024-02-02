@@ -127,7 +127,7 @@ public class GuestBookController {
         );
     }
 
-    @PostMapping("/{guestbook_id}")
+    @PostMapping("/{guestbook_id}/comments")
     public ResponseEntity<PostResponseDto.SuccessResponseDto> createGuestBookComment(
             @PathVariable("guestbook_id") Long guestbookId,
             @RequestBody GuestBookRequestDto.GuestBookCommentDto guestBookCommentDto
@@ -150,5 +150,16 @@ public class GuestBookController {
                 PostResponseDto.SuccessResponseDto.builder().message(message).build(),
                 HttpStatus.OK
         );
+    }
+
+    // 성지순례 장소 방문 인증글 작성하기
+    @PostMapping("/{pilgrimage_id}")
+    public PostResponseDto.SuccessResponseDto postToPilgrimage(
+            @PathVariable("pilgrimage_id") Long pilgrimageId,
+            @RequestPart GuestBookRequestDto.ModifyGuestBookDto data,
+            @RequestPart(required = false) List<MultipartFile> images
+    ) throws IOException {
+        Member member = securityUtil.getUser();
+        return guestBookCommandService.postGuestBook(member, pilgrimageId, data, images);
     }
 }
