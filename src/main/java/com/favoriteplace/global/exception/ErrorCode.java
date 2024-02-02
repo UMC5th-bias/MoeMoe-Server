@@ -48,8 +48,14 @@ public enum ErrorCode {
 
     // 아이템 (9000번대)
     ITEM_TYPE_NOT_FOUND(HttpStatus.BAD_REQUEST, 9001, "존재하지 않는 아이템 타입입니다."),
-    ITEM_NOT_EXISTS(HttpStatus.BAD_REQUEST, 9002, "없는 아이템입니다.");
+    ITEM_NOT_EXISTS(HttpStatus.BAD_REQUEST, 9002, "없는 아이템입니다."),
 
+    //댓글 (10000번대)
+    COMMENT_NOT_FOUND(HttpStatus.BAD_REQUEST, 10001, "댓글이 존재하지 않습니다."),
+
+    //이미지 (11000번대)
+    IMAGE_FORMAT_ERROR(HttpStatus.BAD_REQUEST, 11001, "올바른 이미지 파일이 아닙니다."),
+    IMAGE_NOT_READABLE(HttpStatus.BAD_REQUEST, 11002, "이미지 파일을 읽을 수 없습니다.");
 
     private final HttpStatus httpStatus;
     private final int code;

@@ -1,4 +1,4 @@
-package com.favoriteplace.app.service.sortStrategy;
+package com.favoriteplace.app.service.community.sortStrategy;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

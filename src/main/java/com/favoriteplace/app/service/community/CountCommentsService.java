@@ -1,4 +1,4 @@
-package com.favoriteplace.app.service;
+package com.favoriteplace.app.service.community;
 
 import com.favoriteplace.app.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class CountComments {
+public class CountCommentsService {
     private final CommentRepository commentRepository;
 
     Long countPostComments(Long postId){
