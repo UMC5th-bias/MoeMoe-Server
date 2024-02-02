@@ -53,8 +53,8 @@ public class MyPageConverter {
                 .userId(member.getId())
                 .nickname(member.getNickname())
                 .profileImg(member.getProfileImageUrl())
-                .userTitleImg(member.getProfileTitle().getImage().getUrl())
-                .userIconImg(member.getProfileIcon().getImage().getUrl())
+                .userTitleImg(member.getProfileTitle() != null?member.getProfileTitle().getImage().getUrl():null)
+                .userIconImg(member.getProfileIcon() != null?member.getProfileIcon().getImage().getUrl():null)
                 .build();
     }
 
