@@ -29,7 +29,6 @@ public class MyPageQueryService {
     private final LikedRallyRepository likedRallyRepository;
     private final VisitedPilgrimageRepository visitedPilgrimageRepository;
     private final CompleteRallyRepository completeRallyRepository;
-    private final VisitedPilgrimageRepository visitedPilgrimageRepository;
     private final CommentRepository commentRepository;
     private final GuestBookRepository guestBookRepository;
     private final PostRepository postRepository;
