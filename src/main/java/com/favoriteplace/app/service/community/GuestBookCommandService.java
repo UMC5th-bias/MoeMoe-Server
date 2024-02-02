@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class GuestBookCommandService {
     private final GuestBookRepository guestBookRepository;
     private final ImageRepository imageRepository;
@@ -77,19 +76,6 @@ public class GuestBookCommandService {
     }
 
     /**
-     * 성지순례 인증글에 댓글 추가
-     * @param member
-     * @param guestbookId
-     */
-    @Transactional
-    public void createGuestBookComment(Member member, Long guestbookId, GuestBookRequestDto.GuestBookCommentDto comment) {
-        GuestBook guestBook = guestBookRepository.findById(guestbookId).orElseThrow(() -> new RestApiException(ErrorCode.GUESTBOOK_NOT_FOUND));
-        Comment newComment = Comment.builder().member(member).guestBook(guestBook).content(comment.getContent()).build();
-        guestBook.addComment(newComment);
-        guestBookRepository.save(guestBook);
-    }
-
-    /**
      * 이미지가 여러개일 때, 이미지 처리하는 로직 (새로운 이미지 저장)
      * @param guestBook
      * @param images
@@ -115,26 +101,6 @@ public class GuestBookCommandService {
     private void checkAuthOfGuestBook(Member member, GuestBook guestBook){
         if(!member.getId().equals(guestBook.getMember().getId())){
             throw new RestApiException(ErrorCode.USER_NOT_AUTHOR);
-        }
-    }
-
-    /**
-     * 성지순례 인증글 추천(좋아요) 함수
-     * @param member
-     * @param guestbookId
-     * @return
-     */
-    @Transactional
-    public String modifyGuestBookLike(Member member, Long guestbookId) {
-        GuestBook guestBook = guestBookRepository.findById(guestbookId).orElseThrow(() -> new RestApiException(ErrorCode.GUESTBOOK_NOT_FOUND));
-        Boolean likeExists = likedPostRepository.existsByGuestBookIdAndMemberId(guestBook.getId(), member.getId());
-        if(likeExists){
-            likedPostRepository.deleteByGuestBookIdAndMemberId(guestBook.getId(), member.getId());
-            return "추천을 취소했습니다.";
-        }else{
-            LikedPost likedPost = LikedPost.builder().member(member).guestBook(guestBook).build();
-            likedPostRepository.save(likedPost);
-            return "추천을 완료했습니다.";
         }
     }
 

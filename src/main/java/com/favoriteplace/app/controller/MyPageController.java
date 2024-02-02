@@ -48,21 +48,21 @@ public class MyPageController {
 
     // 찜한 성지순례
     @GetMapping("/guestbooks/like")
-    public MyPageDto.MyGuestBookDto getMyLikedBook(){
+    public List<MyPageDto.MyGuestBookDto> getMyLikedBook(){
         Member member = securityUtil.getUser();
         return myPageQueryService.getMyLikedBook(member);
     }
 
     // 인증한 성지순례
     @GetMapping("/guestbooks/visited")
-    public MyPageDto.MyGuestBookDto getMyVisitedBook(){
+    public List<MyPageDto.MyGuestBookDto> getMyVisitedBook(){
         Member member = securityUtil.getUser();
         return myPageQueryService.getMyVisitedBook(member);
     }
 
     // 완료한 성지순례
     @GetMapping("/guestbooks/done")
-    public MyPageDto.MyGuestBookDto getMyDoneBook(){
+    public List<MyPageDto.MyGuestBookDto> getMyDoneBook(){
         Member member = securityUtil.getUser();
         return myPageQueryService.getMyDoneBook(member);
     }

@@ -1,4 +1,4 @@
-package com.favoriteplace.app.service;
+package com.favoriteplace.app.service.community;
 
 import com.favoriteplace.app.converter.GuestBookConverter;
 import com.favoriteplace.app.domain.Image;
@@ -11,10 +11,9 @@ import com.favoriteplace.app.repository.GuestBookRepository;
 import com.favoriteplace.app.repository.HashtagRepository;
 import com.favoriteplace.app.repository.ImageRepository;
 import com.favoriteplace.app.repository.LikedPostRepository;
-import com.favoriteplace.app.service.sortStrategy.SortStrategy;
+import com.favoriteplace.app.service.community.sortStrategy.SortStrategy;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
-import com.favoriteplace.global.gcpImage.ConvertUuidToUrl;
 import com.favoriteplace.global.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +38,7 @@ public class GuestBookQueryService {
     private final HashtagRepository hashtagRepository;
     private final SortStrategy<GuestBook> sortGuestBookByLatestStrategy;
     private final SortStrategy<GuestBook> sortGuestBookByLikedStrategy;
-    private final CountComments countComments;
+    private final CountCommentsService countCommentsService;
     private final SecurityUtil securityUtil;
 
     public List<TrendingPostResponseDto.TrendingPostRank> getTodayTrendingGuestBook() {
@@ -63,7 +62,7 @@ public class GuestBookQueryService {
         Pageable pageable = PageRequest.of(page-1, size);
         Page<GuestBook> myGuestBooks = guestBookRepository.findAllByMemberIdOrderByCreatedAtDesc(member.getId(), pageable);
         if(myGuestBooks.isEmpty()){return Page.empty();}
-        return myGuestBooks.map(guestBook -> GuestBookConverter.toGuestBook(guestBook, member.getNickname(), countComments.countGuestBookComments(guestBook.getId())));
+        return myGuestBooks.map(guestBook -> GuestBookConverter.toGuestBook(guestBook, member.getNickname(), countCommentsService.countGuestBookComments(guestBook.getId())));
     }
 
     public GuestBookResponseDto.GuestBookInfo getDetailGuestBookInfo(Long guestBookId, HttpServletRequest request) {
@@ -106,7 +105,7 @@ public class GuestBookQueryService {
         if(guestBooks.isEmpty()){return Page.empty();}
         return guestBooks.map(guestBook -> GuestBookConverter.toTotalGuestBookInfo(guestBook,
                 imageRepository.findFirstByGuestBook(guestBook),
-                countComments.countGuestBookComments(guestBook.getId()),
+                countCommentsService.countGuestBookComments(guestBook.getId()),
                 hashtagRepository.findAllByGuestBookId(guestBook.getId())));
     }
 

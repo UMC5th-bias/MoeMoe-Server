@@ -1,11 +1,12 @@
 package com.favoriteplace.app.controller;
 
 import com.favoriteplace.app.domain.Member;
-import com.favoriteplace.app.dto.community.CommentRequestDto;
-import com.favoriteplace.app.dto.community.CommentResponseDto;
 import com.favoriteplace.app.dto.community.PostRequestDto;
 import com.favoriteplace.app.dto.community.PostResponseDto;
 import com.favoriteplace.app.service.*;
+import com.favoriteplace.app.service.community.LikedPostService;
+import com.favoriteplace.app.service.community.PostCommandService;
+import com.favoriteplace.app.service.community.PostQueryService;
 import com.favoriteplace.global.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,6 @@ public class PostController {
     private final MemberService memberService;
     private final PostQueryService postQueryService;
     private final PostCommandService postCommandService;
-    private final CommentService commentService;
     private final LikedPostService likedPostService;
     private final SecurityUtil securityUtil;
 
@@ -41,22 +41,6 @@ public class PostController {
                 .build();
     }
 
-    @GetMapping("/{post_id}/comments")
-    public CommentResponseDto.PostCommentDto getPostComments(
-            @PathVariable("post_id") Long postId,
-            @RequestParam(required = false, defaultValue = "1") int page,
-            @RequestParam(required = false, defaultValue = "10") int size,
-            HttpServletRequest request
-    ){
-        Member member = securityUtil.getUserFromHeader(request);
-        Page<CommentResponseDto.PostComment> comments = commentService.getPostComments(member, page, size, postId);
-        return CommentResponseDto.PostCommentDto.builder()
-                .page((long)comments.getNumber()+1)
-                .size((long) comments.getSize())
-                .comment(comments.getContent())
-                .build();
-    }
-
     @GetMapping("/my-posts")
     public PostResponseDto.MyPostResponseDto getMyPosts(
             @RequestParam(required = false, defaultValue = "1") int page,
@@ -68,20 +52,6 @@ public class PostController {
                 .page((long)posts.getNumber() +1)
                 .size((long)posts.getSize())
                 .post(posts.getContent())
-                .build();
-    }
-
-    @GetMapping("/my-comments")
-    public PostResponseDto.MyCommentDto getMyComments(
-            @RequestParam(required = false, defaultValue = "1") int page,
-            @RequestParam(required = false, defaultValue = "10") int size
-    ){
-        Member member = securityUtil.getUser();
-        Page<PostResponseDto.MyComment> comments = commentService.getMyPostComments(member, page, size);
-        return PostResponseDto.MyCommentDto.builder()
-                .page((long) comments.getNumber()+1)
-                .size((long) comments.getSize())
-                .comment(comments.getContent())
                 .build();
     }
 
@@ -119,19 +89,6 @@ public class PostController {
         postCommandService.deletePost(postId, member);
         return new ResponseEntity<>(
                 PostResponseDto.SuccessResponseDto.builder().message("게시글이 성공적으로 삭제되었습니다.").build(),
-                HttpStatus.OK
-        );
-    }
-
-    @PostMapping("/{post_id}")
-    public ResponseEntity<PostResponseDto.SuccessResponseDto> createPostComment(
-            @PathVariable("post_id") long postId,
-            @RequestBody CommentRequestDto dto
-    ){
-        Member member = securityUtil.getUser();
-        commentService.createComment(member, postId, dto.getContent());
-        return new ResponseEntity<>(
-                PostResponseDto.SuccessResponseDto.builder().message("댓글을 성공적으로 등록했습니다.").build(),
                 HttpStatus.OK
         );
     }
