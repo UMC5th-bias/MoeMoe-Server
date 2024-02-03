@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
@@ -26,5 +27,9 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     Optional<Item> findAllByIdWithImage(@Param("item_id") Long itemID);
 
     Optional<Item> findByName(String name);
+
+    @Modifying
+    @Query("update Item i set i.category = 'NORMAL' where i.category = 'NEW'")
+    void changeCategory();
 
 }
