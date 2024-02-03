@@ -12,8 +12,10 @@ import com.favoriteplace.app.dto.item.ItemDto;
 import com.favoriteplace.app.dto.item.ItemDto.ItemDetailResDto;
 import com.favoriteplace.app.dto.item.ItemDto.ItemListDivideByCategory;
 import com.favoriteplace.app.dto.item.ItemDto.ItemListDivideBySaleStatus;
+import com.favoriteplace.app.dto.item.ItemDto.ItemPurchaseRes;
 import com.favoriteplace.app.repository.AcquiredItemRepository;
 import com.favoriteplace.app.repository.ItemRepository;
+import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -120,6 +122,21 @@ public class ShopService {
 
         return ShopConverter.totalNewItemList(titles, icons);
 
+    }
+
+    public ItemDto.ItemPurchaseRes buyItem(Long itemId) {
+        Boolean canBuy;
+        Member member = securityUtil.getUser();
+        if (member == null) {
+            throw new RestApiException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        Item item = itemRepository.findById(itemId)
+            .orElseThrow(() -> new RestApiException(ITEM_NOT_EXISTS));
+
+        canBuy = member.getPoint() >= item.getPoint() ? true : false;
+
+        return new ItemPurchaseRes(canBuy);
     }
 
     public List<ItemCategory> getItemCategories() {

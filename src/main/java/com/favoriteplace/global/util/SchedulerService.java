@@ -2,6 +2,7 @@ package com.favoriteplace.global.util;
 
 
 import com.favoriteplace.app.repository.ItemRepository;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ public class SchedulerService {
      */
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul") //매일 자정 실행
     public void run() {
-        itemRepository.changeCategory();
+        LocalDateTime now = LocalDateTime.now();
+        itemRepository.changeCategory(now.minusDays(7));
     }
 }

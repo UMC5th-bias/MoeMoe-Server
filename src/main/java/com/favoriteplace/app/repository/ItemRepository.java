@@ -20,7 +20,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
     @Query("SELECT i from Item i WHERE (i.category = 'NEW' or i.createdAt >= :now) and i.type = :type")
-    List<Item> findAllByNEWCategory(@Param("type") ItemType type, @Param("now")LocalDateTime now);
+    List<Item> findAllByNEWCategory(@Param("type") ItemType type, @Param("now") LocalDateTime now);
 
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
     @Query("SELECT it from Item it join fetch it.image im where it.id = :item_id")
@@ -29,7 +29,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     Optional<Item> findByName(String name);
 
     @Modifying
-    @Query("update Item i set i.category = 'NORMAL' where i.category = 'NEW'")
-    void changeCategory();
+    @Query("update Item i set i.category = 'NORMAL' where i.category = 'NEW' and i.createdAt < :now")
+    void changeCategory(@Param("now") LocalDateTime now);
 
 }
