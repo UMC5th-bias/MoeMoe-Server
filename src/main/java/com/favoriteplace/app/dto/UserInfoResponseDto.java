@@ -18,8 +18,8 @@ public class UserInfoResponseDto {
                 .id(member.getId())
                 .nickname(member.getNickname())
                 .profileImageUrl(member.getProfileImageUrl())
-                .profileTitleUrl(member.getProfileTitle().getImage()!= null ? member.getProfileTitle().getImage().getUrl() : null)
-                .profileIconUrl(member.getProfileIcon().getImage()!= null ? member.getProfileIcon().getImage().getUrl() : null)
+                .profileTitleUrl(member.getProfileTitle()!= null ? member.getProfileTitle().getImage().getUrl() : null)
+                .profileIconUrl(member.getProfileIcon()!= null ? member.getProfileIcon().getImage().getUrl() : null)
                 .build();
     }
 }
