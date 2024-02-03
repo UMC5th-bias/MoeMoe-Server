@@ -132,14 +132,13 @@ public class GuestBookCommandService {
                 .view(0L)
                 .build();
         GuestBook newGuestBook = guestBookRepository.save(guestBook);
-        List<HashTag> hashTagList = data.getHashtags().stream().map(hashTag -> {
+        data.getHashtags().stream().map(hashTag -> {
             HashTag newHashTag = HashTag.builder().tagName(hashTag).build();
             hashtagRepository.save(newHashTag);
             newGuestBook.setHashTag(newHashTag);
             return newHashTag;
         }).collect(Collectors.toList());
         setImageList(newGuestBook, images);
-        log.info("get image" + newGuestBook.getImages().get(0).getUrl());
         return PostResponseDto.SuccessResponseDto.builder().message("인증글 작성에 성공했습니다.").build();
     }
 }
