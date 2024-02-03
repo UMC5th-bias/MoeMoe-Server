@@ -48,6 +48,7 @@ public class MemberService {
     @Transactional
     public MemberDto.MemberDetailResDto signup(MemberSignUpReqDto memberSignUpReqDto, List<MultipartFile> images)
         throws IOException {
+        System.out.println(images.size() + "." + images.get(0).getName());
         memberRepository.findByEmail(memberSignUpReqDto.getEmail())
             .ifPresentOrElse(
                 existingMember -> {
@@ -61,7 +62,7 @@ public class MemberService {
         String uuid = null;
         String password = passwordEncoder.encode(memberSignUpReqDto.getPassword());
 
-        if(!(images == null)) {
+        if(!images.get(0).isEmpty()) {
             uuid = uploadImage.uploadImageToCloud(images.get(0));
         }
 
