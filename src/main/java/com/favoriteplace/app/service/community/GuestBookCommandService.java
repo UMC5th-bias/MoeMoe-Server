@@ -1,11 +1,13 @@
 package com.favoriteplace.app.service;
 
+import com.favoriteplace.app.converter.PointHistoryConverter;
 import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.Comment;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.HashTag;
 import com.favoriteplace.app.domain.community.LikedPost;
+import com.favoriteplace.app.domain.enums.PointType;
 import com.favoriteplace.app.domain.travel.Pilgrimage;
 import com.favoriteplace.app.domain.travel.VisitedPilgrimage;
 import com.favoriteplace.app.dto.CommonResponseDto;
@@ -36,6 +38,7 @@ public class GuestBookCommandService {
     private final PilgrimageRepository pilgrimageRepository;
     private final HashtagRepository hashtagRepository;
     private final VisitedPilgrimageRepository visitedPilgrimageRepository;
+    private final PointHistoryRepository pointHistoryRepository;
 
     /**
      * 성지순례 인증글 수정
@@ -140,6 +143,16 @@ public class GuestBookCommandService {
             return newHashTag;
         }).collect(Collectors.toList());
         setImageList(newGuestBook, images);
+
+        successPostAndPointProcess(member, pilgrimage);
+
         return PostResponseDto.SuccessResponseDto.builder().message("인증글 작성에 성공했습니다.").build();
+    }
+
+    public void successPostAndPointProcess(Member member, Pilgrimage pilgrimage) {
+        VisitedPilgrimage newVisited = VisitedPilgrimage.builder().pilgrimage(pilgrimage).member(member).build();
+        visitedPilgrimageRepository.save(newVisited);
+        pointHistoryRepository.save(PointHistoryConverter.toPointHistory(member, 20L, PointType.ACQUIRE));
+        member.updatePoint(20L);
     }
 }

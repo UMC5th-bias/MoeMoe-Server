@@ -131,31 +131,31 @@
 //
 //            GuestBook guestBook1 = GuestBook.builder().id(0L)
 //                    .member(member).pilgrimage(pilgrimage1)
-//                    .title("인증글1").content("인증글내용1").likeCount(5L).view(5L).latitude(1.1).longitude(1.1)
+//                    .title("인증글1").content("인증글내용1").likeCount(5L).view(5L)
 //                    .build();
 //            GuestBook guestBook2 = GuestBook.builder().id(1L)
 //                    .member(member).pilgrimage(pilgrimage1)
-//                    .title("인증글2").content("인증글내용2").likeCount(10L).view(10L).latitude(1.1).longitude(1.1)
+//                    .title("인증글2").content("인증글내용2").likeCount(10L).view(10L)
 //                    .build();
 //            GuestBook guestBook3 = GuestBook.builder()
 //                    .member(member).pilgrimage(pilgrimage1)
-//                    .title("인증글3").content("인증글내용3").likeCount(15L).view(15L).latitude(1.1).longitude(1.1)
+//                    .title("인증글3").content("인증글내용3").likeCount(15L).view(15L)
 //                    .build();
 //            GuestBook guestBook4 = GuestBook.builder()
 //                    .member(member).pilgrimage(pilgrimage2)
-//                    .title("인증글4").content("인증글내용4").likeCount(20L).view(20L).latitude(1.1).longitude(1.1)
+//                    .title("인증글4").content("인증글내용4").likeCount(20L).view(20L)
 //                    .build();
 //            GuestBook guestBook5 = GuestBook.builder()
 //                    .member(member).pilgrimage(pilgrimage2)
-//                    .title("인증글5").content("인증글내용5").likeCount(20L).view(20L).latitude(1.1).longitude(1.1)
+//                    .title("인증글5").content("인증글내용5").likeCount(20L).view(20L)
 //                    .build();
 //            GuestBook guestBook6 = GuestBook.builder()
 //                    .member(member).pilgrimage(pilgrimage2)
-//                    .title("인증글6").content("인증글내용6").likeCount(25L).view(25L).latitude(1.1).longitude(1.1)
+//                    .title("인증글6").content("인증글내용6").likeCount(25L).view(25L)
 //                    .build();
 //            GuestBook guestBook7 = GuestBook.builder()
 //                    .member(member).pilgrimage(pilgrimage2)
-//                    .title("인증글7").content("인증글내용7").likeCount(30L).view(30L).latitude(1.1).longitude(1.1)
+//                    .title("인증글7").content("인증글내용7").likeCount(30L).view(30L)
 //                    .build();
 //            em.merge(guestBook1);em.merge(guestBook2); em.merge(guestBook3); em.merge(guestBook4); em.merge(guestBook5); em.merge(guestBook6); em.merge(guestBook7);
 //
