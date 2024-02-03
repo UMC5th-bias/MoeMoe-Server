@@ -1,5 +1,6 @@
 package com.favoriteplace.app.service;
 
+import com.favoriteplace.app.converter.TrendingPostConverter;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.HashTag;
 import com.favoriteplace.app.domain.community.Post;
@@ -10,7 +11,6 @@ import com.favoriteplace.app.repository.HashtagRepository;
 import com.favoriteplace.app.repository.PostRepository;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
-import com.favoriteplace.global.util.DateTimeFormatUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -75,24 +75,13 @@ public class TotalPostService {
 
     private HomeResponseDto.TrendingPost convertToTodayTrendingPost(Object object, int rank){
         if(object instanceof GuestBook guestBook){
-            return HomeResponseDto.TrendingPost.builder()
-                    .id(guestBook.getId()).rank(rank).title(guestBook.getTitle())
-                    .profileImageUrl(guestBook.getMember().getProfileImageUrl())
-                    .profileIconUrl(guestBook.getMember().getProfileIcon().getImage().getUrl())
-                    .hashtags(hashtagRepository.findAllByGuestBookId(guestBook.getId()).stream()
-                            .map(HashTag::getTagName)
-                            .collect(Collectors.toList()))
-                    .passedTime(DateTimeFormatUtils.getPassDateTime(guestBook.getCreatedAt()))
-                    .board("성지순례 인증").build();
+            List<String> hashtags = hashtagRepository.findAllByGuestBookId(guestBook.getId()).stream()
+                    .map(HashTag::getTagName)
+                    .toList();
+            return TrendingPostConverter.toTrendingPost(guestBook, rank, hashtags);
         }
         else if(object instanceof Post post){
-            return HomeResponseDto.TrendingPost.builder()
-                    .id(post.getId()).rank(rank).title(post.getTitle())
-                    .profileImageUrl(post.getMember().getProfileImageUrl())
-                    .profileIconUrl(post.getMember().getProfileIcon().getImage().getUrl())
-                    .hashtags(new ArrayList<>())
-                    .passedTime(DateTimeFormatUtils.getPassDateTime(post.getCreatedAt()))
-                    .board("자유게시판").build();
+            return TrendingPostConverter.toTrendingPost(post, rank);
         }
         else{
             throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);

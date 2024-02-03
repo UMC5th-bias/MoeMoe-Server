@@ -1,4 +1,4 @@
-package com.favoriteplace.app.service;
+package com.favoriteplace.app.service.community;
 
 import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.Member;
@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class GuestBookCommandService {
     private final GuestBookRepository guestBookRepository;
     private final ImageRepository imageRepository;
