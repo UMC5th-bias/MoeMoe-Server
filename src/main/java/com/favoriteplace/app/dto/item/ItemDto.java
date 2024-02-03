@@ -103,4 +103,13 @@ public class ItemDto {
         private Integer point;
     }
 
+    @Getter
+    public static class ItemPurchaseRes {
+        private Boolean canBuy;
+
+        public ItemPurchaseRes(Boolean canBuy) {
+            this.canBuy = canBuy;
+        }
+    }
+
 }
