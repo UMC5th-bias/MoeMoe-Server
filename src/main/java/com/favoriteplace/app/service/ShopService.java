@@ -18,6 +18,7 @@ import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import java.lang.reflect.Array;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -103,8 +104,11 @@ public class ShopService {
     }
 
     public ItemDto.NewItemListResDto getNewItemList() {
-        List<Item> titleItemList = itemRepository.findAllByNEWCategory(ItemType.TITLE);
-        List<Item> iconItemList = itemRepository.findAllByNEWCategory(ItemType.ICON);
+        LocalDateTime now = LocalDateTime.now();
+        List<Item> titleItemList = itemRepository.findAllByNEWCategory(ItemType.TITLE, now.minusDays(7));
+        List<Item> iconItemList = itemRepository.findAllByNEWCategory(ItemType.ICON, now.minusDays(7));
+
+        System.out.println(LocalDateTime.now());
 
         List<ItemListDivideBySaleStatus> titles = null;
         List<ItemListDivideBySaleStatus> icons = null;
