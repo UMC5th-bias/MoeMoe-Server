@@ -119,14 +119,4 @@ public class PilgrimageCommandService {
         visitedPilgrimageRepository.save(newVisited);
         pointHistoryRepository.save(PointHistoryConverter.toPointHistory(member, 15L, PointType.ACQUIRE));
     }
-
-    /***
-     * 성지순례 방문 인증글 작성하기
-     * @param pilgrimageId 성지순례 아이디
-     * @param member 인증한 사용자
-     * @return
-     */
-    public CommonResponseDto.PostResponseDto postToPilgrimage(Long pilgrimageId, Member member) {
-        return null;
-    }
 }

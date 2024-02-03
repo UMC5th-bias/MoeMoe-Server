@@ -2,6 +2,7 @@ package com.favoriteplace.app.converter;
 
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.item.Item;
+import com.favoriteplace.app.domain.travel.Rally;
 import com.favoriteplace.app.dto.MyPageDto;
 
 import java.util.List;
@@ -54,6 +55,16 @@ public class MyPageConverter {
                 .profileImg(member.getProfileImageUrl())
                 .userTitleImg(member.getProfileTitle().getImage().getUrl())
                 .userIconImg(member.getProfileIcon().getImage().getUrl())
+                .build();
+    }
+
+    public static MyPageDto.MyGuestBookDto toMyGuestBookDto(Rally rally, Long myPilgrimageNumber) {
+        return MyPageDto.MyGuestBookDto.builder()
+                .id(rally.getId())
+                .title(rally.getName())
+                .pilgrimageNumber(rally.getPilgrimageNumber())
+                .myPilgrimageNumber(myPilgrimageNumber)
+                .imageUrl(rally.getImage().getUrl())
                 .build();
     }
 }

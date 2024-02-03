@@ -1,8 +1,8 @@
 package com.favoriteplace.app.controller;
 
 import com.favoriteplace.app.dto.community.TrendingPostResponseDto;
-import com.favoriteplace.app.service.GuestBookQueryService;
-import com.favoriteplace.app.service.PostQueryService;
+import com.favoriteplace.app.service.community.GuestBookQueryService;
+import com.favoriteplace.app.service.community.PostQueryService;
 import com.favoriteplace.app.service.TotalPostService;
 import com.favoriteplace.global.util.DateTimeFormatUtils;
 import lombok.RequiredArgsConstructor;

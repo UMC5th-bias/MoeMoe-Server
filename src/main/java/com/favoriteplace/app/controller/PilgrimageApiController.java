@@ -2,6 +2,8 @@ package com.favoriteplace.app.controller;
 
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.dto.CommonResponseDto;
+import com.favoriteplace.app.dto.community.GuestBookRequestDto;
+import com.favoriteplace.app.dto.community.PostResponseDto;
 import com.favoriteplace.app.dto.travel.PilgrimageDto;
 import com.favoriteplace.app.dto.travel.RallyDto;
 import com.favoriteplace.app.service.PilgrimageCommandService;
@@ -13,8 +15,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -108,12 +113,5 @@ public class PilgrimageApiController {
             @RequestBody PilgrimageDto.PilgrimageCertifyRequestDto form){
         Member member = securityUtil.getUser();
         return pilgrimageCommandService.certifyToPilgrimage(pilgrimageId, member, form);
-    }
-
-    // 성지순례 장소 방문 인증글 작성하기
-    @PostMapping("/guestbooks/{pilgrimage_id}")
-    public CommonResponseDto.PostResponseDto postToPilgrimage(@PathVariable("pilgrimage_id")Long pilgrimageId){
-        Member member = securityUtil.getUser();
-        return pilgrimageCommandService.postToPilgrimage(pilgrimageId, member);
     }
 }

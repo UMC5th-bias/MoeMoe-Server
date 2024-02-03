@@ -29,6 +29,7 @@ public enum ErrorCode {
     PILGRIMAGE_NOT_FOUND(HttpStatus.BAD_REQUEST, 3001, "성지순례 정보를 찾을 수 없습니다."),
     PILGRIMAGE_ALREADY_CERTIFIED(HttpStatus.BAD_REQUEST, 3002, "인증 후 24시간이 지나야 재인증할 수 있습니다."),
     PILGRIMAGE_CAN_NOT_CERTIFIED(HttpStatus.BAD_REQUEST, 3003, "인증 장소와 현재 위치의 거리가 너무 멉니다."),
+    PILGRIMAGE_NOT_CERTIFIED(HttpStatus.BAD_REQUEST, 3004, "인증글은 인증 후 작성할 수 있습니다."),
 
     //Rally (4000번대)
     RALLY_NOT_FOUND(HttpStatus.BAD_REQUEST, 4001, "랠리 정보를 찾을 수 없습니다."),
@@ -48,8 +49,14 @@ public enum ErrorCode {
 
     // 아이템 (9000번대)
     ITEM_TYPE_NOT_FOUND(HttpStatus.BAD_REQUEST, 9001, "존재하지 않는 아이템 타입입니다."),
-    ITEM_NOT_EXISTS(HttpStatus.BAD_REQUEST, 9002, "없는 아이템입니다.");
+    ITEM_NOT_EXISTS(HttpStatus.BAD_REQUEST, 9002, "없는 아이템입니다."),
 
+    //댓글 (10000번대)
+    COMMENT_NOT_FOUND(HttpStatus.BAD_REQUEST, 10001, "댓글이 존재하지 않습니다."),
+
+    //이미지 (11000번대)
+    IMAGE_FORMAT_ERROR(HttpStatus.BAD_REQUEST, 11001, "올바른 이미지 파일이 아닙니다."),
+    IMAGE_NOT_READABLE(HttpStatus.BAD_REQUEST, 11002, "이미지 파일을 읽을 수 없습니다.");
 
     private final HttpStatus httpStatus;
     private final int code;
