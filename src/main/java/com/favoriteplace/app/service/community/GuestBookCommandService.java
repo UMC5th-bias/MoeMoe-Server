@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class GuestBookCommandService {
     private final GuestBookRepository guestBookRepository;
     private final ImageRepository imageRepository;
