@@ -2,6 +2,7 @@ package com.favoriteplace.app.converter;
 
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.Comment;
+import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.Post;
 import com.favoriteplace.app.dto.UserInfoResponseDto;
 import com.favoriteplace.app.dto.community.CommentResponseDto;
@@ -12,15 +13,17 @@ import com.favoriteplace.global.util.DateTimeFormatUtils;
 public class CommentConverter {
 
     public static GuestBookResponseDto.MyGuestBookComment toMyGuestBookComment(Comment comment, Long comments) {
+        GuestBook guestBook = comment.getGuestBook();
         return GuestBookResponseDto.MyGuestBookComment.builder()
                 .id(comment.getId()).content(comment.getContent()).passedTime(DateTimeFormatUtils.getPassDateTime(comment.getCreatedAt()))
                 .guestBook(GuestBookResponseDto.GuestBook.builder()
-                        .id(comment.getGuestBook().getId())
-                        .title(comment.getGuestBook().getTitle())
-                        .nickname(comment.getGuestBook().getMember().getNickname())
-                        .views(comment.getGuestBook().getView())
-                        .likes(comment.getGuestBook().getLikeCount())
+                        .id(guestBook.getId())
+                        .title(guestBook.getTitle())
+                        .nickname(guestBook.getMember().getNickname())
+                        .views(guestBook.getView())
+                        .likes(guestBook.getLikeCount())
                         .comments(comments)
+                        .passedTime(DateTimeFormatUtils.getPassDateTime(guestBook.getCreatedAt()))
                         .build())
                 .build();
     }
