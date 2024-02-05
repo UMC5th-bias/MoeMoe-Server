@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class SearchGuestBookByTitle implements SearchStrategy<GuestBook> {
     private final GuestBookRepository guestBookRepository;
     @Override
-    public Page<GuestBook> search(Pageable pageable) {
-        return null;
+    public Page<GuestBook> search(String keyword, Pageable pageable) {
+        return guestBookRepository.searchByTitleUsingKeyword(keyword.trim(), pageable);
     }
 }

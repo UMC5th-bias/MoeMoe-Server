@@ -10,6 +10,12 @@ import com.favoriteplace.app.repository.CommentRepository;
 import com.favoriteplace.app.repository.ImageRepository;
 import com.favoriteplace.app.repository.LikedPostRepository;
 import com.favoriteplace.app.repository.PostRepository;
+import com.favoriteplace.app.service.community.searchStrategy.SearchPostByContent;
+import com.favoriteplace.app.service.community.searchStrategy.SearchPostByNickname;
+import com.favoriteplace.app.service.community.searchStrategy.SearchPostByTitle;
+import com.favoriteplace.app.service.community.searchStrategy.SearchStrategy;
+import com.favoriteplace.app.service.community.sortStrategy.SortPostByLatestStrategy;
+import com.favoriteplace.app.service.community.sortStrategy.SortPostByLikedStrategy;
 import com.favoriteplace.app.service.community.sortStrategy.SortStrategy;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
@@ -37,14 +43,12 @@ public class PostQueryService {
     private final PostRepository postRepository;
     private final ImageRepository imageRepository;
     private final LikedPostRepository likedPostRepository;
-    private final CommentRepository commentRepository;
-    private final SortStrategy<Post> sortPostByLatestStrategy;
-    private final SortStrategy<Post> sortPostByLikedStrategy;
-    private final UploadImage uploadImage;
+    private final SortPostByLatestStrategy sortPostByLatestStrategy;
+    private final SortPostByLikedStrategy sortPostByLikedStrategy;
+    private final SearchPostByTitle searchPostByTitle;
+    private final SearchPostByNickname searchPostByNickname;
+    private final SearchPostByContent searchPostByContent;
     private final SecurityUtil securityUtil;
-
-//    @Value("${spring.cloud.gcp.storage.bucket}")
-//    private String bucketName;
 
     /**
      * 자유게시글 전체 글들을 페이징해서 가져오기
@@ -61,12 +65,10 @@ public class PostQueryService {
         }else if("liked".equals(sort)) {
             sortStrategy = sortPostByLikedStrategy;
         }else{
-            throw new RestApiException(ErrorCode.SORT_KEYWORD_NOT_ALLOWED);
+            throw new RestApiException(ErrorCode.SORT_TYPE_NOT_ALLOWED);
         }
         Page<Post> sortedPosts = sortStrategy.sort(pageable);
-        if(sortedPosts.isEmpty()){
-            return Page.empty();
-        }
+        if(sortedPosts.isEmpty()){return Page.empty();}
         return sortedPosts.map(post -> PostConverter.toMyPost(post, post.getMember(), countPostComment(post)));
     }
 
@@ -78,11 +80,22 @@ public class PostQueryService {
      * @param keyword
      * @return
      */
-    //TODO
     public Page<PostResponseDto.MyPost> getTotalPostByKeyword(int page, int size, String searchType, String keyword) {
         Pageable pageable = PageRequest.of(page-1, size);
-
-        return null;
+        SearchStrategy<Post> searchStrategy;
+        if("title".equals(searchType)){
+            searchStrategy = searchPostByTitle;
+        } else if ("nickname".equals(searchType)) {
+            searchStrategy = searchPostByNickname;
+        } else if ("content".equals(searchType)) {
+            searchStrategy = searchPostByContent;
+        } else {
+            throw new RestApiException(ErrorCode.SEARCH_TYPE_NOT_ALLOWED);
+        }
+        if(keyword.trim().isEmpty()){return Page.empty();}
+        Page<Post> postPage = searchStrategy.search(keyword, pageable);
+        if(postPage.isEmpty()){return Page.empty();}
+        return postPage.map(post -> PostConverter.toMyPost(post, post.getMember(), countPostComment(post)));
     }
 
     /**
@@ -155,10 +168,9 @@ public class PostQueryService {
      * @return
      */
     public Long countPostComment(Post post){
-        return commentRepository.countByPostId(post.getId()) != null ? commentRepository.countByPostId(post.getId()) : 0L;
+        return (long) post.getComments().size();
+        //return commentRepository.countByPostId(post.getId()) != null ? commentRepository.countByPostId(post.getId()) : 0L;
     }
-
-
 
     /**
      * 게시글의 조회수를 증가하는 함수
@@ -171,6 +183,5 @@ public class PostQueryService {
         post.increaseView();
         postRepository.save(post);
     }
-
 
 }

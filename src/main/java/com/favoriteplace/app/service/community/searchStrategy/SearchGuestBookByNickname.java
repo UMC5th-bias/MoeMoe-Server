@@ -14,7 +14,7 @@ public class SearchGuestBookByNickname implements SearchStrategy<GuestBook> {
     private final GuestBookRepository guestBookRepository;
 
     @Override
-    public Page<GuestBook> search(Pageable pageable) {
-        return null;
+    public Page<GuestBook> search(String keyword, Pageable pageable) {
+        return guestBookRepository.searchByNicknameUsingKeyword(keyword.trim(), pageable);
     }
 }

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class SearchPostByNickname implements SearchStrategy<Post>{
     private final PostRepository postRepository;
     @Override
-    public Page<Post> search(Pageable pageable) {
-        return null;
+    public Page<Post> search(String keyword, Pageable pageable) {
+        return postRepository.searchByNicknameUsingKeyword(keyword.trim(), pageable);
     }
 }

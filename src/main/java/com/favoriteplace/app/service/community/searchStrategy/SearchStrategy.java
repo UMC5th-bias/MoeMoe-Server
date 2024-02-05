@@ -4,5 +4,5 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface SearchStrategy<T> {
-    Page<T> search(Pageable pageable);
+    Page<T> search(String keyword, Pageable pageable);
 }

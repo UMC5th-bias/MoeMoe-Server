@@ -69,7 +69,6 @@ public class PostController {
                 .build();
     }
 
-    //TODO
     @GetMapping("/search")
     public PostResponseDto.MyPostResponseDto getTotalPostByKeyword(
             @RequestParam(required = false, defaultValue = "1") int page,
