@@ -57,7 +57,7 @@ public class GuestBookQueryService {
         return trendingPostsRank;
     }
 
-    public Page<GuestBookResponseDto.GuestBook> getMyGuestBooks(int page, int size) {
+    public Page<GuestBookResponseDto.MyGuestBookInfo> getMyGuestBooks(int page, int size) {
         Member member = securityUtil.getUser();
         Pageable pageable = PageRequest.of(page-1, size);
         Page<GuestBook> myGuestBooks = guestBookRepository.findAllByMemberIdOrderByCreatedAtDesc(member.getId(), pageable);

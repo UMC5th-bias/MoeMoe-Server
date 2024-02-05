@@ -71,6 +71,21 @@ public class PostQueryService {
     }
 
     /**
+     * searchType(제목, 닉네임, 내용)을 기반으로 게시글을 가져오는 함 (게시글 생성일의 내림차순으로 정렬)
+     * @param page
+     * @param size
+     * @param searchType
+     * @param keyword
+     * @return
+     */
+    //TODO
+    public Page<PostResponseDto.MyPost> getTotalPostByKeyword(int page, int size, String searchType, String keyword) {
+        Pageable pageable = PageRequest.of(page-1, size);
+
+        return null;
+    }
+
+    /**
      * 내가 작성한 글들 페이징 해서 보여주는 함수
      * @param page
      * @param size
@@ -134,8 +149,6 @@ public class PostQueryService {
                 .orElse(Collections.emptyList());
     }
 
-
-
     /**
      * 게시글의 댓글이 몇개인지 counting하는 함수
      * @param post
@@ -158,4 +171,6 @@ public class PostQueryService {
         post.increaseView();
         postRepository.save(post);
     }
+
+
 }

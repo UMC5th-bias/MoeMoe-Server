@@ -16,7 +16,7 @@ public class CommentConverter {
         GuestBook guestBook = comment.getGuestBook();
         return GuestBookResponseDto.MyGuestBookComment.builder()
                 .id(comment.getId()).content(comment.getContent()).passedTime(DateTimeFormatUtils.getPassDateTime(comment.getCreatedAt()))
-                .guestBook(GuestBookResponseDto.GuestBook.builder()
+                .myGuestBookInfo(GuestBookResponseDto.MyGuestBookInfo.builder()
                         .id(guestBook.getId())
                         .title(guestBook.getTitle())
                         .nickname(guestBook.getMember().getNickname())
