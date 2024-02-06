@@ -3,6 +3,7 @@ package com.favoriteplace.app.converter;
 import com.favoriteplace.app.domain.travel.Address;
 import com.favoriteplace.app.domain.travel.Pilgrimage;
 import com.favoriteplace.app.domain.travel.Rally;
+import com.favoriteplace.app.dto.travel.PilgrimageDto;
 import com.favoriteplace.app.dto.travel.RallyDto;
 
 import java.util.List;
@@ -81,4 +82,27 @@ public class RallyConverter {
                 .build();
     }
 
+    public static RallyDto.SearchAnimeDto toSearchAnimeDto(Rally rally, Long visitedPilgrimages) {
+        return RallyDto.SearchAnimeDto.builder()
+                .name(rally.getName())
+                .pilgrimageNumber(rally.getPilgrimageNumber())
+                .myPilgrimageNumber(visitedPilgrimages)
+                .image(rally.getImage().getUrl())
+                .build();
+    }
+
+    public static RallyDto.SearchRegionDto toSearchRegionDto(String name, List<RallyDto.SearchRegionDetailDto> pilgrimages) {
+        return RallyDto.SearchRegionDto.builder()
+                .address(name)
+                .rallies(pilgrimages)
+                .build();
+    }
+
+    public static RallyDto.SearchRegionDetailDto toSearchRegionDetailDto(Pilgrimage pilgrimage){
+        return RallyDto.SearchRegionDetailDto.builder()
+                .name(pilgrimage.getRallyName())
+                .image(pilgrimage.getVirtualImage().getUrl())
+                .detailAddress(pilgrimage.getDetailAddress())
+                .build();
+    }
 }
