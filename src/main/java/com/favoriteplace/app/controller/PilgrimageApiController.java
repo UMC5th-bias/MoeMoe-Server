@@ -1,6 +1,7 @@
 package com.favoriteplace.app.controller;
 
 import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.domain.travel.Rally;
 import com.favoriteplace.app.dto.CommonResponseDto;
 import com.favoriteplace.app.dto.community.GuestBookRequestDto;
 import com.favoriteplace.app.dto.community.PostResponseDto;
@@ -113,5 +114,25 @@ public class PilgrimageApiController {
             @RequestBody PilgrimageDto.PilgrimageCertifyRequestDto form){
         Member member = securityUtil.getUser();
         return pilgrimageCommandService.certifyToPilgrimage(pilgrimageId, member, form);
+    }
+
+    // 성지순례 애니 별 검색
+    @GetMapping("/category")
+    public List<RallyDto.SearchAnimeDto> searchAnime(HttpServletRequest request, @RequestParam String value){
+        Member member = securityUtil.getUserFromHeader(request);
+        if (value.equals("")){
+            throw new RestApiException(ErrorCode.RALLY_NOT_FOUND);
+        }
+        return pilgrimageQueryService.searchAnime(value, member);
+    }
+
+    // 성지순례 지역 별 검색
+    @GetMapping("/category/region")
+    public List<RallyDto.SearchRegionDto> searchRegion(HttpServletRequest request, @RequestParam String value){
+        Member member = securityUtil.getUserFromHeader(request);
+        if (value.equals("")){
+            throw new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND);
+        }
+        return pilgrimageQueryService.searchRegion(value, member);
     }
 }

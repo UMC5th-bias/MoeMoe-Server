@@ -5,6 +5,9 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static lombok.AccessLevel.PRIVATE;
+import static lombok.AccessLevel.PROTECTED;
+
 
 public class RallyDto {
     @Builder
@@ -74,5 +77,35 @@ public class RallyDto {
         Long pilgrimageNumber;
         Long myPilgrimageNumber;
         String image;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor(access = PROTECTED)
+    @AllArgsConstructor(access = PRIVATE)
+    public static class SearchAnimeDto {
+        String name;
+        Long pilgrimageNumber;
+        Long myPilgrimageNumber;
+        String image;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor(access = PROTECTED)
+    @AllArgsConstructor(access = PRIVATE)
+    static public class SearchRegionDto {
+        String address;
+        List<SearchRegionDetailDto> rallies;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor(access = PROTECTED)
+    @AllArgsConstructor(access = PRIVATE)
+    public static class SearchRegionDetailDto {
+        String name;
+        String image;
+        String detailAddress;
     }
 }
