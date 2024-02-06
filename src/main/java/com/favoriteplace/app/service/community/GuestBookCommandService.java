@@ -24,8 +24,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,7 +62,7 @@ public class GuestBookCommandService {
         if(!hashtags.isEmpty()){
             hashtags.forEach(hashtag -> guestBook.setHashTag(HashTag.builder().tagName(hashtag).build()));
         }
-        setImageList(guestBook, images);
+        if(images != null){setImageList(guestBook, images);}
         guestBookRepository.save(guestBook);
     }
 
@@ -84,15 +86,28 @@ public class GuestBookCommandService {
      * @throws IOException
      */
     private void setImageList(GuestBook guestBook, List<MultipartFile> images) throws IOException {
-        if(images != null){
-            for(MultipartFile image:images){
-                if(!image.isEmpty()){
-                    String uuid = uploadImage.uploadImageToCloud(image);
-                    Image newImage = Image.builder().url(ConvertUuidToUrl.convertUuidToUrl(uuid)).build();
-                    guestBook.setImage(newImage);
-                }
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+        for(MultipartFile image:images){
+            if(!image.isEmpty()){
+                CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+                    try {
+                        String uuid = uploadImage.uploadImageToCloud(image);
+                        Image newImage = Image.builder().url(ConvertUuidToUrl.convertUuidToUrl(uuid)).build();
+                        guestBook.setImage(newImage);
+                    } catch (IOException e) {
+                        throw new RestApiException(ErrorCode.IMAGE_CANNOT_UPLOAD);
+                    }
+                });
+                futures.add(future);
             }
+//            if(!image.isEmpty()){
+//                String uuid = uploadImage.uploadImageToCloud(image);
+//                Image newImage = Image.builder().url(ConvertUuidToUrl.convertUuidToUrl(uuid)).build();
+//                guestBook.setImage(newImage);
+//            }
         }
+        // 작업 다 끝날때 까지 기다림
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
     }
 
     /**
@@ -142,7 +157,7 @@ public class GuestBookCommandService {
             newGuestBook.setHashTag(newHashTag);
             return newHashTag;
         }).collect(Collectors.toList());
-        setImageList(newGuestBook, images);
+        if(images != null){setImageList(newGuestBook, images);}
 
         successPostAndPointProcess(member, pilgrimage);
 
