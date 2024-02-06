@@ -59,7 +59,7 @@ public enum ErrorCode {
     IMAGE_FORMAT_ERROR(HttpStatus.BAD_REQUEST, 11001, "올바른 이미지 파일이 아닙니다."),
     IMAGE_NOT_READABLE(HttpStatus.BAD_REQUEST, 11002, "이미지 파일을 읽을 수 없습니다."),
     IMAGE_CANNOT_UPLOAD(HttpStatus.BAD_REQUEST, 11003, "이미지 파일을 업로드할 수 없습니다."),
-    IMAGE_SIZE_TOO_BIG(HttpStatus.BAD_REQUEST, 11004, "이미지 파일의 사이즈가 4MB를 넘어갈 수 없습니다.");
+    IMAGE_SIZE_TOO_BIG(HttpStatus.PAYLOAD_TOO_LARGE, 11004, "각각의 이미지 파일의 사이즈가 4MB를 넘어갈 수 없습니다.");
 
     private final HttpStatus httpStatus;
     private final int code;

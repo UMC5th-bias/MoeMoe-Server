@@ -58,11 +58,6 @@ public class UploadImage {
         try (InputStream originalInputStream = multipartFile.getInputStream();
              ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 
-            // 파일 크기가 4MB 이상인지 확인
-            if (multipartFile.getSize() > 4L * 1024 * 1024) {
-                throw new RestApiException(ErrorCode.IMAGE_SIZE_TOO_BIG);
-            }
-
             // 이미지 파일을 올바르게 읽어오는지 확인
             if (!isImageFile(multipartFile)) {
                 throw new RestApiException(ErrorCode.IMAGE_FORMAT_ERROR);
