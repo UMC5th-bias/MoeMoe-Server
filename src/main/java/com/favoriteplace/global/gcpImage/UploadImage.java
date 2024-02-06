@@ -18,6 +18,8 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import static java.time.LocalDateTime.*;
@@ -35,26 +37,31 @@ public class UploadImage {
     public String uploadImageToCloud(MultipartFile image) throws IOException {
         String uuid = UUID.randomUUID().toString();
         LocalDateTime now = now();
-        log.info(String.valueOf("1 : " + ChronoUnit.MILLIS.between(now, now())));
+        //log.info(String.valueOf("1 : " + ChronoUnit.MILLIS.between(now, now())));
         String ext = image.getContentType();
-        InputStream resizedImage = resize(image, 500, 500);
-        log.info(String.valueOf("2 : " + ChronoUnit.MILLIS.between(now, now())));
+        InputStream resizedImage = resize(image, 800, 800);
+        //log.info(String.valueOf("2 : " + ChronoUnit.MILLIS.between(now, now())));
 
         //Cloud에 이미지 업로드
         BlobInfo blobInfo = storage.create(
                 BlobInfo.newBuilder(bucketName, uuid)
                         .setContentType(ext)
                         .build(),
-                //image.getInputStream()
                 resizedImage
         );
-        log.info(String.valueOf("3 : " +ChronoUnit.MILLIS.between(now, now())));
+        //log.info(String.valueOf("3 : " +ChronoUnit.MILLIS.between(now, now())));
         return uuid;
     }
+
 
     public InputStream resize(MultipartFile multipartFile, int width, int height) throws IOException {
         try (InputStream originalInputStream = multipartFile.getInputStream();
              ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+
+            // 파일 크기가 4MB 이상인지 확인
+            if (multipartFile.getSize() > 4L * 1024 * 1024) {
+                throw new RestApiException(ErrorCode.IMAGE_SIZE_TOO_BIG);
+            }
 
             // 이미지 파일을 올바르게 읽어오는지 확인
             if (!isImageFile(multipartFile)) {
