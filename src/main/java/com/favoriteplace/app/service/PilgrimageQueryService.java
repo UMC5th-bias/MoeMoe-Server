@@ -14,7 +14,6 @@ import com.favoriteplace.app.dto.travel.RallyDto;
 import com.favoriteplace.app.repository.*;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -299,5 +298,37 @@ public class PilgrimageQueryService {
         List<Pilgrimage> pilgrimages = pilgrimageRepository.findByRallyId(rallyId);
         List<Long> pilgrimageIds = pilgrimages.stream().map(Pilgrimage::getId).toList();
         return visitedPilgrimageRepository.countByMemberIdAndPilgrimageIdIn(memberId, pilgrimageIds);
+    }
+
+    /**
+     * 애니메이션 별 랠리 검색
+     * @param value 검색어
+     * @param member 사용자
+     * @return
+     */
+    public List<RallyDto.SearchAnimeDto> searchAnime(String value, Member member) {
+        List<Rally> rallyList = rallyRepository.findByName(value);
+        return rallyList.stream().map(rally -> {
+            Long visitedPilgrimages = 0L;
+            if (member != null) {
+                visitedPilgrimages = visitedPilgrimageRepository.findByDistinctCount(member.getId(), rally.getId());
+            }
+            return RallyConverter.toSearchAnimeDto(rally, visitedPilgrimages);
+        }).collect(Collectors.toList());
+    }
+
+    public List<RallyDto.SearchRegionDto> searchRegion(String value, Member member) {
+        List<Address> addressList = addressRepository.findByStateOrDistrictContaining(value);
+
+        return addressList.stream().map(address-> {
+            log.info("address=" + address.getState()+' '+address.getDistrict());
+            List<Pilgrimage> pilgrimages = pilgrimageRepository.findByAddress(address);
+            String name = address.getState() + ' ' + address.getDistrict();
+            List<RallyDto.SearchRegionDetailDto> resultList = pilgrimages.stream()
+                    .map(pilgrimage -> {
+                        return RallyConverter.toSearchRegionDetailDto(pilgrimage);
+                    }).collect(Collectors.toList());
+            return RallyConverter.toSearchRegionDto(name, resultList);
+        }).collect(Collectors.toList());
     }
 }

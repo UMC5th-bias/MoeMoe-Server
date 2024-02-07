@@ -28,14 +28,14 @@ public class GuestBookResponseDto {
         private Long id;
         private String content;
         private String passedTime;
-        private GuestBook guestBook;
+        private MyGuestBookInfo myGuestBookInfo;
     }
 
     @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class GuestBook{
+    public static class MyGuestBookInfo {
         private Long id;
         private String title;
         private String nickname;
@@ -52,7 +52,7 @@ public class GuestBookResponseDto {
     public static class MyGuestBookDto{
         private Long page;
         private Long size;
-        private List<GuestBook> guestBook;
+        private List<MyGuestBookInfo> myGuestBookInfo;
     }
 
     @Getter

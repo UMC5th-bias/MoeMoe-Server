@@ -39,7 +39,7 @@ public class TrendingPostResponseDto {
         public static TrendingPostRank of(GuestBook guestBook) {
             return TrendingPostRank.builder()
                     .id(guestBook.getId())
-                    .title(guestBook.getContent())
+                    .title(guestBook.getTitle())
                     .build();
         }
     }

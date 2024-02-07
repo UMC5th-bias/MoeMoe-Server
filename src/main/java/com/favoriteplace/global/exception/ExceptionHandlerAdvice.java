@@ -1,16 +1,19 @@
 package com.favoriteplace.global.exception;
 
+import static com.favoriteplace.global.exception.ErrorCode.IMAGE_SIZE_TOO_BIG;
 import static com.favoriteplace.global.exception.ErrorCode.INVALID_HTTP_METHOD;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.NestedExceptionUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 @Slf4j
 @RestControllerAdvice
@@ -76,5 +79,14 @@ public class ExceptionHandlerAdvice {
         ErrorCode errorCode = INVALID_HTTP_METHOD;
         ErrorResponse errorResponse = ErrorResponse.of(errorCode.getHttpStatus(), errorCode.getCode(),  errorCode.getMessage());
         return ResponseEntity.status(errorCode.getHttpStatus()).body(errorResponse);
+    }
+
+    //이미지 사이즈 초과했을 때
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity handleMaxUploadSizeException(MaxUploadSizeExceededException e) {
+        log.error("[MaxUploadSizeExceededException (파일 업로드 크기 초과 (각 파일 4MB로 제한)] message : {}" , e.getMessage());
+        ErrorCode errorCode = IMAGE_SIZE_TOO_BIG;
+        ErrorResponse errorResponse = ErrorResponse.of(errorCode.getHttpStatus(), errorCode.getCode(), errorCode.getMessage());
+        return ResponseEntity.status(errorResponse.getHttpStatus()).body(errorResponse.getMessage());
     }
 }

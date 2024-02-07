@@ -1,11 +1,13 @@
-package com.favoriteplace.app.service;
+package com.favoriteplace.app.service.community;
 
+import com.favoriteplace.app.converter.PointHistoryConverter;
 import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.Comment;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.HashTag;
 import com.favoriteplace.app.domain.community.LikedPost;
+import com.favoriteplace.app.domain.enums.PointType;
 import com.favoriteplace.app.domain.travel.Pilgrimage;
 import com.favoriteplace.app.domain.travel.VisitedPilgrimage;
 import com.favoriteplace.app.dto.CommonResponseDto;
@@ -17,14 +19,15 @@ import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.gcpImage.ConvertUuidToUrl;
 import com.favoriteplace.global.gcpImage.UploadImage;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,6 +40,7 @@ public class GuestBookCommandService {
     private final PilgrimageRepository pilgrimageRepository;
     private final HashtagRepository hashtagRepository;
     private final VisitedPilgrimageRepository visitedPilgrimageRepository;
+    private final PointHistoryRepository pointHistoryRepository;
 
     /**
      * 성지순례 인증글 수정
@@ -58,7 +62,7 @@ public class GuestBookCommandService {
         if(!hashtags.isEmpty()){
             hashtags.forEach(hashtag -> guestBook.setHashTag(HashTag.builder().tagName(hashtag).build()));
         }
-        setImageList(guestBook, images);
+        if(images != null){setImageList(guestBook, images);}
         guestBookRepository.save(guestBook);
     }
 
@@ -82,15 +86,28 @@ public class GuestBookCommandService {
      * @throws IOException
      */
     private void setImageList(GuestBook guestBook, List<MultipartFile> images) throws IOException {
-        if(images != null){
-            for(MultipartFile image:images){
-                if(!image.isEmpty()){
-                    String uuid = uploadImage.uploadImageToCloud(image);
-                    Image newImage = Image.builder().url(ConvertUuidToUrl.convertUuidToUrl(uuid)).build();
-                    guestBook.setImage(newImage);
-                }
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+        for(MultipartFile image:images){
+            if(!image.isEmpty()){
+                CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+                    try {
+                        String uuid = uploadImage.uploadImageToCloud(image);
+                        Image newImage = Image.builder().url(ConvertUuidToUrl.convertUuidToUrl(uuid)).build();
+                        guestBook.setImage(newImage);
+                    } catch (IOException e) {
+                        throw new RestApiException(ErrorCode.IMAGE_CANNOT_UPLOAD);
+                    }
+                });
+                futures.add(future);
             }
+//            if(!image.isEmpty()){
+//                String uuid = uploadImage.uploadImageToCloud(image);
+//                Image newImage = Image.builder().url(ConvertUuidToUrl.convertUuidToUrl(uuid)).build();
+//                guestBook.setImage(newImage);
+//            }
         }
+        // 작업 다 끝날때 까지 기다림
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
     }
 
     /**
@@ -104,11 +121,14 @@ public class GuestBookCommandService {
         }
     }
 
-    /***
+    /**
      * 성지순례 방문 인증글 작성
-     * @param pilgrimageId 성지순례 아이디
      * @param member 인증한 사용자
+     * @param pilgrimageId 성지순례 아이디
+     * @param data json 폼
+     * @param images 이미지
      * @return
+     * @throws IOException
      */
     public PostResponseDto.SuccessResponseDto postGuestBook(Member member, Long pilgrimageId, GuestBookRequestDto.ModifyGuestBookDto data, List<MultipartFile> images) throws IOException {
         Pilgrimage pilgrimage = pilgrimageRepository
@@ -137,7 +157,17 @@ public class GuestBookCommandService {
             newGuestBook.setHashTag(newHashTag);
             return newHashTag;
         }).collect(Collectors.toList());
-        setImageList(newGuestBook, images);
+        if(images != null){setImageList(newGuestBook, images);}
+
+        successPostAndPointProcess(member, pilgrimage);
+
         return PostResponseDto.SuccessResponseDto.builder().message("인증글 작성에 성공했습니다.").build();
+    }
+
+    public void successPostAndPointProcess(Member member, Pilgrimage pilgrimage) {
+        VisitedPilgrimage newVisited = VisitedPilgrimage.builder().pilgrimage(pilgrimage).member(member).build();
+        visitedPilgrimageRepository.save(newVisited);
+        pointHistoryRepository.save(PointHistoryConverter.toPointHistory(member, 20L, PointType.ACQUIRE));
+        member.updatePoint(20L);
     }
 }

@@ -49,9 +49,6 @@ public class GuestBook extends BaseTimeEntity {
     @Column(nullable = false)
     private Long view;
 
-    private Double latitude;  //위도
-    private Double longitude;  //경도
-
     @OneToMany(mappedBy = "guestBook", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     List<HashTag> hashTags = new ArrayList<>();

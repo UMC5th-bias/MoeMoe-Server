@@ -4,13 +4,12 @@ import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.dto.community.GuestBookRequestDto;
 import com.favoriteplace.app.dto.community.GuestBookResponseDto;
 import com.favoriteplace.app.dto.community.PostResponseDto;
-import com.favoriteplace.app.service.GuestBookCommandService;
 import com.favoriteplace.app.service.MemberService;
 import com.favoriteplace.app.service.PilgrimageQueryService;
+import com.favoriteplace.app.service.community.GuestBookCommandService;
 import com.favoriteplace.app.service.community.GuestBookQueryService;
 import com.favoriteplace.app.service.community.LikedPostService;
 import com.favoriteplace.global.util.SecurityUtil;
-import com.google.api.Http;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -47,16 +46,32 @@ public class GuestBookController {
                 .build();
     }
 
+    @GetMapping("/search")
+    public GuestBookResponseDto.TotalGuestBookDto getTotalGuestBookByKeyword(
+            @RequestParam(required = false, defaultValue = "1") int page,
+            @RequestParam(required = false, defaultValue = "10") int size,
+            @RequestParam() String searchType,
+            @RequestParam() String keyword
+    ){
+        Page<GuestBookResponseDto.TotalGuestBookInfo> guestBooks = guestBookQueryService.getTotalPostByKeyword(page, size, searchType, keyword);
+        return GuestBookResponseDto.TotalGuestBookDto.builder()
+                .page((long) (guestBooks.getNumber() + 1))
+                .size((long) guestBooks.getSize())
+                .guestBook(guestBooks.getContent())
+                .build();
+    }
+
+
     @GetMapping("/my-posts")
     public GuestBookResponseDto.MyGuestBookDto getMyGuestBooks(
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false, defaultValue = "10") int size
     ){
-        Page<GuestBookResponseDto.GuestBook> myGuestBooks = guestBookQueryService.getMyGuestBooks(page, size);
+        Page<GuestBookResponseDto.MyGuestBookInfo> myGuestBooks = guestBookQueryService.getMyGuestBooks(page, size);
         return GuestBookResponseDto.MyGuestBookDto.builder()
                 .page((long)myGuestBooks.getNumber() + 1)
                 .size((long)myGuestBooks.getSize())
-                .guestBook(myGuestBooks.getContent())
+                .myGuestBookInfo(myGuestBooks.getContent())
                 .build();
     }
 

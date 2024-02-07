@@ -15,4 +15,7 @@ public interface RallyRepository extends JpaRepository<Rally, Long> {
 
     @Query("select r from Rally r where :pilgrimage MEMBER of r.pilgrimages")
     Rally findByPilgrimage(Pilgrimage pilgrimage);
+
+    @Query("select r from Rally r where r.name like %:name%")
+    List<Rally> findByName(String name);
 }
