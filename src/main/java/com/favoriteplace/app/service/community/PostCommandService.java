@@ -1,5 +1,6 @@
 package com.favoriteplace.app.service.community;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.Post;
@@ -20,6 +21,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -56,15 +60,30 @@ public class PostCommandService {
     @Transactional
     public List<Image> setImageList(Post post, List<MultipartFile> images) throws IOException {
         //이미지 업로드 관련
-        List<Image> imagesForPost = new ArrayList<>();
+        List<CompletableFuture<Image>> futures = new ArrayList<>();
+
         for(MultipartFile image: images){
             if(!image.isEmpty()){
+                /*
                 String uuid = uploadImage.uploadImageToCloud(image);
                 Image newImage = Image.builder().url(ConvertUuidToUrl.convertUuidToUrl(uuid)).post(post).build();
-                imagesForPost.add(newImage);
+                imagesForPost.add(newImage);*/
+                CompletableFuture<Image> future = CompletableFuture.supplyAsync(() -> {
+                    try {
+                        String uuid = uploadImage.uploadImageToCloud(image);
+                        return Image.builder().url(ConvertUuidToUrl.convertUuidToUrl(uuid)).post(post).build();
+                    } catch (IOException e) {
+                        throw new RestApiException(ErrorCode.IMAGE_CANNOT_UPLOAD);
+                    }
+                });
+                futures.add(future);
             }
         }
-        return imagesForPost;
+
+        // 모든 작업이 완료될 때까지 기다림
+        return futures.stream()
+                .map(CompletableFuture::join)
+                .collect(Collectors.toList());
     }
 
     /**

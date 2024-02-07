@@ -1,17 +1,32 @@
 package com.favoriteplace.global.gcpImage;
 
+import com.favoriteplace.global.exception.ErrorCode;
+import com.favoriteplace.global.exception.RestApiException;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
+
+import static java.time.LocalDateTime.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UploadImage {
 
     private final Storage storage;
@@ -21,20 +36,24 @@ public class UploadImage {
 
     public String uploadImageToCloud(MultipartFile image) throws IOException {
         String uuid = UUID.randomUUID().toString();
+        LocalDateTime now = now();
+        //log.info(String.valueOf("1 : " + ChronoUnit.MILLIS.between(now, now())));
         String ext = image.getContentType();
+        InputStream resizedImage = resize(image, 800, 800);
+        //log.info(String.valueOf("2 : " + ChronoUnit.MILLIS.between(now, now())));
 
         //Cloud에 이미지 업로드
         BlobInfo blobInfo = storage.create(
                 BlobInfo.newBuilder(bucketName, uuid)
                         .setContentType(ext)
                         .build(),
-                //resize(image, 1000, 1000)
-                image.getInputStream()
+                resizedImage
         );
+        //log.info(String.valueOf("3 : " +ChronoUnit.MILLIS.between(now, now())));
         return uuid;
     }
 
-    /*
+
     public InputStream resize(MultipartFile multipartFile, int width, int height) throws IOException {
         try (InputStream originalInputStream = multipartFile.getInputStream();
              ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
@@ -95,5 +114,5 @@ public class UploadImage {
         }
         return "jpg"; // 기본적으로는 JPG 형식으로 저장
     }
-    */
+
 }

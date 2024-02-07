@@ -11,6 +11,12 @@ import com.favoriteplace.app.repository.GuestBookRepository;
 import com.favoriteplace.app.repository.HashtagRepository;
 import com.favoriteplace.app.repository.ImageRepository;
 import com.favoriteplace.app.repository.LikedPostRepository;
+import com.favoriteplace.app.service.community.searchStrategy.SearchGuestBookByContent;
+import com.favoriteplace.app.service.community.searchStrategy.SearchGuestBookByNickname;
+import com.favoriteplace.app.service.community.searchStrategy.SearchGuestBookByTitle;
+import com.favoriteplace.app.service.community.searchStrategy.SearchStrategy;
+import com.favoriteplace.app.service.community.sortStrategy.SortGuestBookByLatestStrategy;
+import com.favoriteplace.app.service.community.sortStrategy.SortGuestBookByLikedStrategy;
 import com.favoriteplace.app.service.community.sortStrategy.SortStrategy;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
@@ -36,8 +42,11 @@ public class GuestBookQueryService {
     private final LikedPostRepository likedPostRepository;
     private final ImageRepository imageRepository;
     private final HashtagRepository hashtagRepository;
-    private final SortStrategy<GuestBook> sortGuestBookByLatestStrategy;
-    private final SortStrategy<GuestBook> sortGuestBookByLikedStrategy;
+    private final SortGuestBookByLatestStrategy sortGuestBookByLatestStrategy;
+    private final SortGuestBookByLikedStrategy sortGuestBookByLikedStrategy;
+    private final SearchGuestBookByTitle searchGuestBookByTitle;
+    private final SearchGuestBookByNickname searchGuestBookByNickname;
+    private final SearchGuestBookByContent searchGuestBookByContent;
     private final CountCommentsService countCommentsService;
     private final SecurityUtil securityUtil;
 
@@ -57,7 +66,7 @@ public class GuestBookQueryService {
         return trendingPostsRank;
     }
 
-    public Page<GuestBookResponseDto.GuestBook> getMyGuestBooks(int page, int size) {
+    public Page<GuestBookResponseDto.MyGuestBookInfo> getMyGuestBooks(int page, int size) {
         Member member = securityUtil.getUser();
         Pageable pageable = PageRequest.of(page-1, size);
         Page<GuestBook> myGuestBooks = guestBookRepository.findAllByMemberIdOrderByCreatedAtDesc(member.getId(), pageable);
@@ -99,15 +108,49 @@ public class GuestBookQueryService {
         else if("liked".equals(sort)){
             sortStrategy = sortGuestBookByLikedStrategy;
         }else{
-            throw new RestApiException(ErrorCode.SORT_KEYWORD_NOT_ALLOWED);
+            throw new RestApiException(ErrorCode.SORT_TYPE_NOT_ALLOWED);
         }
         Page<GuestBook> guestBooks = sortStrategy.sort(pageable);
         if(guestBooks.isEmpty()){return Page.empty();}
         return guestBooks.map(guestBook -> GuestBookConverter.toTotalGuestBookInfo(guestBook,
                 imageRepository.findFirstByGuestBook(guestBook),
-                countCommentsService.countGuestBookComments(guestBook.getId()),
-                hashtagRepository.findAllByGuestBookId(guestBook.getId())));
+                countGuestBookComment(guestBook),
+                guestBook.getHashTags()));
     }
+
+    /**
+     * searchType(제목, 닉네임, 내용)을 기반으로 성지순레 인증글을 가져오는 함 (게시글 생성일의 내림차순으로 정렬)
+     * @param page
+     * @param size
+     * @param searchType
+     * @param keyword
+     * @return
+     */
+    public Page<GuestBookResponseDto.TotalGuestBookInfo> getTotalPostByKeyword(int page, int size, String searchType, String keyword) {
+        Pageable pageable = PageRequest.of(page-1, size);
+        SearchStrategy<GuestBook> searchStrategy;
+        if("title".equals(searchType)){
+            searchStrategy = searchGuestBookByTitle;
+        } else if ("nickname".equals(searchType)) {
+            searchStrategy = searchGuestBookByNickname;
+        } else if ("content".equals(searchType)) {
+            searchStrategy = searchGuestBookByContent;
+        } else {
+            throw new RestApiException(ErrorCode.SEARCH_TYPE_NOT_ALLOWED);
+        }
+        if(keyword.trim().isEmpty()){return Page.empty();}
+        Page<GuestBook> guestBooks = searchStrategy.search(keyword, pageable);
+        if(guestBooks.isEmpty()){return Page.empty();}
+        return guestBooks.map(guestBook -> GuestBookConverter.toTotalGuestBookInfo(guestBook,
+                imageRepository.findFirstByGuestBook(guestBook),
+                countGuestBookComment(guestBook),
+                guestBook.getHashTags()));
+    }
+
+    private Long countGuestBookComment(GuestBook guestBook) {
+        return (long) guestBook.getComments().size();
+    }
+
 
     private Boolean isLiked(Long guestBookId, Long memberId){
         return likedPostRepository.existsByGuestBookIdAndMemberId(guestBookId, memberId);
@@ -128,4 +171,6 @@ public class GuestBookQueryService {
         guestBook.increaseView();
         guestBookRepository.save(guestBook);
     }
+
+
 }

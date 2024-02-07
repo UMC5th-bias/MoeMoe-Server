@@ -69,6 +69,21 @@ public class PostController {
                 .build();
     }
 
+    @GetMapping("/search")
+    public PostResponseDto.MyPostResponseDto getTotalPostByKeyword(
+            @RequestParam(required = false, defaultValue = "1") int page,
+            @RequestParam(required = false, defaultValue = "10") int size,
+            @RequestParam() String searchType,
+            @RequestParam() String keyword
+    ){
+        Page<PostResponseDto.MyPost> posts = postQueryService.getTotalPostByKeyword(page, size, searchType, keyword);
+        return PostResponseDto.MyPostResponseDto.builder()
+                .page((long) (posts.getNumber()+1))
+                .size((long) posts.getSize())
+                .post(posts.getContent())
+                .build();
+    }
+
     @PostMapping("")
     public ResponseEntity<PostResponseDto.SuccessResponseDto> createPost(
             @RequestPart PostRequestDto data,

@@ -46,16 +46,32 @@ public class GuestBookController {
                 .build();
     }
 
+    @GetMapping("/search")
+    public GuestBookResponseDto.TotalGuestBookDto getTotalGuestBookByKeyword(
+            @RequestParam(required = false, defaultValue = "1") int page,
+            @RequestParam(required = false, defaultValue = "10") int size,
+            @RequestParam() String searchType,
+            @RequestParam() String keyword
+    ){
+        Page<GuestBookResponseDto.TotalGuestBookInfo> guestBooks = guestBookQueryService.getTotalPostByKeyword(page, size, searchType, keyword);
+        return GuestBookResponseDto.TotalGuestBookDto.builder()
+                .page((long) (guestBooks.getNumber() + 1))
+                .size((long) guestBooks.getSize())
+                .guestBook(guestBooks.getContent())
+                .build();
+    }
+
+
     @GetMapping("/my-posts")
     public GuestBookResponseDto.MyGuestBookDto getMyGuestBooks(
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false, defaultValue = "10") int size
     ){
-        Page<GuestBookResponseDto.GuestBook> myGuestBooks = guestBookQueryService.getMyGuestBooks(page, size);
+        Page<GuestBookResponseDto.MyGuestBookInfo> myGuestBooks = guestBookQueryService.getMyGuestBooks(page, size);
         return GuestBookResponseDto.MyGuestBookDto.builder()
                 .page((long)myGuestBooks.getNumber() + 1)
                 .size((long)myGuestBooks.getSize())
-                .guestBook(myGuestBooks.getContent())
+                .myGuestBookInfo(myGuestBooks.getContent())
                 .build();
     }
 
