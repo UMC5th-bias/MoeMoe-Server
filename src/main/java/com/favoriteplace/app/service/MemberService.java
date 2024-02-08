@@ -62,7 +62,6 @@ public class MemberService {
         String password = passwordEncoder.encode(memberSignUpReqDto.getPassword());
 
         if (images != null && !images.get(0).isEmpty()) {
-            System.out.println("hi");
             uuid = uploadImage.uploadImageToCloud(images.get(0));
         }
 
