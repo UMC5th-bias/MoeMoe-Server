@@ -139,7 +139,7 @@ public class ShopService {
             .orElseThrow(() -> new RestApiException(ITEM_NOT_EXISTS));
 
         canBuy = member.getPoint() >= item.getPoint() ? true : false;
-        if (canBuy == true) {
+        if (canBuy) {
             member.updatePointWhenBuyItem(member.getPoint() - item.getPoint());
         }
 
