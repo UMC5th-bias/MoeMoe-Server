@@ -1,9 +1,15 @@
 package com.favoriteplace.app.service;
 
+import com.favoriteplace.app.converter.CommonConverter;
 import com.favoriteplace.app.domain.Block;
 import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.domain.enums.ItemType;
+import com.favoriteplace.app.domain.item.Item;
+import com.favoriteplace.app.dto.CommonResponseDto;
 import com.favoriteplace.app.dto.MyPageDto;
+import com.favoriteplace.app.repository.AcquiredItemRepository;
 import com.favoriteplace.app.repository.BlockRepository;
+import com.favoriteplace.app.repository.ItemRepository;
 import com.favoriteplace.app.repository.MemberRepository;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
@@ -16,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class MyPageCommandService {
     private final BlockRepository blockRepository;
     private final MemberRepository memberRepository;
+    private final ItemRepository itemRepository;
+    private final AcquiredItemRepository acquiredItemRepository;
 
     /**
      * 다른 유저를 차단 또는 차단 해제
@@ -42,4 +50,22 @@ public class MyPageCommandService {
         return MyPageDto.MyModifyBlockDto.builder().isBlocked(isBlocked).build();
     }
 
+    /**
+     * 보유하는 아이템 착용하기
+     * @param itemId 착용하려는 아이템
+     * @param member 착용자
+     * @return
+     */
+    public CommonResponseDto.PostResponseDto wearItem(Long itemId, Member member) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(()->new RestApiException(ErrorCode.ITEM_NOT_EXISTS));
+        acquiredItemRepository.findByMemberAndItem(member, item)
+                .orElseThrow(()->new RestApiException(ErrorCode.ITEM_NOT_ACQUIRED));
+        if (item.getType() == ItemType.ICON){
+            member.updateIcon(item);
+        } else if (item.getType() == ItemType.TITLE) {
+            member.updateTitle(item);
+        }
+        return CommonConverter.toPostResponseDto(true, "착용이 완료되었습니다.");
+    }
 }
