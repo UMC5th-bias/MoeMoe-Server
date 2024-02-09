@@ -255,7 +255,7 @@ public class PilgrimageQueryService {
 
     /***
      * 성지순례 지역 상세 카테고리
-     * @param regionId
+     * @param regionId역
      * @return district 별 성지순례 리스트
      */
     public List<PilgrimageDto.PilgrimageCategoryRegionDetailDto> getCategoryRegionDetail(Long regionId) {

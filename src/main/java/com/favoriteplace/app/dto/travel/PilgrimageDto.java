@@ -87,6 +87,7 @@ public class PilgrimageDto {
         Long id;
         String title;
         String detailAddress;
+        String image;
         Double latitude;
         Double longitude;
     }
