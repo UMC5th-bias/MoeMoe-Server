@@ -40,6 +40,7 @@ public enum ErrorCode {
 
     //GuestBook (6000번대)
     GUESTBOOK_NOT_FOUND(HttpStatus.BAD_REQUEST, 6001, "성지순례 인증글이 존재하지 않습니다."),
+    GUESTBOOK_MUST_INCLUDE_IMAGES(HttpStatus.BAD_REQUEST, 6002, "반드시 이미지를 등록해야 합니다."),
 
     //커뮤니티 (7000번대)
     SORT_TYPE_NOT_ALLOWED(HttpStatus.BAD_REQUEST, 7001, "존재하지 않는 정렬 방식입니다."),

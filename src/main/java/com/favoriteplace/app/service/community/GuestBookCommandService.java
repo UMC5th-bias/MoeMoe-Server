@@ -134,6 +134,10 @@ public class GuestBookCommandService {
         Pilgrimage pilgrimage = pilgrimageRepository
                 .findById(pilgrimageId).orElseThrow(()->new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
 
+        if (images == null || images.isEmpty()) {
+            throw new RestApiException(ErrorCode.GUESTBOOK_MUST_INCLUDE_IMAGES);
+        }
+
         List<VisitedPilgrimage> visitedPilgrimageList = visitedPilgrimageRepository.findByPilgrimageAndMemberOrderByCreatedAtDesc(pilgrimage, member);
 
         boolean hasVisited = visitedPilgrimageList.stream()
@@ -151,12 +155,12 @@ public class GuestBookCommandService {
                 .view(0L)
                 .build();
         GuestBook newGuestBook = guestBookRepository.save(guestBook);
-        data.getHashtags().stream().map(hashTag -> {
+
+        data.getHashtags().stream().forEach(hashTag -> {
             HashTag newHashTag = HashTag.builder().tagName(hashTag).build();
             hashtagRepository.save(newHashTag);
             newGuestBook.setHashTag(newHashTag);
-            return newHashTag;
-        }).collect(Collectors.toList());
+        });
         if(images != null){setImageList(newGuestBook, images);}
 
         successPostAndPointProcess(member, pilgrimage);
