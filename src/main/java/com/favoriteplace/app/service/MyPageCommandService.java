@@ -66,6 +66,7 @@ public class MyPageCommandService {
         } else if (item.getType() == ItemType.TITLE) {
             member.updateTitle(item);
         }
+        memberRepository.save(member);
         return CommonConverter.toPostResponseDto(true, "착용이 완료되었습니다.");
     }
 }
