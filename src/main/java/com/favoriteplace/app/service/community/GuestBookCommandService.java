@@ -19,6 +19,7 @@ import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.gcpImage.ConvertUuidToUrl;
 import com.favoriteplace.global.gcpImage.UploadImage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,6 +32,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class GuestBookCommandService {
     private final GuestBookRepository guestBookRepository;
@@ -130,6 +132,7 @@ public class GuestBookCommandService {
      * @return
      * @throws IOException
      */
+    @Transactional
     public PostResponseDto.SuccessResponseDto postGuestBook(Member member, Long pilgrimageId, GuestBookRequestDto.ModifyGuestBookDto data, List<MultipartFile> images) throws IOException {
         Pilgrimage pilgrimage = pilgrimageRepository
                 .findById(pilgrimageId).orElseThrow(()->new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
@@ -137,15 +140,39 @@ public class GuestBookCommandService {
         if (images == null || images.isEmpty()) {
             throw new RestApiException(ErrorCode.GUESTBOOK_MUST_INCLUDE_IMAGES);
         }
+        if (!images.stream().anyMatch(file -> !file.isEmpty()))  {
+            throw new RestApiException(ErrorCode.GUESTBOOK_MUST_INCLUDE_IMAGES);
+        }
 
+        checkVisited(pilgrimage, member);
+        GuestBook newGuestBook = saveGuestBook(member, data, pilgrimage);
+
+        data.getHashtags().stream().forEach(hashTag -> {
+            HashTag newHashTag = HashTag.builder().tagName(hashTag).guestBook(newGuestBook).build();
+            hashtagRepository.save(newHashTag);
+            newGuestBook.setHashTag(newHashTag);
+        });
+
+        if (images != null) {
+            setImageList(newGuestBook, images);
+        }
+        log.info("success image upload");
+        successPostAndPointProcess(member, pilgrimage);
+        log.info("success point update");
+        return PostResponseDto.SuccessResponseDto.builder().message("인증글 작성에 성공했습니다.").build();
+    }
+
+    private void checkVisited(Pilgrimage pilgrimage, Member member){
         List<VisitedPilgrimage> visitedPilgrimageList = visitedPilgrimageRepository.findByPilgrimageAndMemberOrderByCreatedAtDesc(pilgrimage, member);
 
         boolean hasVisited = visitedPilgrimageList.stream()
-                .anyMatch(visitedPilgrimage -> pilgrimageId.equals(visitedPilgrimage.getPilgrimage().getId()));
+                .anyMatch(visitedPilgrimage -> pilgrimage.getId().equals(visitedPilgrimage.getPilgrimage().getId()));
 
         if (!hasVisited)
             throw new RestApiException(ErrorCode.PILGRIMAGE_NOT_CERTIFIED);
+    }
 
+    private GuestBook saveGuestBook(Member member, GuestBookRequestDto.ModifyGuestBookDto data, Pilgrimage pilgrimage){
         GuestBook guestBook = GuestBook.builder()
                 .member(member)
                 .pilgrimage(pilgrimage)
@@ -154,18 +181,7 @@ public class GuestBookCommandService {
                 .likeCount(0L)
                 .view(0L)
                 .build();
-        GuestBook newGuestBook = guestBookRepository.save(guestBook);
-
-        data.getHashtags().stream().forEach(hashTag -> {
-            HashTag newHashTag = HashTag.builder().tagName(hashTag).build();
-            hashtagRepository.save(newHashTag);
-            newGuestBook.setHashTag(newHashTag);
-        });
-        if(images != null){setImageList(newGuestBook, images);}
-
-        successPostAndPointProcess(member, pilgrimage);
-
-        return PostResponseDto.SuccessResponseDto.builder().message("인증글 작성에 성공했습니다.").build();
+        return guestBookRepository.save(guestBook);
     }
 
     public void successPostAndPointProcess(Member member, Pilgrimage pilgrimage) {
