@@ -7,6 +7,7 @@ import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.enums.ItemCategory;
 import com.favoriteplace.app.domain.enums.ItemType;
 import com.favoriteplace.app.domain.enums.SaleStatus;
+import com.favoriteplace.app.domain.item.AcquiredItem;
 import com.favoriteplace.app.domain.item.Item;
 import com.favoriteplace.app.dto.item.ItemDto;
 import com.favoriteplace.app.dto.item.ItemDto.ItemDetailResDto;
@@ -28,14 +29,17 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ShopService {
     private final SecurityUtil securityUtil;
     private final ItemRepository itemRepository;
     private final AcquiredItemRepository acquiredItemRepository;
 
+    @Transactional(readOnly = true)
     public ItemDto.ItemDetailResDto getItemDetail(HttpServletRequest request, Long itemId) {
         Member member = securityUtil.getUserFromHeader(request);
 
@@ -48,7 +52,7 @@ public class ShopService {
         return ItemDetailResDto.from(item, member, alreadyBought);
 
     }
-
+    @Transactional(readOnly = true)
     public ItemDto.ItemListResDto getLimitedProduct(HttpServletRequest request) {
         Member member = securityUtil.getUserFromHeader(request);
 
@@ -77,6 +81,7 @@ public class ShopService {
         return ShopConverter.totalItemList(member, titles, icons);
     }
 
+    @Transactional(readOnly = true)
     public ItemDto.ItemListResDto getAlwaysSellProduct(HttpServletRequest request) {
         Member member = securityUtil.getUserFromHeader(request);
 
@@ -105,12 +110,11 @@ public class ShopService {
         return ShopConverter.totalItemList(member, titles, icons);
     }
 
+    @Transactional(readOnly = true)
     public ItemDto.NewItemListResDto getNewItemList() {
         LocalDateTime now = LocalDateTime.now();
         List<Item> titleItemList = itemRepository.findAllByNEWCategory(ItemType.TITLE, now.minusDays(7));
         List<Item> iconItemList = itemRepository.findAllByNEWCategory(ItemType.ICON, now.minusDays(7));
-
-        System.out.println(LocalDateTime.now());
 
         List<ItemListDivideBySaleStatus> titles = null;
         List<ItemListDivideBySaleStatus> icons = null;
@@ -135,7 +139,18 @@ public class ShopService {
             .orElseThrow(() -> new RestApiException(ITEM_NOT_EXISTS));
 
         canBuy = member.getPoint() >= item.getPoint() ? true : false;
+        if (canBuy) {
+            member.updatePointWhenBuyItem(member.getPoint() - item.getPoint());
+        }
 
+        //acquiredItem 테이블(보유 아이템) 저장
+        AcquiredItem newAcquiredItem =
+            AcquiredItem.builder()
+                .item(item)
+                .member(member)
+                .build();
+
+        acquiredItemRepository.save(newAcquiredItem);
         return new ItemPurchaseRes(canBuy);
     }
 
