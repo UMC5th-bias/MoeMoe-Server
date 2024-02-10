@@ -40,6 +40,7 @@ public enum ErrorCode {
 
     //GuestBook (6000번대)
     GUESTBOOK_NOT_FOUND(HttpStatus.BAD_REQUEST, 6001, "성지순례 인증글이 존재하지 않습니다."),
+    GUESTBOOK_MUST_INCLUDE_IMAGES(HttpStatus.BAD_REQUEST, 6002, "반드시 이미지를 등록해야 합니다."),
 
     //커뮤니티 (7000번대)
     SORT_TYPE_NOT_ALLOWED(HttpStatus.BAD_REQUEST, 7001, "존재하지 않는 정렬 방식입니다."),
@@ -50,7 +51,8 @@ public enum ErrorCode {
 
     // 아이템 (9000번대)
     ITEM_TYPE_NOT_FOUND(HttpStatus.BAD_REQUEST, 9001, "존재하지 않는 아이템 타입입니다."),
-    ITEM_NOT_EXISTS(HttpStatus.BAD_REQUEST, 9002, "없는 아이템입니다."),
+    ITEM_NOT_EXISTS(HttpStatus.BAD_REQUEST, 9002, "존재하지 않는 아이템입니다."),
+    ITEM_NOT_ACQUIRED(HttpStatus.BAD_REQUEST, 9003, "보유하지 않은 아이템입니다."),
 
     //댓글 (10000번대)
     COMMENT_NOT_FOUND(HttpStatus.BAD_REQUEST, 10001, "댓글이 존재하지 않습니다."),

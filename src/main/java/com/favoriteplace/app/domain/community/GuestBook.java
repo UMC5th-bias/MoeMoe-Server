@@ -75,6 +75,13 @@ public class GuestBook extends BaseTimeEntity {
         this.images.add(image);
     }
 
+    public void setImages(List<Image> images){
+        images.stream().forEach(image->{
+            image.setGuestBook(this);
+        });
+        this.images.addAll(images);
+    }
+
     public void addComment(Comment comment){
         comment.setGuestBook(this);
         this.comments.add(comment);

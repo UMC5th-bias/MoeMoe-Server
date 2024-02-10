@@ -85,4 +85,12 @@ public class Member extends BaseTimeEntity {
     public void updatePointWhenBuyItem(Long point) {
         this.point = point;
     }
+
+    public void updateIcon(Item icon) {
+        this.profileIcon = icon;
+    }
+
+    public void updateTitle(Item title) {
+        this.profileTitle = title;
+    }
 }

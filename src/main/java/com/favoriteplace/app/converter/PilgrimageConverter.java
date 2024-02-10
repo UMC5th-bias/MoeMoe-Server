@@ -87,6 +87,7 @@ public class PilgrimageConverter {
                 .id(pilgrimage.getId())
                 .title(title)
                 .detailAddress(pilgrimage.getDetailAddress())
+                .image(pilgrimage.getVirtualImage().getUrl())
                 .latitude(pilgrimage.getLatitude())
                 .longitude(pilgrimage.getLongitude())
                 .build();

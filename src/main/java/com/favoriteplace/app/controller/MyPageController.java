@@ -1,7 +1,9 @@
 package com.favoriteplace.app.controller;
 
 import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.dto.CommonResponseDto;
 import com.favoriteplace.app.dto.MyPageDto;
+import com.favoriteplace.app.dto.community.CommentResponseDto;
 import com.favoriteplace.app.service.MyPageCommandService;
 import com.favoriteplace.app.service.MyPageQueryService;
 import com.favoriteplace.global.util.SecurityUtil;
@@ -37,6 +39,13 @@ public class MyPageController {
     public MyPageDto.MyItemDto getMyItems(@RequestParam(value = "type", defaultValue = "title")String type){
         Member member = securityUtil.getUser();
         return myPageQueryService.getMyItems(member, type);
+    }
+
+    // 아이템 착용
+    @PutMapping("/items/{item_id}")
+    public CommonResponseDto.PostResponseDto wearItem(@PathVariable("item_id")Long itemId){
+        Member member = securityUtil.getUser();
+        return myPageCommandService.wearItem(itemId, member);
     }
 
     // 차단한 사용자 목록
