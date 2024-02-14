@@ -1,6 +1,7 @@
 package com.favoriteplace.app.service;
 
 import static com.favoriteplace.global.exception.ErrorCode.USER_ALREADY_EXISTS;
+import static com.favoriteplace.global.exception.ErrorCode.USER_NOT_FOUND;
 
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.GuestBook;
@@ -79,6 +80,15 @@ public class MemberService {
         Boolean isExists = memberRepository.findByEmail(email).isPresent();
 
         return new EmailDuplicateResDto(isExists);
+    }
+
+    @Transactional
+    public void setNewPassword(String email, String password) {
+        Member member = memberRepository.findByEmail(email)
+            .orElseThrow(() -> new RestApiException(USER_NOT_FOUND));
+
+        String newPassword = passwordEncoder.encode(password);
+        member.updatePassword(newPassword);
     }
 
     @Transactional
