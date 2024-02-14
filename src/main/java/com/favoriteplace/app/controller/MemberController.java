@@ -62,5 +62,4 @@ public class MemberController {
         memberService.setNewPassword(email, password);
         return ResponseEntity.ok("성공했습니다.");
     }
-
 }
