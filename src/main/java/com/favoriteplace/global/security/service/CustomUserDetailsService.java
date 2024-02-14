@@ -1,4 +1,4 @@
-package com.favoriteplace.global.security.provider;
+package com.favoriteplace.global.security.service;
 
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.repository.MemberRepository;
