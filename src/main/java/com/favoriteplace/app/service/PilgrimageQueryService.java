@@ -125,6 +125,11 @@ public class PilgrimageQueryService {
     public PilgrimageDto.PilgrimageDetailDto getPilgrimageDetail(Long pilgrimageId, Member member) {
         Pilgrimage pilgrimage = pilgrimageRepository.findById(pilgrimageId)
                 .orElseThrow(() -> new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
+        if (member == null){
+            PilgrimageDto.PilgrimageDetailDto result = PilgrimageConverter.toPilgrimageDetailDto(pilgrimage, 0L);
+            result.setIsCertified(false);
+            return result;
+        }
         Long visitedPilgrimages = visitedPilgrimageRepository
                 .findByDistinctCount(member.getId(), pilgrimage.getRally().getId());
         PilgrimageDto.PilgrimageDetailDto result = PilgrimageConverter.toPilgrimageDetailDto(pilgrimage, visitedPilgrimages);

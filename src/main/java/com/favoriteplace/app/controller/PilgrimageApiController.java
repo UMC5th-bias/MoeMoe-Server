@@ -92,9 +92,9 @@ public class PilgrimageApiController {
     // 성지순례 랠리 장소 상세
     // 회원
     @GetMapping("/detail/{pilgrimageId}")
-    public PilgrimageDto.PilgrimageDetailDto getPilgrimageDetail(@PathVariable("pilgrimageId")Long pilgrimageId){
+    public PilgrimageDto.PilgrimageDetailDto getPilgrimageDetail(HttpServletRequest request, @PathVariable("pilgrimageId")Long pilgrimageId){
         // Jwt AuthenticationFilter에 엔드포인트 추가
-        Member member = securityUtil.getUser();
+        Member member = securityUtil.getUserFromHeader(request);
         return pilgrimageQueryService.getPilgrimageDetail(pilgrimageId, member);
     }
 
