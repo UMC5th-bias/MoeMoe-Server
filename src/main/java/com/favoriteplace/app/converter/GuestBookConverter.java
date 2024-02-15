@@ -9,11 +9,11 @@ import com.favoriteplace.global.util.DateTimeFormatUtils;
 import java.util.List;
 
 public class GuestBookConverter {
-    public static GuestBookResponseDto.MyGuestBookInfo toGuestBook(GuestBook guestBook, String nickname){
+    public static GuestBookResponseDto.MyGuestBookInfo toGuestBook(GuestBook guestBook){
         return GuestBookResponseDto.MyGuestBookInfo.builder()
                 .id(guestBook.getId())
                 .title(guestBook.getTitle())
-                .nickname(nickname)
+                .nickname(guestBook.getMember().getNickname())
                 .views(guestBook.getView())
                 .likes(guestBook.getLikeCount())
                 .comments((long) guestBook.getComments().size())

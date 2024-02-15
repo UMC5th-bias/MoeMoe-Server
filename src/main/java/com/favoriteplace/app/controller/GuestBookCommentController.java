@@ -10,7 +10,6 @@ import com.favoriteplace.app.service.community.CommentQueryService;
 import com.favoriteplace.global.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,11 +30,11 @@ public class GuestBookCommentController {
             @RequestParam(required = false, defaultValue = "10") int size
     ){
         Member member = securityUtil.getUser();
-        Page<GuestBookResponseDto.MyGuestBookComment> myComments = commentQueryService.getMyGuestBookComments(member, page, size);
+        List<GuestBookResponseDto.MyGuestBookComment> myComments = commentQueryService.getMyGuestBookComments(member, page, size);
         return GuestBookResponseDto.MyGuestBookCommentDto.builder()
-                .page((long) (myComments.getNumber()+1))
-                .size((long) myComments.getSize())
-                .comment(myComments.getContent())
+                .page((long) page)
+                .size((long) size)
+                .comment(myComments)
                 .build();
     }
 

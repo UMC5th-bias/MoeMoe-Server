@@ -35,4 +35,15 @@ public class GuestBookImplRepository {
                 .getResultList();
     }
 
+    public List<GuestBook> findAllByMemberIdOrderByCreatedAtDesc(Long memberId, int page, int size) {
+        return em.createQuery(
+                "select g from GuestBook g" +
+                        " join fetch g.member m" +
+                        " where g.member.id = :memberId" +
+                        " order by g.createdAt desc", GuestBook.class)
+                .setParameter("memberId", memberId)
+                .setFirstResult((page-1)*size)
+                .setMaxResults(size)
+                .getResultList();
+    }
 }

@@ -7,12 +7,7 @@ import com.favoriteplace.app.dto.community.CommentResponseDto;
 import com.favoriteplace.app.dto.community.GuestBookResponseDto;
 import com.favoriteplace.app.dto.community.PostResponseDto;
 import com.favoriteplace.app.repository.CommentImplRepository;
-import com.favoriteplace.app.repository.CommentRepository;
-import com.favoriteplace.app.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +18,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class CommentQueryService {
-    private final CommentRepository commentRepository;
     private final CommentImplRepository commentImplRepository;
 
     /**
@@ -77,11 +71,11 @@ public class CommentQueryService {
      * @param size
      * @return
      */
-    public Page<GuestBookResponseDto.MyGuestBookComment> getMyGuestBookComments(Member member, int page, int size) {
-        Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Comment> pageComment = commentRepository.findAllByMemberIdAndPostIsNullAndGuestBookIsNotNullOrderByCreatedAtDesc(member.getId(), pageable);
-        if(pageComment.isEmpty()){return Page.empty();}
-        return pageComment.map(CommentConverter::toMyGuestBookComment);
+    public List<GuestBookResponseDto.MyGuestBookComment> getMyGuestBookComments(Member member, int page, int size) {
+        List<Comment> pageComment = commentImplRepository.findAllByMemberIdAndPostIsNullAndGuestBookIsNotNullOrderByCreatedAtDesc(member.getId(), page, size);
+        if(pageComment.isEmpty()){return Collections.emptyList();}
+        return pageComment.stream()
+                .map(CommentConverter::toMyGuestBookComment).toList();
     }
 
 

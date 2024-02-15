@@ -7,10 +7,7 @@ import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.HashTag;
 import com.favoriteplace.app.dto.community.GuestBookResponseDto;
 import com.favoriteplace.app.dto.community.TrendingPostResponseDto;
-import com.favoriteplace.app.repository.GuestBookRepository;
-import com.favoriteplace.app.repository.HashtagRepository;
-import com.favoriteplace.app.repository.ImageRepository;
-import com.favoriteplace.app.repository.LikedPostRepository;
+import com.favoriteplace.app.repository.*;
 import com.favoriteplace.app.service.community.searchStrategy.SearchGuestBookByContent;
 import com.favoriteplace.app.service.community.searchStrategy.SearchGuestBookByNickname;
 import com.favoriteplace.app.service.community.searchStrategy.SearchGuestBookByTitle;
@@ -40,6 +37,7 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class GuestBookQueryService {
     private final GuestBookRepository guestBookRepository;
+    private final GuestBookImplRepository guestBookImplRepository;
     private final LikedPostRepository likedPostRepository;
     private final ImageRepository imageRepository;
     private final HashtagRepository hashtagRepository;
@@ -90,12 +88,18 @@ public class GuestBookQueryService {
                 .toList();
     }
 
-    public Page<GuestBookResponseDto.MyGuestBookInfo> getMyGuestBooks(int page, int size) {
+    /**
+     * 내가 작성한 글
+     * @param page
+     * @param size
+     * @return
+     */
+    public List<GuestBookResponseDto.MyGuestBookInfo> getMyGuestBooks(int page, int size) {
         Member member = securityUtil.getUser();
-        Pageable pageable = PageRequest.of(page-1, size);
-        Page<GuestBook> myGuestBooks = guestBookRepository.findAllByMemberIdOrderByCreatedAtDesc(member.getId(), pageable);
-        if(myGuestBooks.isEmpty()){return Page.empty();}
-        return myGuestBooks.map(guestBook -> GuestBookConverter.toGuestBook(guestBook, member.getNickname()));
+        List<GuestBook> myGuestBooks = guestBookImplRepository.findAllByMemberIdOrderByCreatedAtDesc(member.getId(), page, size);
+        if(myGuestBooks.isEmpty()){return Collections.emptyList();}
+        return myGuestBooks.stream()
+                .map(GuestBookConverter::toGuestBook).toList();
     }
 
     public GuestBookResponseDto.GuestBookInfo getDetailGuestBookInfo(Long guestBookId, HttpServletRequest request) {
