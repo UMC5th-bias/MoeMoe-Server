@@ -33,7 +33,18 @@ public class PostImplRepository {
                 .setFirstResult((page-1)*size)
                 .setMaxResults(size)
                 .getResultList();
+    }
 
+    public List<Post> findAllByMemberIdOrderByCreatedAtDesc(Long memberId, int page, int size){
+        return em.createQuery(
+                "select p from Post p"+
+                        " join fetch p.member m" +
+                        " where m.id = :memberId" +
+                        " order by p.createdAt desc", Post.class)
+                .setParameter("memberId", memberId)
+                .setFirstResult((page-1)*size)
+                .setMaxResults(size)
+                .getResultList();
     }
 
 

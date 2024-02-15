@@ -47,11 +47,11 @@ public class PostController {
             @RequestParam(required = false, defaultValue = "10") int size
     ){
         Member member = securityUtil.getUser();
-        Page<PostResponseDto.MyPost> posts = postQueryService.getMyPosts(member, page, size);
+        List<PostResponseDto.MyPost> posts = postQueryService.getMyPosts(member, page, size);
         return PostResponseDto.MyPostResponseDto.builder()
-                .page((long)posts.getNumber() +1)
-                .size((long)posts.getSize())
-                .post(posts.getContent())
+                .page((long) page)
+                .size((long) size)
+                .post(posts)
                 .build();
     }
 

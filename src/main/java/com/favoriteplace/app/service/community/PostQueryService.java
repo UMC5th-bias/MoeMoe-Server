@@ -8,6 +8,7 @@ import com.favoriteplace.app.dto.community.PostResponseDto;
 import com.favoriteplace.app.dto.community.TrendingPostResponseDto;
 import com.favoriteplace.app.repository.ImageRepository;
 import com.favoriteplace.app.repository.LikedPostRepository;
+import com.favoriteplace.app.repository.PostImplRepository;
 import com.favoriteplace.app.repository.PostRepository;
 import com.favoriteplace.app.service.community.searchStrategy.SearchPostByContent;
 import com.favoriteplace.app.service.community.searchStrategy.SearchPostByNickname;
@@ -39,6 +40,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class PostQueryService {
     private final PostRepository postRepository;
+    private final PostImplRepository postImplRepository;
     private final ImageRepository imageRepository;
     private final LikedPostRepository likedPostRepository;
     private final SortPostByLatestStrategy sortPostByLatestStrategy;
@@ -110,15 +112,12 @@ public class PostQueryService {
      * @param size
      * @return
      */
-    public Page<PostResponseDto.MyPost> getMyPosts(Member member, int page, int size) {
-        Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Post> postPage = postRepository.findAllByMemberIdOrderByCreatedAtDesc(member.getId(), pageable);
-        if (postPage.isEmpty()) {
-            return Page.empty();
-        }
-        //TODO
-        return null;
-        //return postPage.map(post -> PostConverter.toMyPost(post, member, countPostComment(post)));
+    public List<PostResponseDto.MyPost> getMyPosts(Member member, int page, int size) {
+        List<Post> postPage = postImplRepository.findAllByMemberIdOrderByCreatedAtDesc(member.getId(), page, size);
+        if (postPage.isEmpty()) {return Collections.emptyList();}
+        return postPage.stream()
+                .map(PostConverter::toMyPost)
+                .toList();
     }
 
     /**
