@@ -1,9 +1,7 @@
 package com.favoriteplace.app.converter;
 
-import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.Comment;
 import com.favoriteplace.app.domain.community.GuestBook;
-import com.favoriteplace.app.domain.community.Post;
 import com.favoriteplace.app.dto.UserInfoResponseDto;
 import com.favoriteplace.app.dto.community.CommentResponseDto;
 import com.favoriteplace.app.dto.community.GuestBookResponseDto;
@@ -40,12 +38,12 @@ public class CommentConverter {
                 .build();
     }
 
-    public static PostResponseDto.MyComment toMyGuestBookComment(Comment comment, Member member, Post post, Long commentCount){
+    public static PostResponseDto.MyComment toMyPostComment(Comment comment){
         return PostResponseDto.MyComment.builder()
                 .id(comment.getId())
                 .content(comment.getContent())
                 .passedTime(DateTimeFormatUtils.getPassDateTime(comment.getCreatedAt()))
-                .post(PostConverter.toMyPost(post, member, commentCount))
+                .post(PostConverter.toMyPost(comment.getPost()))
                 .build();
     }
 }
