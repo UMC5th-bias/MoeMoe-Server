@@ -20,6 +20,8 @@ public class PilgrimageConverter {
                 .image(pilgrimage.getVirtualImage().getUrl())
                 .realImage(pilgrimage.getRealImage().getUrl())
                 .address(pilgrimage.getDetailAddress())
+                .addressEn(pilgrimage.getDetailAddressEn())
+                .addressJp(pilgrimage.getDetailAddressJp())
                 .latitude(pilgrimage.getLatitude())
                 .longitude(pilgrimage.getLongitude())
                 .isCertified(true)
