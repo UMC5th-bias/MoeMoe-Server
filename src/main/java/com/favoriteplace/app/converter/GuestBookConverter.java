@@ -9,14 +9,14 @@ import com.favoriteplace.global.util.DateTimeFormatUtils;
 import java.util.List;
 
 public class GuestBookConverter {
-    public static GuestBookResponseDto.MyGuestBookInfo toGuestBook(GuestBook guestBook, String nickname, Long comments){
+    public static GuestBookResponseDto.MyGuestBookInfo toGuestBook(GuestBook guestBook, String nickname){
         return GuestBookResponseDto.MyGuestBookInfo.builder()
                 .id(guestBook.getId())
                 .title(guestBook.getTitle())
                 .nickname(nickname)
                 .views(guestBook.getView())
                 .likes(guestBook.getLikeCount())
-                .comments(comments)
+                .comments((long) guestBook.getComments().size())
                 .passedTime(DateTimeFormatUtils.getPassDateTime(guestBook.getCreatedAt()))
                 .build();
     }

@@ -74,7 +74,7 @@ public class CommentQueryService {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Comment> pageComment = commentRepository.findAllByMemberIdAndPostIsNullAndGuestBookIsNotNullOrderByCreatedAtDesc(member.getId(), pageable);
         if(pageComment.isEmpty()){return Page.empty();}
-        return pageComment.map(comment -> CommentConverter.toMyGuestBookComment(comment, countCommentsService.countGuestBookComments(comment.getGuestBook().getId())));
+        return pageComment.map(CommentConverter::toMyGuestBookComment);
     }
 
 

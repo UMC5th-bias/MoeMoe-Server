@@ -12,17 +12,19 @@ import com.favoriteplace.global.util.DateTimeFormatUtils;
 
 public class CommentConverter {
 
-    public static GuestBookResponseDto.MyGuestBookComment toMyGuestBookComment(Comment comment, Long comments) {
+    public static GuestBookResponseDto.MyGuestBookComment toMyGuestBookComment(Comment comment) {
         GuestBook guestBook = comment.getGuestBook();
         return GuestBookResponseDto.MyGuestBookComment.builder()
-                .id(comment.getId()).content(comment.getContent()).passedTime(DateTimeFormatUtils.getPassDateTime(comment.getCreatedAt()))
+                .id(comment.getId())
+                .content(comment.getContent())
+                .passedTime(DateTimeFormatUtils.getPassDateTime(comment.getCreatedAt()))
                 .myGuestBookInfo(GuestBookResponseDto.MyGuestBookInfo.builder()
                         .id(guestBook.getId())
                         .title(guestBook.getTitle())
                         .nickname(guestBook.getMember().getNickname())
                         .views(guestBook.getView())
                         .likes(guestBook.getLikeCount())
-                        .comments(comments)
+                        .comments((long) guestBook.getComments().size())
                         .passedTime(DateTimeFormatUtils.getPassDateTime(guestBook.getCreatedAt()))
                         .build())
                 .build();
