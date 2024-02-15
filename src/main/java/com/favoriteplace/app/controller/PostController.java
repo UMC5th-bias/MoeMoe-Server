@@ -34,11 +34,8 @@ public class PostController {
             @PathVariable("post_id") Long postId,
             HttpServletRequest request
     ){
-        postQueryService.increasePostView(postId);
-        return PostResponseDto.PostDetailResponseDto.builder()
-                .userInfo(memberService.getUserInfoByPostId(postId))
-                .postInfo(postQueryService.getPostDetail(postId, request))
-                .build();
+        postCommandService.increasePostView(postId);
+        return postQueryService.getPostDetail(postId, request);
     }
 
     @GetMapping("/my-posts")

@@ -141,35 +141,40 @@ public class PostQueryService {
         return trendingPostRanks;
     }
 
-    public PostResponseDto.PostInfo getPostDetail(Long postId, HttpServletRequest request) {
-        Optional<Post> post = postRepository.findById(postId);
-        if (post.isEmpty()) {
-            throw new RestApiException(ErrorCode.POST_NOT_FOUND);
-        }
-        List<String> imageUrls = getImageUrlsByPostId(postId);
+    /**
+     * 자유 게시글 상제 정보 조회
+     * @param postId
+     * @param request
+     * @return
+     */
+    public PostResponseDto.PostDetailResponseDto getPostDetail(Long postId, HttpServletRequest request) {
+        Post post = postImplRepository.findOneById(postId);
+        if (post == null) {throw new RestApiException(ErrorCode.POST_NOT_FOUND);}
         if (!securityUtil.isTokenExists(request)) {
-            return PostResponseDto.PostInfo.of(post.get(), false, false, imageUrls);
+            return PostConverter.toPostDetailResponse(post, false, false);
         }
         Long memberId = securityUtil.getUserFromHeader(request).getId();
-        return PostResponseDto.PostInfo.of(post.get(), isLiked(postId, memberId), isWriter(postId, memberId), imageUrls);
+        return PostConverter.toPostDetailResponse(post, isLiked(postId, memberId), isWriter(post, memberId));
     }
 
-    private Boolean isWriter(Long postId, Long memberId) {
-        Optional<Post> optionalPost = postRepository.findById(postId);
-        if (optionalPost.isEmpty()) {
-            throw new RestApiException(ErrorCode.POST_NOT_FOUND);
-        }
-        return optionalPost.get().getMember().getId().equals(memberId);
+    /**
+     * 사용자가 해당 글의 작성자가 맞는지 확인
+     * @param post
+     * @param memberId
+     * @return
+     */
+    private Boolean isWriter(Post post, Long memberId) {
+        return post.getMember().getId().equals(memberId);
     }
 
+    /**
+     * 사용자가 해당 글에 좋아요를 눌렀는지 확인
+     * @param postId
+     * @param memberId
+     * @return
+     */
     private Boolean isLiked(Long postId, Long memberId) {
         return likedPostRepository.existsByPostIdAndMemberId(postId, memberId);
-    }
-
-    private List<String> getImageUrlsByPostId(Long postId) {
-        return Optional.ofNullable(imageRepository.findByPostId(postId))
-                .map(images -> images.stream().map(Image::getUrl).collect(Collectors.toList()))
-                .orElse(Collections.emptyList());
     }
 
     /**
@@ -181,21 +186,6 @@ public class PostQueryService {
     public Long countPostComment(Post post) {
         return (long) post.getComments().size();
         //return commentRepository.countByPostId(post.getId()) != null ? commentRepository.countByPostId(post.getId()) : 0L;
-    }
-
-    /**
-     * 게시글의 조회수를 증가하는 함수
-     *
-     * @param postId
-     */
-    public void increasePostView(Long postId) {
-        Optional<Post> postOptional = postRepository.findById(postId);
-        if (postOptional.isEmpty()) {
-            throw new RestApiException(ErrorCode.POST_NOT_FOUND);
-        }
-        Post post = postOptional.get();
-        post.increaseView();
-        postRepository.save(post);
     }
 
 }

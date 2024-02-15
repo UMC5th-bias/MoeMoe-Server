@@ -84,23 +84,10 @@ public class PostResponseDto {
         private String content;
         private Long view;
         private Long likes;
+        private Long comments;
         private Boolean isLike;
         private Boolean isWrite;
         private String passedTime;
         private List<String> image;
-
-        public static PostInfo of(Post post, Boolean isLike, Boolean isWrite, List<String> images){
-            return PostInfo.builder()
-                    .id(post.getId())
-                    .title(post.getTitle())
-                    .content(post.getContent())
-                    .view(post.getView())
-                    .likes(post.getLikeCount())
-                    .isLike(isLike)
-                    .isWrite(isWrite)
-                    .passedTime(DateTimeFormatUtils.getPassDateTime(post.getCreatedAt()))
-                    .image(images)
-                    .build();
-        }
     }
 }

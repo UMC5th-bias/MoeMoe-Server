@@ -48,5 +48,14 @@ public class PostImplRepository {
     }
 
 
-
+    public Post findOneById(Long postId) {
+        return em.createQuery(
+                "select p from Post p" +
+                        " join fetch p.member m" +
+                        " left join fetch m.profileIcon pi" +
+                        " left join fetch m.profileTitle pt" +
+                        " where p.id = :postId", Post.class)
+                .setParameter("postId", postId)
+                .getSingleResult();
+    }
 }

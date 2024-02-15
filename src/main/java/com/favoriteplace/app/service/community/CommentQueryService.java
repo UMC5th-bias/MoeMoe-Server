@@ -24,7 +24,6 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class CommentQueryService {
     private final CommentRepository commentRepository;
-    private final CountCommentsService countCommentsService;
     private final CommentImplRepository commentImplRepository;
 
     /**
