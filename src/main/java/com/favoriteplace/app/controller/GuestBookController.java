@@ -81,12 +81,14 @@ public class GuestBookController {
             HttpServletRequest request
     ){
         Member member = securityUtil.getUserFromHeader(request);
-        guestBookQueryService.increaseGuestBookView(guestBookId);
-        return GuestBookResponseDto.DetailGuestBookDto.builder()
-                .userInfo(memberService.getUserInfoByGuestBookId(guestBookId))
-                .pilgrimage(pilgrimageQueryService.getPilgrimageDetailCommunity(member, guestBookId))
-                .guestBook(guestBookQueryService.getDetailGuestBookInfo(guestBookId, request))
-                .build();
+        guestBookCommandService.increaseGuestBookView(guestBookId);
+        return guestBookQueryService.getDetailGuestBookInfo(guestBookId, member);
+
+//        return GuestBookResponseDto.DetailGuestBookDto.builder()
+//                .userInfo(memberService.getUserInfoByGuestBookId(guestBookId))
+//                .pilgrimage(pilgrimageQueryService.getPilgrimageDetailCommunity(member, guestBookId))
+//                .guestBook(guestBookQueryService.getDetailGuestBookInfo(guestBookId, request))
+//                .build();
     }
 
     @PatchMapping("/{guestbook_id}")

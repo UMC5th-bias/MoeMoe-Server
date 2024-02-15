@@ -186,4 +186,17 @@ public class GuestBookCommandService {
         pointHistoryRepository.save(PointHistoryConverter.toPointHistory(member, 20L, PointType.ACQUIRE));
         member.updatePoint(20L);
     }
+
+    /**
+     * 성지 순례 인증글 조회수 증가
+     * @param guestBookId
+     */
+    @Transactional
+    public void increaseGuestBookView(Long guestBookId) {
+        Optional<GuestBook> optionalGuestBook = guestBookRepository.findById(guestBookId);
+        if(optionalGuestBook.isEmpty()){throw new RestApiException(ErrorCode.GUESTBOOK_NOT_FOUND);}
+        GuestBook guestBook = optionalGuestBook.get();
+        guestBook.increaseView();
+        guestBookRepository.save(guestBook);
+    }
 }

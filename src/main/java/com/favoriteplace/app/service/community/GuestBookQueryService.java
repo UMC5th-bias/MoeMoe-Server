@@ -1,10 +1,12 @@
 package com.favoriteplace.app.service.community;
 
 import com.favoriteplace.app.converter.GuestBookConverter;
+import com.favoriteplace.app.converter.PilgrimageConverter;
 import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.HashTag;
+import com.favoriteplace.app.domain.travel.Pilgrimage;
 import com.favoriteplace.app.dto.community.GuestBookResponseDto;
 import com.favoriteplace.app.dto.community.TrendingPostResponseDto;
 import com.favoriteplace.app.repository.*;
@@ -39,8 +41,8 @@ public class GuestBookQueryService {
     private final GuestBookRepository guestBookRepository;
     private final GuestBookImplRepository guestBookImplRepository;
     private final LikedPostRepository likedPostRepository;
-    private final ImageRepository imageRepository;
-    private final HashtagRepository hashtagRepository;
+    private final PilgrimageRepository pilgrimageRepository;
+    private final VisitedPilgrimageRepository visitedPilgrimageRepository;
     private final SortGuestBookByLatestStrategy sortGuestBookByLatestStrategy;
     private final SortGuestBookByLikedStrategy sortGuestBookByLikedStrategy;
     private final SearchGuestBookByTitle searchGuestBookByTitle;
@@ -102,24 +104,36 @@ public class GuestBookQueryService {
                 .map(GuestBookConverter::toGuestBook).toList();
     }
 
-    public GuestBookResponseDto.GuestBookInfo getDetailGuestBookInfo(Long guestBookId, HttpServletRequest request) {
-        Member member = securityUtil.getUserFromHeader(request);
-        Optional<GuestBook> optionalGuestBook = guestBookRepository.findById(guestBookId);
-        if(optionalGuestBook.isEmpty()){throw new RestApiException(ErrorCode.GUESTBOOK_NOT_FOUND);}
-        //GuestBook
-        GuestBook guestBook = optionalGuestBook.get();
-        //Image
-        List<Image> images = imageRepository.findAllByGuestBookId(guestBook.getId());
-        List<String> imagesUrl = images.stream().map(Image::getUrl).toList();
-        //HashTag
-        List<HashTag> hashTags = hashtagRepository.findAllByGuestBookId(guestBook.getId());
-        List<String> hashTagsString = hashTags.stream().map(HashTag::getTagName).toList();
-        if(!securityUtil.isTokenExists(request)){
-            return GuestBookConverter.toGuestBookInfo(guestBook, false, false, imagesUrl, hashTagsString);
+    /**
+     * 성지 순례 인증글 상세 정보
+     * @param guestBookId
+     * @param member
+     * @return
+     */
+    public GuestBookResponseDto.DetailGuestBookDto getDetailGuestBookInfo(Long guestBookId, Member member) {
+        GuestBook guestBook = guestBookImplRepository.findOneById(guestBookId);
+        if(guestBook == null){throw new RestApiException(ErrorCode.GUESTBOOK_NOT_FOUND);}
+        Long completeNumber = getCompletePilgrimageCount(member, guestBook.getPilgrimage().getRally().getId());
+        GuestBookResponseDto.PilgrimageInfo pilgrimageInfo = GuestBookConverter.toPilgrimageInfo(guestBook.getPilgrimage(), completeNumber);
+        if(member == null){
+            return GuestBookConverter.toDetailGuestBookInfo(guestBook, false, false, pilgrimageInfo);
         }
-        return GuestBookConverter.toGuestBookInfo(guestBook, isLiked(guestBook.getId(), member.getId()), isWriter(guestBook.getId(), member.getId()), imagesUrl, hashTagsString);
+        return GuestBookConverter.toDetailGuestBookInfo(guestBook, isLiked(guestBook.getId(), member.getId()),
+                isWriter(guestBook, member.getId()), pilgrimageInfo);
     }
 
+    /**
+     * 사용자가 해당 랠리에서 몇개의 성지순례를 완료했는지 알려주는 함수
+     * @param member
+     * @param rallyId
+     * @return
+     */
+    public long getCompletePilgrimageCount(Member member, Long rallyId){
+        if(member == null){return 0L;}
+        Long memberId = member.getId();
+        List<Long> pilgrimageIds = pilgrimageRepository.findByRallyId(rallyId).stream().map(Pilgrimage::getId).toList();
+        return visitedPilgrimageRepository.countByMemberIdAndPilgrimageIdIn(memberId, pilgrimageIds);
+    }
 
 
     /**
@@ -148,30 +162,24 @@ public class GuestBookQueryService {
         return guestBooks.map(GuestBookConverter::toTotalGuestBookInfo);
     }
 
-    private Long countGuestBookComment(GuestBook guestBook) {
-        return (long) guestBook.getComments().size();
-    }
-
-
+    /**
+     * 해당 글에 좋아요를 눌렀는지 확인
+     * @param guestBookId
+     * @param memberId
+     * @return
+     */
     private Boolean isLiked(Long guestBookId, Long memberId){
         return likedPostRepository.existsByGuestBookIdAndMemberId(guestBookId, memberId);
     }
 
-    private Boolean isWriter(Long guestBookId, Long memberId){
-        Optional<GuestBook> optionalGuestBook = guestBookRepository.findById(guestBookId);
-        if(optionalGuestBook.isEmpty()){
-            throw new RestApiException(ErrorCode.GUESTBOOK_NOT_FOUND);
-        }
-        return optionalGuestBook.get().getMember().getId().equals(memberId);
+    /**
+     * 해당 글의 작성자인지 확인
+     * @param guestBook
+     * @param memberId
+     * @return
+     */
+    private Boolean isWriter(GuestBook guestBook, Long memberId){
+        return guestBook.getMember().getId().equals(memberId);
     }
-
-    public void increaseGuestBookView(Long guestBookId) {
-        Optional<GuestBook> optionalGuestBook = guestBookRepository.findById(guestBookId);
-        if(optionalGuestBook.isEmpty()){throw new RestApiException(ErrorCode.GUESTBOOK_NOT_FOUND);}
-        GuestBook guestBook = optionalGuestBook.get();
-        guestBook.increaseView();
-        guestBookRepository.save(guestBook);
-    }
-
 
 }

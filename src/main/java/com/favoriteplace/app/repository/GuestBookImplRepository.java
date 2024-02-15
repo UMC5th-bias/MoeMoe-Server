@@ -46,4 +46,22 @@ public class GuestBookImplRepository {
                 .setMaxResults(size)
                 .getResultList();
     }
+
+    public GuestBook findOneById(Long guestBookId) {
+        return em.createQuery(
+                "select g from GuestBook g"+
+                        " join fetch g.member m" +
+                        " join fetch g.pilgrimage p" +
+                        " left join fetch m.profileIcon pi" +
+                        " left join fetch m.profileTitle pt" +
+                        " left join fetch pi.image pii" +
+                        " left join fetch pt.image pti" +
+                        " left join fetch p.address pa" +
+                        " left join fetch p.realImage pri" +
+                        " left join fetch p.virtualImage pvi" +
+                        " join fetch p.rally r" +
+                        " where g.id = :guestBookId", GuestBook.class)
+                .setParameter("guestBookId", guestBookId)
+                .getSingleResult();
+    }
 }
