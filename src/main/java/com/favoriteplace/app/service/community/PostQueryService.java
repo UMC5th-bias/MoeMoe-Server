@@ -56,8 +56,7 @@ public class PostQueryService {
      * @param sort
      * @return
      */
-    public Page<PostResponseDto.MyPost> getTotalPostBySort(int page, int size, String sort) {
-        Pageable pageable = PageRequest.of(page - 1, size);
+    public List<PostResponseDto.MyPost> getTotalPostBySort(int page, int size, String sort) {
         SortStrategy<Post> sortStrategy;
         if ("latest".equals(sort)) {
             sortStrategy = sortPostByLatestStrategy;
@@ -66,11 +65,11 @@ public class PostQueryService {
         } else {
             throw new RestApiException(ErrorCode.SORT_TYPE_NOT_ALLOWED);
         }
-        Page<Post> sortedPosts = sortStrategy.sort(pageable);
-        if (sortedPosts.isEmpty()) {
-            return Page.empty();
-        }
-        return sortedPosts.map(post -> PostConverter.toMyPost(post, post.getMember(), countPostComment(post)));
+        List<Post> sortedPosts = sortStrategy.sort(page, size);
+        if (sortedPosts.isEmpty()) {return Collections.emptyList();}
+        return sortedPosts.stream()
+                .map(PostConverter::toMyPost)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -117,7 +116,9 @@ public class PostQueryService {
         if (postPage.isEmpty()) {
             return Page.empty();
         }
-        return postPage.map(post -> PostConverter.toMyPost(post, member, countPostComment(post)));
+        //TODO
+        return null;
+        //return postPage.map(post -> PostConverter.toMyPost(post, member, countPostComment(post)));
     }
 
     /**

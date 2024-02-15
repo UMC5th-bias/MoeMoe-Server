@@ -38,11 +38,11 @@ public class GuestBookController {
             @RequestParam(required = false, defaultValue = "10") int size,
             @RequestParam(required = false, defaultValue = "latest") String sort
     ){
-        Page<GuestBookResponseDto.TotalGuestBookInfo> guestBookInfos = guestBookQueryService.getTotalGuestBooksBySort(page, size, sort);
+        List<GuestBookResponseDto.TotalGuestBookInfo> guestBookInfos = guestBookQueryService.getTotalGuestBooksBySort(page, size, sort);
         return GuestBookResponseDto.TotalGuestBookDto.builder()
-                .page((long)guestBookInfos.getNumber()+1)
-                .size((long)guestBookInfos.getSize())
-                .guestBook(guestBookInfos.getContent())
+                .page((long)page)
+                .size((long)size)
+                .guestBook(guestBookInfos)
                 .build();
     }
 

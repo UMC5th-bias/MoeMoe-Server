@@ -13,7 +13,4 @@ public class CountCommentsService {
         return commentRepository.countByPostId(postId) != null ? commentRepository.countByPostId(postId) : 0L;
     }
 
-    Long countGuestBookComments(Long guestBookId){
-        return commentRepository.countByGuestBookId(guestBookId) != null ? commentRepository.countByGuestBookId(guestBookId) : 0L;
-    }
 }

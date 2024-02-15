@@ -61,11 +61,11 @@ public class PostController {
             @RequestParam(required = false, defaultValue = "10") int size,
             @RequestParam(required = false, defaultValue = "latest") String sort
     ){
-        Page<PostResponseDto.MyPost> sortPages = postQueryService.getTotalPostBySort(page, size, sort);
+        List<PostResponseDto.MyPost> sortPages = postQueryService.getTotalPostBySort(page, size, sort);
         return PostResponseDto.MyPostResponseDto.builder()
-                .page((long) (sortPages.getNumber()+1))
-                .size((long)sortPages.getSize())
-                .post(sortPages.getContent())
+                .page((long) page)
+                .size((long) size)
+                .post(sortPages)
                 .build();
     }
 

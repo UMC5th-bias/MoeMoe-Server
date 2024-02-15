@@ -19,9 +19,9 @@ public interface GuestBookRepository extends JpaRepository<GuestBook, Long> {
 
     Page<GuestBook> findAllByMemberIdOrderByCreatedAtDesc(Long id, Pageable pageable);
 
-    Page<GuestBook> findAllByOrderByLikeCountDesc(Pageable pageable);
+    //Page<GuestBook> findAllByOrderByLikeCountDesc(Pageable pageable);
 
-    Page<GuestBook> findAllByOrderByCreatedAtDesc(Pageable pageable);
+    //Page<GuestBook> findAllByOrderByCreatedAtDesc(Pageable pageable);
     Long countByMember(Member member);
 
     @Query("select g from GuestBook g where g.title like %:keyword% order by g.createdAt desc")

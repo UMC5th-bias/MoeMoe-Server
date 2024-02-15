@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,7 +48,6 @@ public class GuestBookQueryService {
     private final SearchGuestBookByTitle searchGuestBookByTitle;
     private final SearchGuestBookByNickname searchGuestBookByNickname;
     private final SearchGuestBookByContent searchGuestBookByContent;
-    private final CountCommentsService countCommentsService;
     private final SecurityUtil securityUtil;
 
     public List<TrendingPostResponseDto.TrendingPostRank> getTodayTrendingGuestBook() {
@@ -64,6 +64,30 @@ public class GuestBookQueryService {
             trendingPostsRank.add(TrendingPostResponseDto.TrendingPostRank.of(guestBooks.get(i)));
         }
         return trendingPostsRank;
+    }
+
+    /**
+     * sort에 따라 전체 정시순례 인증글들을 페이징해서 보여주는 기능
+     * @param page
+     * @param size
+     * @param sort
+     * @return sort에 따라 전체 정시순례 인증글들
+     */
+    public List<GuestBookResponseDto.TotalGuestBookInfo> getTotalGuestBooksBySort(int page, int size, String sort) {
+        SortStrategy<GuestBook> sortStrategy;
+        if("latest".equals(sort)){
+            sortStrategy = sortGuestBookByLatestStrategy;
+        }
+        else if("liked".equals(sort)){
+            sortStrategy = sortGuestBookByLikedStrategy;
+        }else{
+            throw new RestApiException(ErrorCode.SORT_TYPE_NOT_ALLOWED);
+        }
+        List<GuestBook> guestBooks = sortStrategy.sort(page, size);
+        if(guestBooks.isEmpty()){return Collections.emptyList();}
+        return guestBooks.stream()
+                .map(GuestBookConverter::toTotalGuestBookInfo)
+                .toList();
     }
 
     public Page<GuestBookResponseDto.MyGuestBookInfo> getMyGuestBooks(int page, int size) {
@@ -92,28 +116,7 @@ public class GuestBookQueryService {
         return GuestBookConverter.toGuestBookInfo(guestBook, isLiked(guestBook.getId(), member.getId()), isWriter(guestBook.getId(), member.getId()), imagesUrl, hashTagsString);
     }
 
-    /**
-     * sort에 따라 전체 정시순례 인증글들을 페이징해서 보여주는 기능
-     * @param page
-     * @param size
-     * @param sort
-     * @return sort에 따라 전체 정시순례 인증글들
-     */
-    public Page<GuestBookResponseDto.TotalGuestBookInfo> getTotalGuestBooksBySort(int page, int size, String sort) {
-        Pageable pageable = PageRequest.of(page-1, size);
-        SortStrategy<GuestBook> sortStrategy;
-        if("latest".equals(sort)){
-            sortStrategy = sortGuestBookByLatestStrategy;
-        }
-        else if("liked".equals(sort)){
-            sortStrategy = sortGuestBookByLikedStrategy;
-        }else{
-            throw new RestApiException(ErrorCode.SORT_TYPE_NOT_ALLOWED);
-        }
-        Page<GuestBook> guestBooks = sortStrategy.sort(pageable);
-        if(guestBooks.isEmpty()){return Page.empty();}
-        return guestBooks.map(GuestBookConverter::toTotalGuestBookInfo);
-    }
+
 
     /**
      * searchType(제목, 닉네임, 내용)을 기반으로 성지순레 인증글을 가져오는 함 (게시글 생성일의 내림차순으로 정렬)

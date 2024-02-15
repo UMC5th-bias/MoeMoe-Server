@@ -1,19 +1,20 @@
 package com.favoriteplace.app.service.community.sortStrategy;
 
 import com.favoriteplace.app.domain.community.GuestBook;
+import com.favoriteplace.app.repository.GuestBookImplRepository;
 import com.favoriteplace.app.repository.GuestBookRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 public class SortGuestBookByLikedStrategy implements SortStrategy<GuestBook> {
-    private final GuestBookRepository guestBookRepository;
+    private final GuestBookImplRepository guestBookImplRepository;
 
     @Override
-    public Page<GuestBook> sort(Pageable pageable) {
-        return guestBookRepository.findAllByOrderByLikeCountDesc(pageable);
+    public List<GuestBook> sort(int page, int size) {
+        return guestBookImplRepository.findAllByOrderByLikeCountDesc(page, size);
     }
 }

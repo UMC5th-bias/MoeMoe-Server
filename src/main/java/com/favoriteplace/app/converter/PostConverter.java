@@ -16,4 +16,15 @@ public class PostConverter {
                 .comments(comments)
                 .passedTime(DateTimeFormatUtils.getPassDateTime(post.getCreatedAt())).build();
     }
+
+    public static PostResponseDto.MyPost toMyPost(Post post){
+        return PostResponseDto.MyPost.builder()
+                .id(post.getId())
+                .title(post.getTitle())
+                .nickname(post.getMember().getNickname())
+                .views(post.getView())
+                .likes(post.getLikeCount())
+                .comments((long) post.getComments().size())
+                .passedTime(DateTimeFormatUtils.getPassDateTime(post.getCreatedAt())).build();
+    }
 }
