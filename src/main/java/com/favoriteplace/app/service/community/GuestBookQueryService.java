@@ -112,10 +112,7 @@ public class GuestBookQueryService {
         }
         Page<GuestBook> guestBooks = sortStrategy.sort(pageable);
         if(guestBooks.isEmpty()){return Page.empty();}
-        return guestBooks.map(guestBook -> GuestBookConverter.toTotalGuestBookInfo(guestBook,
-                imageRepository.findFirstByGuestBook(guestBook),
-                countGuestBookComment(guestBook),
-                guestBook.getHashTags()));
+        return guestBooks.map(GuestBookConverter::toTotalGuestBookInfo);
     }
 
     /**
@@ -141,10 +138,7 @@ public class GuestBookQueryService {
         if(keyword.trim().isEmpty()){return Page.empty();}
         Page<GuestBook> guestBooks = searchStrategy.search(keyword, pageable);
         if(guestBooks.isEmpty()){return Page.empty();}
-        return guestBooks.map(guestBook -> GuestBookConverter.toTotalGuestBookInfo(guestBook,
-                imageRepository.findFirstByGuestBook(guestBook),
-                countGuestBookComment(guestBook),
-                guestBook.getHashTags()));
+        return guestBooks.map(GuestBookConverter::toTotalGuestBookInfo);
     }
 
     private Long countGuestBookComment(GuestBook guestBook) {

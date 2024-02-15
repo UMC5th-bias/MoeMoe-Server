@@ -1,6 +1,5 @@
 package com.favoriteplace.app.converter;
 
-import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.HashTag;
 import com.favoriteplace.app.domain.travel.Pilgrimage;
@@ -50,17 +49,17 @@ public class GuestBookConverter {
                 .build();
     }
 
-    public static GuestBookResponseDto.TotalGuestBookInfo toTotalGuestBookInfo(GuestBook guestBook, Image image, Long comments, List<HashTag> hashTags){
+    public static GuestBookResponseDto.TotalGuestBookInfo toTotalGuestBookInfo(GuestBook guestBook){
         return GuestBookResponseDto.TotalGuestBookInfo.builder()
                 .id(guestBook.getId())
                 .title(guestBook.getTitle())
                 .nickname(guestBook.getMember().getNickname())
-                .thumbnail(image != null ? image.getUrl() : null)
+                .thumbnail(!guestBook.getImages().isEmpty() ? guestBook.getImages().get(0).getUrl() : null)
                 .views(guestBook.getView())
                 .likes(guestBook.getLikeCount())
-                .comments(comments)
+                .comments((long) guestBook.getComments().size())
                 .passedTime(DateTimeFormatUtils.getPassDateTime(guestBook.getCreatedAt()))
-                .hashTags(hashTags.stream().map(HashTag::getTagName).toList())
+                .hashTags(guestBook.getHashTags().stream().map(HashTag::getTagName).toList())
                 .build();
     }
 }
