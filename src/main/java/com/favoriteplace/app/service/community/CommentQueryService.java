@@ -33,11 +33,12 @@ public class CommentQueryService {
      * @param postId
      * @return
      */
-    public Page<CommentResponseDto.PostComment> getPostComments(Member member, int page, int size, Long postId) {
-        Pageable pageable = PageRequest.of(page-1, size);
-        Page<Comment> commentPage = commentRepository.findAllByPostIdOrderByCreatedAtAsc(postId, pageable);
-        if(commentPage.isEmpty()){return Page.empty();}
-        return commentPage.map(comment -> CommentConverter.toPostComment(comment, isCommentWriter(member, comment)));
+    public List<CommentResponseDto.PostComment> getPostComments(Member member, int page, int size, Long postId) {
+        List<Comment> commentPage = commentImplRepository.findAllByPostIdOrderByCreatedAtAsc(postId, page, size);
+        if(commentPage.isEmpty()){return Collections.emptyList();}
+        return commentPage.stream()
+                .map(comment -> CommentConverter.toPostComment(comment, isCommentWriter(member, comment)))
+                .toList();
     }
 
     /**
@@ -48,11 +49,12 @@ public class CommentQueryService {
      * @param guestbookId
      * @return 페이징 된 댓글 리스트
      */
-    public Page<CommentResponseDto.PostComment> getGuestBookComments(int page, int size, Member member, Long guestbookId) {
-        Pageable pageable = PageRequest.of(page-1, size);
-        Page<Comment> commentPage = commentRepository.findAllByGuestBookIdOrderByCreatedAtAsc(guestbookId, pageable);
-        if(commentPage.isEmpty()){return Page.empty();}
-        return commentPage.map(comment -> CommentConverter.toPostComment(comment, isCommentWriter(member, comment)));
+    public List<CommentResponseDto.PostComment> getGuestBookComments(int page, int size, Member member, Long guestbookId) {
+        List<Comment> commentPage = commentImplRepository.findAllByGuestBookIdOrderByCreatedAtAsc(guestbookId, page, size);
+        if(commentPage.isEmpty()){return Collections.emptyList();}
+        return commentPage.stream()
+                .map(comment -> CommentConverter.toPostComment(comment, isCommentWriter(member, comment)))
+                .toList();
     }
 
     /**

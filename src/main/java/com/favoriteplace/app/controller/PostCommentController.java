@@ -47,11 +47,11 @@ public class PostCommentController {
             HttpServletRequest request
     ){
         Member member = securityUtil.getUserFromHeader(request);
-        Page<CommentResponseDto.PostComment> comments = commentQueryService.getPostComments(member, page, size, postId);
+        List<CommentResponseDto.PostComment> comments = commentQueryService.getPostComments(member, page, size, postId);
         return CommentResponseDto.PostCommentDto.builder()
-                .page((long)comments.getNumber()+1)
-                .size((long) comments.getSize())
-                .comment(comments.getContent())
+                .page((long)page)
+                .size((long)size)
+                .comment(comments)
                 .build();
     }
 

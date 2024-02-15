@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/posts/guestbooks")
 @RequiredArgsConstructor
@@ -45,11 +47,11 @@ public class GuestBookCommentController {
             HttpServletRequest request
     ){
         Member member = securityUtil.getUserFromHeader(request);
-        Page<CommentResponseDto.PostComment> comments = commentQueryService.getGuestBookComments(page, size, member, guestbookId);
+        List<CommentResponseDto.PostComment> comments = commentQueryService.getGuestBookComments(page, size, member, guestbookId);
         return CommentResponseDto.PostCommentDto.builder()
-                .page((long) comments.getNumber() +1)
-                .size((long) comments.getSize())
-                .comment(comments.getContent())
+                .page((long) page)
+                .size((long) size)
+                .comment(comments)
                 .build();
     }
 

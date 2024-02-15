@@ -54,6 +54,8 @@ public class PostImplRepository {
                         " join fetch p.member m" +
                         " left join fetch m.profileIcon pi" +
                         " left join fetch m.profileTitle pt" +
+                        " left join fetch pi.image pii" +
+                        " left join fetch pt.image pti" +
                         " where p.id = :postId", Post.class)
                 .setParameter("postId", postId)
                 .getSingleResult();

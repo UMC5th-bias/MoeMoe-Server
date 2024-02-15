@@ -28,4 +28,36 @@ public class CommentImplRepository {
                 .setMaxResults(size)
                 .getResultList();
     }
+
+    public List<Comment> findAllByPostIdOrderByCreatedAtAsc(Long postId, int page, int size) {
+        return em.createQuery(
+                "select c from Comment c" +
+                        " join fetch c.member m" +
+                        " left join fetch m.profileIcon pi" +
+                        " left join fetch m.profileTitle pt" +
+                        " left join fetch pi.image pii" +
+                        " left join fetch pt.image pti" +
+                        " where c.post.id = :postId" +
+                        " order by c.createdAt asc", Comment.class)
+                .setParameter("postId", postId)
+                .setFirstResult((page-1)*size)
+                .setMaxResults(size)
+                .getResultList();
+    }
+
+    public List<Comment> findAllByGuestBookIdOrderByCreatedAtAsc(Long guestbookId, int page, int size) {
+        return em.createQuery(
+                "select c from Comment c" +
+                        " join fetch c.member m" +
+                        " left join fetch m.profileIcon pi" +
+                        " left join fetch m.profileTitle pt" +
+                        " left join fetch pi.image pii" +
+                        " left join fetch pt.image pti" +
+                        " where c.guestBook.id = :guestbookId" +
+                        " order by c.createdAt asc", Comment.class)
+                .setParameter("guestbookId", guestbookId)
+                .setFirstResult((page-1)*size)
+                .setMaxResults(size)
+                .getResultList();
+    }
 }
