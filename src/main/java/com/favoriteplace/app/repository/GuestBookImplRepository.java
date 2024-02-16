@@ -55,8 +55,8 @@ public class GuestBookImplRepository {
                         " join fetch g.pilgrimage p" +
                         " left join fetch m.profileIcon pi" +
                         " left join fetch m.profileTitle pt" +
-                        " left join fetch pi.image pii" +
-                        " left join fetch pt.image pti" +
+                        " left join fetch pi.defaultImage pii" +
+                        " left join fetch pt.defaultImage pti" +
                         " left join fetch p.address pa" +
                         " left join fetch p.realImage pri" +
                         " left join fetch p.virtualImage pvi" +
@@ -108,8 +108,8 @@ public class GuestBookImplRepository {
                         " join fetch g.member m" +
                         " left join fetch m.profileTitle pt" +
                         " left join fetch m.profileIcon pi" +
-                        " left join fetch pt.image pti" +
-                        " left join fetch pi.image pii" +
+                        " left join fetch pt.defaultImage pti" +
+                        " left join fetch pi.defaultImage pii" +
                         " where g.createdAt between :startDateTime and :now" +
                         " order by g.likeCount desc", GuestBook.class)
                 .setParameter("startDateTime", startDateTime)
