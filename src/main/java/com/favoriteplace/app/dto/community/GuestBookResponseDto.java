@@ -90,6 +90,7 @@ public class GuestBookResponseDto {
         private String content;
         private Long views;
         private Long likes;
+        private Long comments;
         private Boolean isLike;
         private Boolean isWrite;
         private String passedTime;

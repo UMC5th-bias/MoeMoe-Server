@@ -1,5 +1,6 @@
 package com.favoriteplace.app.service;
 
+import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.travel.Pilgrimage;
 import com.favoriteplace.app.domain.travel.Rally;
 import com.favoriteplace.app.domain.travel.VisitedPilgrimage;
@@ -22,19 +23,18 @@ import java.util.Random;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class RallyService {
-    private final SecurityUtil securityUtil;
     private final RallyRepository rallyRepository;
     private final VisitedPilgrimageRepository visitedPilgrimageRepository;
     private final PilgrimageRepository pilgrimageRepository;
 
-    public HomeResponseDto.HomeRally getRecentRallyElseRandomRally(HttpServletRequest request) {
+    public HomeResponseDto.HomeRally getRecentRallyElseRandomRally(Boolean isLoggedIn, Member member) {
         Rally rally;
         long visitedCount = 0L;
-        if(!securityUtil.isTokenExists(request)){
+        if(!isLoggedIn){
             rally = recommandRandomRally();
         }
         else{
-            Long id = securityUtil.getUserFromHeader(request).getId();
+            Long id = member.getId();
             List<VisitedPilgrimage> visitedPilgrimages = visitedPilgrimageRepository.findByMemberIdOrderByModifiedAtDesc(id);
             if(visitedPilgrimages.isEmpty()){
                 //랜덤 랠리

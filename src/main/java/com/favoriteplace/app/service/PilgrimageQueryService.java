@@ -260,7 +260,7 @@ public class PilgrimageQueryService {
 
     /***
      * 성지순례 지역 상세 카테고리
-     * @param regionId역
+     * @param regionId
      * @return district 별 성지순례 리스트
      */
     public List<PilgrimageDto.PilgrimageCategoryRegionDetailDto> getCategoryRegionDetail(Long regionId) {
@@ -274,35 +274,6 @@ public class PilgrimageQueryService {
                     return PilgrimageConverter.toPilgrimageCategoryRegionDetailDto(rally.getName(), pilgrimage);
                 })
                 .collect(Collectors.toList());
-    }
-
-    /**
-     * 커뮤니티: 성지순례 인증글 상세 정보
-     * @param member
-     * @param guestBookId
-     * @return 성지순례 인증글 상세 정보
-     */
-    public GuestBookResponseDto.PilgrimageInfo getPilgrimageDetailCommunity(Member member, Long guestBookId) {
-        Optional<GuestBook> guestBookOptional = guestBookRepository.findById(guestBookId);
-        if(guestBookOptional.isEmpty()){throw new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND);}
-        GuestBook guestBook = guestBookOptional.get();
-        Long pilgrimageNumber = guestBook.getPilgrimage().getRally().getPilgrimageNumber();
-        Long completeNumber = getCompletePilgrimageCount(member, guestBook.getPilgrimage().getRally().getId());
-        return GuestBookConverter.toPilgrimageInfo(guestBook.getPilgrimage(), pilgrimageNumber, completeNumber);
-    }
-
-    /**
-     * 사용자가 해당 랠리에서 몇개의 성지순례를 완료했는지 알려주는 함수
-     * @param member
-     * @param rallyId
-     * @return
-     */
-    public long getCompletePilgrimageCount(Member member, Long rallyId){
-        if(member == null){return 0L;}
-        Long memberId = member.getId();
-        List<Pilgrimage> pilgrimages = pilgrimageRepository.findByRallyId(rallyId);
-        List<Long> pilgrimageIds = pilgrimages.stream().map(Pilgrimage::getId).toList();
-        return visitedPilgrimageRepository.countByMemberIdAndPilgrimageIdIn(memberId, pilgrimageIds);
     }
 
     /**

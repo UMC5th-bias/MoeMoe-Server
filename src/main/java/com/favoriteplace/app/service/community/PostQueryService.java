@@ -1,13 +1,12 @@
 package com.favoriteplace.app.service.community;
 
 import com.favoriteplace.app.converter.PostConverter;
-import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.Post;
 import com.favoriteplace.app.dto.community.PostResponseDto;
 import com.favoriteplace.app.dto.community.TrendingPostResponseDto;
-import com.favoriteplace.app.repository.ImageRepository;
 import com.favoriteplace.app.repository.LikedPostRepository;
+import com.favoriteplace.app.repository.PostImplRepository;
 import com.favoriteplace.app.repository.PostRepository;
 import com.favoriteplace.app.service.community.searchStrategy.SearchPostByContent;
 import com.favoriteplace.app.service.community.searchStrategy.SearchPostByNickname;
@@ -21,9 +20,6 @@ import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,15 +27,13 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class PostQueryService {
-    private final PostRepository postRepository;
-    private final ImageRepository imageRepository;
+    private final PostImplRepository postImplRepository;
     private final LikedPostRepository likedPostRepository;
     private final SortPostByLatestStrategy sortPostByLatestStrategy;
     private final SortPostByLikedStrategy sortPostByLikedStrategy;
@@ -56,8 +50,7 @@ public class PostQueryService {
      * @param sort
      * @return
      */
-    public Page<PostResponseDto.MyPost> getTotalPostBySort(int page, int size, String sort) {
-        Pageable pageable = PageRequest.of(page - 1, size);
+    public List<PostResponseDto.MyPost> getTotalPostBySort(int page, int size, String sort) {
         SortStrategy<Post> sortStrategy;
         if ("latest".equals(sort)) {
             sortStrategy = sortPostByLatestStrategy;
@@ -66,11 +59,11 @@ public class PostQueryService {
         } else {
             throw new RestApiException(ErrorCode.SORT_TYPE_NOT_ALLOWED);
         }
-        Page<Post> sortedPosts = sortStrategy.sort(pageable);
-        if (sortedPosts.isEmpty()) {
-            return Page.empty();
-        }
-        return sortedPosts.map(post -> PostConverter.toMyPost(post, post.getMember(), countPostComment(post)));
+        List<Post> sortedPosts = sortStrategy.sort(page, size);
+        if (sortedPosts.isEmpty()) {return Collections.emptyList();}
+        return sortedPosts.stream()
+                .map(PostConverter::toMyPost)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -82,8 +75,7 @@ public class PostQueryService {
      * @param keyword
      * @return
      */
-    public Page<PostResponseDto.MyPost> getTotalPostByKeyword(int page, int size, String searchType, String keyword) {
-        Pageable pageable = PageRequest.of(page - 1, size);
+    public List<PostResponseDto.MyPost> getTotalPostByKeyword(int page, int size, String searchType, String keyword) {
         SearchStrategy<Post> searchStrategy;
         if ("title".equals(searchType)) {
             searchStrategy = searchPostByTitle;
@@ -94,14 +86,12 @@ public class PostQueryService {
         } else {
             throw new RestApiException(ErrorCode.SEARCH_TYPE_NOT_ALLOWED);
         }
-        if (keyword.trim().isEmpty()) {
-            return Page.empty();
-        }
-        Page<Post> postPage = searchStrategy.search(keyword, pageable);
-        if (postPage.isEmpty()) {
-            return Page.empty();
-        }
-        return postPage.map(post -> PostConverter.toMyPost(post, post.getMember(), countPostComment(post)));
+        if (keyword.trim().isEmpty()) {return Collections.emptyList();}
+        List<Post> postPage = searchStrategy.search(keyword, page, size);
+        if (postPage.isEmpty()) {return Collections.emptyList();}
+        return postPage.stream()
+                .map(PostConverter::toMyPost)
+                .toList();
     }
 
     /**
@@ -111,13 +101,12 @@ public class PostQueryService {
      * @param size
      * @return
      */
-    public Page<PostResponseDto.MyPost> getMyPosts(Member member, int page, int size) {
-        Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Post> postPage = postRepository.findAllByMemberIdOrderByCreatedAtDesc(member.getId(), pageable);
-        if (postPage.isEmpty()) {
-            return Page.empty();
-        }
-        return postPage.map(post -> PostConverter.toMyPost(post, member, countPostComment(post)));
+    public List<PostResponseDto.MyPost> getMyPosts(Member member, int page, int size) {
+        List<Post> postPage = postImplRepository.findAllByMemberIdOrderByCreatedAtDesc(member.getId(), page, size);
+        if (postPage.isEmpty()) {return Collections.emptyList();}
+        return postPage.stream()
+                .map(PostConverter::toMyPost)
+                .toList();
     }
 
     /**
@@ -128,7 +117,7 @@ public class PostQueryService {
     public List<TrendingPostResponseDto.TrendingPostRank> getTodayTrendingPost() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startOfDay = now.toLocalDate().atStartOfDay();
-        List<Post> posts = postRepository.findByCreatedAtBetweenOrderByLikeCountDesc(startOfDay, now);
+        List<Post> posts = postImplRepository.findByCreatedAtBetweenOrderByLikeCountDesc(startOfDay, now, 5);
         if (posts.isEmpty()) {
             throw new RestApiException(ErrorCode.POST_NOT_FOUND);
         }
@@ -141,61 +130,40 @@ public class PostQueryService {
         return trendingPostRanks;
     }
 
-    public PostResponseDto.PostInfo getPostDetail(Long postId, HttpServletRequest request) {
-        Optional<Post> post = postRepository.findById(postId);
-        if (post.isEmpty()) {
-            throw new RestApiException(ErrorCode.POST_NOT_FOUND);
-        }
-        List<String> imageUrls = getImageUrlsByPostId(postId);
-        if (!securityUtil.isTokenExists(request)) {
-            return PostResponseDto.PostInfo.of(post.get(), false, false, imageUrls);
-        }
-        Long memberId = securityUtil.getUserFromHeader(request).getId();
-        return PostResponseDto.PostInfo.of(post.get(), isLiked(postId, memberId), isWriter(postId, memberId), imageUrls);
-    }
-
-    private Boolean isWriter(Long postId, Long memberId) {
-        Optional<Post> optionalPost = postRepository.findById(postId);
-        if (optionalPost.isEmpty()) {
-            throw new RestApiException(ErrorCode.POST_NOT_FOUND);
-        }
-        return optionalPost.get().getMember().getId().equals(memberId);
-    }
-
-    private Boolean isLiked(Long postId, Long memberId) {
-        return likedPostRepository.existsByPostIdAndMemberId(postId, memberId);
-    }
-
-    private List<String> getImageUrlsByPostId(Long postId) {
-        return Optional.ofNullable(imageRepository.findByPostId(postId))
-                .map(images -> images.stream().map(Image::getUrl).collect(Collectors.toList()))
-                .orElse(Collections.emptyList());
-    }
-
     /**
-     * 게시글의 댓글이 몇개인지 counting하는 함수
-     *
-     * @param post
+     * 자유 게시글 상제 정보 조회
+     * @param postId
+     * @param request
      * @return
      */
-    public Long countPostComment(Post post) {
-        return (long) post.getComments().size();
-        //return commentRepository.countByPostId(post.getId()) != null ? commentRepository.countByPostId(post.getId()) : 0L;
+    public PostResponseDto.PostDetailResponseDto getPostDetail(Long postId, HttpServletRequest request) {
+        Post post = postImplRepository.findOneById(postId);
+        if (post == null) {throw new RestApiException(ErrorCode.POST_NOT_FOUND);}
+        if (!securityUtil.isTokenExists(request)) {
+            return PostConverter.toPostDetailResponse(post, false, false);
+        }
+        Long memberId = securityUtil.getUserFromHeader(request).getId();
+        return PostConverter.toPostDetailResponse(post, isLiked(postId, memberId), isWriter(post, memberId));
     }
 
     /**
-     * 게시글의 조회수를 증가하는 함수
-     *
-     * @param postId
+     * 사용자가 해당 글의 작성자가 맞는지 확인
+     * @param post
+     * @param memberId
+     * @return
      */
-    public void increasePostView(Long postId) {
-        Optional<Post> postOptional = postRepository.findById(postId);
-        if (postOptional.isEmpty()) {
-            throw new RestApiException(ErrorCode.POST_NOT_FOUND);
-        }
-        Post post = postOptional.get();
-        post.increaseView();
-        postRepository.save(post);
+    private Boolean isWriter(Post post, Long memberId) {
+        return post.getMember().getId().equals(memberId);
+    }
+
+    /**
+     * 사용자가 해당 글에 좋아요를 눌렀는지 확인
+     * @param postId
+     * @param memberId
+     * @return
+     */
+    private Boolean isLiked(Long postId, Long memberId) {
+        return likedPostRepository.existsByPostIdAndMemberId(postId, memberId);
     }
 
 }

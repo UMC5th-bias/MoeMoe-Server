@@ -4,43 +4,45 @@ import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.HashTag;
 import com.favoriteplace.app.domain.travel.Pilgrimage;
+import com.favoriteplace.app.dto.UserInfoResponseDto;
 import com.favoriteplace.app.dto.community.GuestBookResponseDto;
 import com.favoriteplace.global.util.DateTimeFormatUtils;
 
 import java.util.List;
 
 public class GuestBookConverter {
-    public static GuestBookResponseDto.MyGuestBookInfo toGuestBook(GuestBook guestBook, String nickname, Long comments){
+    public static GuestBookResponseDto.MyGuestBookInfo toGuestBook(GuestBook guestBook){
         return GuestBookResponseDto.MyGuestBookInfo.builder()
                 .id(guestBook.getId())
                 .title(guestBook.getTitle())
-                .nickname(nickname)
+                .nickname(guestBook.getMember().getNickname())
                 .views(guestBook.getView())
                 .likes(guestBook.getLikeCount())
-                .comments(comments)
+                .comments((long) guestBook.getComments().size())
                 .passedTime(DateTimeFormatUtils.getPassDateTime(guestBook.getCreatedAt()))
                 .build();
     }
 
-    public static GuestBookResponseDto.GuestBookInfo toGuestBookInfo(GuestBook guestBook, Boolean isLike, Boolean isWrite, List<String> images, List<String> hashtags){
+    public static GuestBookResponseDto.GuestBookInfo toGuestBookInfo(GuestBook guestBook, Boolean isLike, Boolean isWrite){
         return GuestBookResponseDto.GuestBookInfo.builder()
                 .id(guestBook.getId())
                 .title(guestBook.getTitle())
                 .content(guestBook.getContent())
                 .views(guestBook.getView())
                 .likes(guestBook.getLikeCount())
+                .comments((long) guestBook.getComments().size())
                 .isLike(isLike)
                 .isWrite(isWrite)
                 .passedTime(DateTimeFormatUtils.getPassDateTime(guestBook.getCreatedAt()))
-                .image(images)
-                .hashTag(hashtags)
+                .image(guestBook.getImages().stream().map(Image::getUrl).toList())
+                .hashTag(guestBook.getHashTags().stream().map(HashTag::getTagName).toList())
                 .build();
     }
 
-    public static GuestBookResponseDto.PilgrimageInfo toPilgrimageInfo(Pilgrimage pilgrimage, Long pilgrimageNumber, Long completeNumber){
+    public static GuestBookResponseDto.PilgrimageInfo toPilgrimageInfo(Pilgrimage pilgrimage, Long completeNumber){
         return GuestBookResponseDto.PilgrimageInfo.builder()
                 .name(pilgrimage.getRallyName())
-                .pilgrimageNumber(pilgrimageNumber)
+                .pilgrimageNumber(pilgrimage.getRally().getPilgrimageNumber())
                 .completeNumber(completeNumber)
                 .address(pilgrimage.getDetailAddress())
                 .latitude(pilgrimage.getLatitude())
@@ -50,17 +52,28 @@ public class GuestBookConverter {
                 .build();
     }
 
-    public static GuestBookResponseDto.TotalGuestBookInfo toTotalGuestBookInfo(GuestBook guestBook, Image image, Long comments, List<HashTag> hashTags){
+    public static GuestBookResponseDto.TotalGuestBookInfo toTotalGuestBookInfo(GuestBook guestBook){
         return GuestBookResponseDto.TotalGuestBookInfo.builder()
                 .id(guestBook.getId())
                 .title(guestBook.getTitle())
                 .nickname(guestBook.getMember().getNickname())
-                .thumbnail(image != null ? image.getUrl() : null)
+                .thumbnail(!guestBook.getImages().isEmpty() ? guestBook.getImages().get(0).getUrl() : null)
                 .views(guestBook.getView())
                 .likes(guestBook.getLikeCount())
-                .comments(comments)
+                .comments((long) guestBook.getComments().size())
                 .passedTime(DateTimeFormatUtils.getPassDateTime(guestBook.getCreatedAt()))
-                .hashTags(hashTags.stream().map(HashTag::getTagName).toList())
+                .hashTags(guestBook.getHashTags().stream().map(HashTag::getTagName).toList())
                 .build();
     }
+
+    public static GuestBookResponseDto.DetailGuestBookDto toDetailGuestBookInfo(GuestBook guestBook, boolean isLike,
+                                boolean isWrite, GuestBookResponseDto.PilgrimageInfo pilgrimageInfo){
+        return GuestBookResponseDto.DetailGuestBookDto.builder()
+                .userInfo(UserInfoResponseDto.of(guestBook.getMember()))
+                .pilgrimage(pilgrimageInfo)
+                .guestBook(toGuestBookInfo(guestBook, isLike, isWrite))
+                .build();
+
+    }
+
 }

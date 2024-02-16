@@ -1,8 +1,7 @@
 package com.favoriteplace.app.service.community.sortStrategy;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import java.util.List;
 
 public interface SortStrategy<T> {
-    Page<T> sort(Pageable pageable);
+    List<T> sort(int page, int size);
 }

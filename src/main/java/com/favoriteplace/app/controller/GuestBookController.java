@@ -4,15 +4,12 @@ import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.dto.community.GuestBookRequestDto;
 import com.favoriteplace.app.dto.community.GuestBookResponseDto;
 import com.favoriteplace.app.dto.community.PostResponseDto;
-import com.favoriteplace.app.service.MemberService;
-import com.favoriteplace.app.service.PilgrimageQueryService;
 import com.favoriteplace.app.service.community.GuestBookCommandService;
 import com.favoriteplace.app.service.community.GuestBookQueryService;
 import com.favoriteplace.app.service.community.LikedPostService;
 import com.favoriteplace.global.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,8 +24,6 @@ import java.util.List;
 public class GuestBookController {
     private final GuestBookQueryService guestBookQueryService;
     private final GuestBookCommandService guestBookCommandService;
-    private final MemberService memberService;
-    private final PilgrimageQueryService pilgrimageQueryService;
     private final LikedPostService likedPostService;
     private final SecurityUtil securityUtil;
 
@@ -38,11 +33,11 @@ public class GuestBookController {
             @RequestParam(required = false, defaultValue = "10") int size,
             @RequestParam(required = false, defaultValue = "latest") String sort
     ){
-        Page<GuestBookResponseDto.TotalGuestBookInfo> guestBookInfos = guestBookQueryService.getTotalGuestBooksBySort(page, size, sort);
+        List<GuestBookResponseDto.TotalGuestBookInfo> guestBookInfos = guestBookQueryService.getTotalGuestBooksBySort(page, size, sort);
         return GuestBookResponseDto.TotalGuestBookDto.builder()
-                .page((long)guestBookInfos.getNumber()+1)
-                .size((long)guestBookInfos.getSize())
-                .guestBook(guestBookInfos.getContent())
+                .page((long)page)
+                .size((long)size)
+                .guestBook(guestBookInfos)
                 .build();
     }
 
@@ -53,11 +48,11 @@ public class GuestBookController {
             @RequestParam() String searchType,
             @RequestParam() String keyword
     ){
-        Page<GuestBookResponseDto.TotalGuestBookInfo> guestBooks = guestBookQueryService.getTotalPostByKeyword(page, size, searchType, keyword);
+        List<GuestBookResponseDto.TotalGuestBookInfo> guestBooks = guestBookQueryService.getTotalPostByKeyword(page, size, searchType, keyword);
         return GuestBookResponseDto.TotalGuestBookDto.builder()
-                .page((long) (guestBooks.getNumber() + 1))
-                .size((long) guestBooks.getSize())
-                .guestBook(guestBooks.getContent())
+                .page((long) page)
+                .size((long) size)
+                .guestBook(guestBooks)
                 .build();
     }
 
@@ -67,11 +62,11 @@ public class GuestBookController {
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false, defaultValue = "10") int size
     ){
-        Page<GuestBookResponseDto.MyGuestBookInfo> myGuestBooks = guestBookQueryService.getMyGuestBooks(page, size);
+        List<GuestBookResponseDto.MyGuestBookInfo> myGuestBooks = guestBookQueryService.getMyGuestBooks(page, size);
         return GuestBookResponseDto.MyGuestBookDto.builder()
-                .page((long)myGuestBooks.getNumber() + 1)
-                .size((long)myGuestBooks.getSize())
-                .myGuestBookInfo(myGuestBooks.getContent())
+                .page((long)page)
+                .size((long)size)
+                .myGuestBookInfo(myGuestBooks)
                 .build();
     }
 
@@ -81,12 +76,8 @@ public class GuestBookController {
             HttpServletRequest request
     ){
         Member member = securityUtil.getUserFromHeader(request);
-        guestBookQueryService.increaseGuestBookView(guestBookId);
-        return GuestBookResponseDto.DetailGuestBookDto.builder()
-                .userInfo(memberService.getUserInfoByGuestBookId(guestBookId))
-                .pilgrimage(pilgrimageQueryService.getPilgrimageDetailCommunity(member, guestBookId))
-                .guestBook(guestBookQueryService.getDetailGuestBookInfo(guestBookId, request))
-                .build();
+        guestBookCommandService.increaseGuestBookView(guestBookId);
+        return guestBookQueryService.getDetailGuestBookInfo(guestBookId, member);
     }
 
     @PatchMapping("/{guestbook_id}")

@@ -3,14 +3,13 @@ package com.favoriteplace.app.controller;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.dto.community.PostRequestDto;
 import com.favoriteplace.app.dto.community.PostResponseDto;
-import com.favoriteplace.app.service.*;
+import com.favoriteplace.app.service.MemberService;
 import com.favoriteplace.app.service.community.LikedPostService;
 import com.favoriteplace.app.service.community.PostCommandService;
 import com.favoriteplace.app.service.community.PostQueryService;
 import com.favoriteplace.global.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,11 +33,8 @@ public class PostController {
             @PathVariable("post_id") Long postId,
             HttpServletRequest request
     ){
-        postQueryService.increasePostView(postId);
-        return PostResponseDto.PostDetailResponseDto.builder()
-                .userInfo(memberService.getUserInfoByPostId(postId))
-                .postInfo(postQueryService.getPostDetail(postId, request))
-                .build();
+        postCommandService.increasePostView(postId);
+        return postQueryService.getPostDetail(postId, request);
     }
 
     @GetMapping("/my-posts")
@@ -47,11 +43,11 @@ public class PostController {
             @RequestParam(required = false, defaultValue = "10") int size
     ){
         Member member = securityUtil.getUser();
-        Page<PostResponseDto.MyPost> posts = postQueryService.getMyPosts(member, page, size);
+        List<PostResponseDto.MyPost> posts = postQueryService.getMyPosts(member, page, size);
         return PostResponseDto.MyPostResponseDto.builder()
-                .page((long)posts.getNumber() +1)
-                .size((long)posts.getSize())
-                .post(posts.getContent())
+                .page((long) page)
+                .size((long) size)
+                .post(posts)
                 .build();
     }
 
@@ -61,11 +57,11 @@ public class PostController {
             @RequestParam(required = false, defaultValue = "10") int size,
             @RequestParam(required = false, defaultValue = "latest") String sort
     ){
-        Page<PostResponseDto.MyPost> sortPages = postQueryService.getTotalPostBySort(page, size, sort);
+        List<PostResponseDto.MyPost> sortPages = postQueryService.getTotalPostBySort(page, size, sort);
         return PostResponseDto.MyPostResponseDto.builder()
-                .page((long) (sortPages.getNumber()+1))
-                .size((long)sortPages.getSize())
-                .post(sortPages.getContent())
+                .page((long) page)
+                .size((long) size)
+                .post(sortPages)
                 .build();
     }
 
@@ -76,11 +72,11 @@ public class PostController {
             @RequestParam() String searchType,
             @RequestParam() String keyword
     ){
-        Page<PostResponseDto.MyPost> posts = postQueryService.getTotalPostByKeyword(page, size, searchType, keyword);
+        List<PostResponseDto.MyPost> posts = postQueryService.getTotalPostByKeyword(page, size, searchType, keyword);
         return PostResponseDto.MyPostResponseDto.builder()
-                .page((long) (posts.getNumber()+1))
-                .size((long) posts.getSize())
-                .post(posts.getContent())
+                .page((long) page)
+                .size((long) size)
+                .post(posts)
                 .build();
     }
 
