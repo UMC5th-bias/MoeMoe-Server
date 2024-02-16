@@ -129,4 +129,19 @@ public class PostCommandService {
             throw new RestApiException(ErrorCode.USER_NOT_AUTHOR);
         }
     }
+
+    /**
+     * 게시글의 조회수를 증가하는 함수
+     * @param postId
+     */
+    @Transactional
+    public void increasePostView(Long postId) {
+        Optional<Post> postOptional = postRepository.findById(postId);
+        if (postOptional.isEmpty()) {
+            throw new RestApiException(ErrorCode.POST_NOT_FOUND);
+        }
+        Post post = postOptional.get();
+        post.increaseView();
+        postRepository.save(post);
+    }
 }

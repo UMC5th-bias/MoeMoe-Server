@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/posts/free")
 @RequiredArgsConstructor
@@ -29,11 +31,11 @@ public class PostCommentController {
             @RequestParam(required = false, defaultValue = "10") int size
     ){
         Member member = securityUtil.getUser();
-        Page<PostResponseDto.MyComment> comments = commentQueryService.getMyPostComments(member, page, size);
+        List<PostResponseDto.MyComment> comments = commentQueryService.getMyPostComments(member, page, size);
         return PostResponseDto.MyCommentDto.builder()
-                .page((long) comments.getNumber()+1)
-                .size((long) comments.getSize())
-                .comment(comments.getContent())
+                .page((long) page)
+                .size((long) size)
+                .comment(comments)
                 .build();
     }
 
@@ -45,11 +47,11 @@ public class PostCommentController {
             HttpServletRequest request
     ){
         Member member = securityUtil.getUserFromHeader(request);
-        Page<CommentResponseDto.PostComment> comments = commentQueryService.getPostComments(member, page, size, postId);
+        List<CommentResponseDto.PostComment> comments = commentQueryService.getPostComments(member, page, size, postId);
         return CommentResponseDto.PostCommentDto.builder()
-                .page((long)comments.getNumber()+1)
-                .size((long) comments.getSize())
-                .comment(comments.getContent())
+                .page((long)page)
+                .size((long)size)
+                .comment(comments)
                 .build();
     }
 

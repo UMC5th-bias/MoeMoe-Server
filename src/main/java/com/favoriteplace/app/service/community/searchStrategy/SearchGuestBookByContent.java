@@ -1,18 +1,19 @@
 package com.favoriteplace.app.service.community.searchStrategy;
 
 import com.favoriteplace.app.domain.community.GuestBook;
-import com.favoriteplace.app.repository.GuestBookRepository;
+import com.favoriteplace.app.repository.GuestBookImplRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 public class SearchGuestBookByContent implements SearchStrategy<GuestBook> {
-    private final GuestBookRepository guestBookRepository;
+    private final GuestBookImplRepository guestBookImplRepository;
+
     @Override
-    public Page<GuestBook> search(String keyword, Pageable pageable) {
-        return guestBookRepository.searchByContentUsingKeyword(keyword.trim(), pageable);
+    public List<GuestBook> search(String keyword, int page, int size) {
+        return guestBookImplRepository.searchByContentUsingKeyword(keyword.trim(), page, size);
     }
 }

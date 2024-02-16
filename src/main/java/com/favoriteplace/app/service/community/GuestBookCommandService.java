@@ -3,14 +3,11 @@ package com.favoriteplace.app.service.community;
 import com.favoriteplace.app.converter.PointHistoryConverter;
 import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.Member;
-import com.favoriteplace.app.domain.community.Comment;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.HashTag;
-import com.favoriteplace.app.domain.community.LikedPost;
 import com.favoriteplace.app.domain.enums.PointType;
 import com.favoriteplace.app.domain.travel.Pilgrimage;
 import com.favoriteplace.app.domain.travel.VisitedPilgrimage;
-import com.favoriteplace.app.dto.CommonResponseDto;
 import com.favoriteplace.app.dto.community.GuestBookRequestDto;
 import com.favoriteplace.app.dto.community.PostResponseDto;
 import com.favoriteplace.app.repository.*;
@@ -29,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -189,5 +185,18 @@ public class GuestBookCommandService {
         visitedPilgrimageRepository.save(newVisited);
         pointHistoryRepository.save(PointHistoryConverter.toPointHistory(member, 20L, PointType.ACQUIRE));
         member.updatePoint(20L);
+    }
+
+    /**
+     * 성지 순례 인증글 조회수 증가
+     * @param guestBookId
+     */
+    @Transactional
+    public void increaseGuestBookView(Long guestBookId) {
+        Optional<GuestBook> optionalGuestBook = guestBookRepository.findById(guestBookId);
+        if(optionalGuestBook.isEmpty()){throw new RestApiException(ErrorCode.GUESTBOOK_NOT_FOUND);}
+        GuestBook guestBook = optionalGuestBook.get();
+        guestBook.increaseView();
+        guestBookRepository.save(guestBook);
     }
 }

@@ -1,5 +1,6 @@
 package com.favoriteplace.app.controller;
 
+import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.dto.HomeResponseDto;
 import com.favoriteplace.app.service.MemberService;
 import com.favoriteplace.app.service.RallyService;
@@ -22,11 +23,14 @@ public class HomeController {
 
     @GetMapping()
     public HomeResponseDto getHomeInfo(HttpServletRequest request) {
+        Boolean isLoggedIn = securityUtil.isTokenExists(request);
+        Member member = securityUtil.getUserFromHeader(request);
         return HomeResponseDto.builder()
-                .isLoggedIn(securityUtil.isTokenExists(request))
-                .userInfo(memberService.getUserInfo(request))
-                .rally(rallyService.getRecentRallyElseRandomRally(request))
+                .isLoggedIn(isLoggedIn)
+                .userInfo(memberService.getUserInfo(member))
+                .rally(rallyService.getRecentRallyElseRandomRally(isLoggedIn, member))
                 .trendingPosts(totalPostService.getTrendingPosts())
                 .build();
+
     }
 }

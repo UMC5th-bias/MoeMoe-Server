@@ -6,6 +6,7 @@ import com.favoriteplace.app.domain.community.HashTag;
 import com.favoriteplace.app.domain.travel.Address;
 import com.favoriteplace.app.domain.travel.Pilgrimage;
 import com.favoriteplace.app.domain.travel.Rally;
+import com.favoriteplace.app.dto.community.GuestBookResponseDto;
 import com.favoriteplace.app.dto.travel.PilgrimageDto;
 
 import java.util.ArrayList;
@@ -94,4 +95,5 @@ public class PilgrimageConverter {
                 .longitude(pilgrimage.getLongitude())
                 .build();
     }
+
 }

@@ -14,7 +14,16 @@ import java.util.List;
 
 @Repository
 public interface VisitedPilgrimageRepository extends JpaRepository<VisitedPilgrimage, Long> {
-    List<VisitedPilgrimage> findByMemberIdOrderByModifiedAtDesc(Long memberId);
+    @Query("""
+    select vp from VisitedPilgrimage vp
+    join Pilgrimage p on p.id = vp.pilgrimage.id
+    join Rally r on r.id = p.rally.id
+    join Image i on r.image.id = i.id
+    and vp.member.id = :memberId
+    order by vp.modifiedAt desc
+    """)
+    List<VisitedPilgrimage> findByMemberIdOrderByModifiedAtDesc(@Param("memberId")Long memberId);
+
     @Query("""
     select count(distinct p.id)
     from Rally r
@@ -23,6 +32,7 @@ public interface VisitedPilgrimageRepository extends JpaRepository<VisitedPilgri
     and vp.member.id = :memberId and r.id = :rallyId
     """)
     Long findByDistinctCount(@Param("memberId") Long memberId, @Param("rallyId") Long rallyId);
+
     @Query("""
     select distinct r
     from Rally r
@@ -31,6 +41,7 @@ public interface VisitedPilgrimageRepository extends JpaRepository<VisitedPilgri
     and vp.member.id = :memberId
     """)
     List<Rally> findByDistinctPilgrimage(@Param("memberId") Long memberId);
+
     @Query("""
     select count(distinct p.id)
     from Rally r
@@ -39,7 +50,9 @@ public interface VisitedPilgrimageRepository extends JpaRepository<VisitedPilgri
     and vp.member.id = :memberId
     """)
     Long findByVisitedCount(@Param("memberId")Long memberId);
+
     List<VisitedPilgrimage> findByPilgrimageAndMemberOrderByCreatedAtDesc(Pilgrimage pilgrimage, Member member);
+
     Long countByMemberIdAndPilgrimageIdIn(Long memberId, List<Long> pilgrimageIds);
 
 }

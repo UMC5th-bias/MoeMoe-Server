@@ -2,13 +2,11 @@ package com.favoriteplace.app.service;
 
 import com.favoriteplace.app.converter.TrendingPostConverter;
 import com.favoriteplace.app.domain.community.GuestBook;
-import com.favoriteplace.app.domain.community.HashTag;
 import com.favoriteplace.app.domain.community.Post;
 import com.favoriteplace.app.dto.HomeResponseDto;
 import com.favoriteplace.app.dto.community.TrendingPostResponseDto;
-import com.favoriteplace.app.repository.GuestBookRepository;
-import com.favoriteplace.app.repository.HashtagRepository;
-import com.favoriteplace.app.repository.PostRepository;
+import com.favoriteplace.app.repository.GuestBookImplRepository;
+import com.favoriteplace.app.repository.PostImplRepository;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +20,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class TotalPostService {
-    private final PostRepository postRepository;
-    private final GuestBookRepository guestBookRepository;
-    private final HashtagRepository hashtagRepository;
+    private final PostImplRepository postImplRepository;
+    private final GuestBookImplRepository guestBookImplRepository;
 
     public List<HomeResponseDto.TrendingPost> getTrendingPosts() {
         List<Object> combinedPosts = getNTrendingPosts(5, "day");
@@ -55,8 +52,8 @@ public class TotalPostService {
             throw new IllegalArgumentException("Invalid period: " + period);
         }
 
-        List<GuestBook> todayGuestBooks = guestBookRepository.findByCreatedAtBetweenOrderByLikeCountDesc(startDateTime, now);
-        List<Post> todayPosts = postRepository.findByCreatedAtBetweenOrderByLikeCountDesc(startDateTime, now);
+        List<GuestBook> todayGuestBooks = guestBookImplRepository.findByCreatedAtBetweenOrderByLikeCountDesc(startDateTime, now, postNumber);
+        List<Post> todayPosts = postImplRepository.findByCreatedAtBetweenOrderByLikeCountDesc(startDateTime, now, postNumber);
 
         List<Object> combined = new ArrayList<>();
         combined.addAll(todayGuestBooks);
@@ -75,13 +72,10 @@ public class TotalPostService {
 
     private HomeResponseDto.TrendingPost convertToTodayTrendingPost(Object object, int rank){
         if(object instanceof GuestBook guestBook){
-            List<String> hashtags = hashtagRepository.findAllByGuestBookId(guestBook.getId()).stream()
-                    .map(HashTag::getTagName)
-                    .toList();
-            return TrendingPostConverter.toTrendingPost(guestBook, rank, hashtags);
+            return TrendingPostConverter.toGuestBookTrending(guestBook, rank);
         }
         else if(object instanceof Post post){
-            return TrendingPostConverter.toTrendingPost(post, rank);
+            return TrendingPostConverter.toGuestBookTrending(post, rank);
         }
         else{
             throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
