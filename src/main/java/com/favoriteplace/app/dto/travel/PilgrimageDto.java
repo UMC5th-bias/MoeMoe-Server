@@ -21,6 +21,8 @@ public class PilgrimageDto {
         String image;
         String realImage;
         String address;
+        String addressEn;
+        String addressJp;
         Double latitude;
         Double longitude;
         Boolean isCertified;

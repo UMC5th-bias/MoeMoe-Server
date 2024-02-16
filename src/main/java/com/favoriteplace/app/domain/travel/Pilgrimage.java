@@ -46,6 +46,12 @@ public class Pilgrimage extends BaseTimeEntity {
     @Column(name = "detail_address", nullable = false)
     private String detailAddress;
 
+    @Column(name = "detail_address_en", nullable = false)
+    private String detailAddressEn;
+
+    @Column(name = "detail_address_jp", nullable = false)
+    private String detailAddressJp;
+
     @Column(nullable = false)
     private Double latitude;
 
