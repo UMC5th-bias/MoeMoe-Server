@@ -47,8 +47,8 @@ public class CommentImplRepository {
                         " join fetch c.member m" +
                         " left join fetch m.profileIcon pi" +
                         " left join fetch m.profileTitle pt" +
-                        " left join fetch pi.image pii" +
-                        " left join fetch pt.image pti" +
+                        " left join fetch pi.defaultImage pii" +
+                        " left join fetch pt.defaultImage pti" +
                         " where c.post.id = :postId" +
                         " order by c.createdAt asc", Comment.class)
                 .setParameter("postId", postId)
@@ -63,8 +63,8 @@ public class CommentImplRepository {
                         " join fetch c.member m" +
                         " left join fetch m.profileIcon pi" +
                         " left join fetch m.profileTitle pt" +
-                        " left join fetch pi.image pii" +
-                        " left join fetch pt.image pti" +
+                        " left join fetch pi.defaultImage pii" +
+                        " left join fetch pt.defaultImage pti" +
                         " where c.guestBook.id = :guestbookId" +
                         " order by c.createdAt asc", Comment.class)
                 .setParameter("guestbookId", guestbookId)
