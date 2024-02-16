@@ -60,7 +60,7 @@ public class GuestBookCommandService {
         if(!hashtags.isEmpty()){
             hashtags.forEach(hashtag -> guestBook.setHashTag(HashTag.builder().tagName(hashtag).build()));
         }
-        if(images != null){setImageList(guestBook, images);}
+        if(images != null && !images.isEmpty()){setImageList(guestBook, images);}
         guestBookRepository.save(guestBook);
     }
 
@@ -86,7 +86,7 @@ public class GuestBookCommandService {
     private void setImageList(GuestBook guestBook, List<MultipartFile> images) throws IOException {
         List<CompletableFuture<Void>> futures = new ArrayList<>();
         for(MultipartFile image:images){
-            if(!image.isEmpty()){
+            if(image != null && !image.isEmpty()){
                 CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
                     try {
                         String uuid = uploadImage.uploadImageToCloud(image);
@@ -149,7 +149,7 @@ public class GuestBookCommandService {
             newGuestBook.setHashTag(newHashTag);
         });
 
-        if (images != null) {
+        if (images != null && !images.isEmpty()) {
             setImageList(newGuestBook, images);
         }
         log.info("success image upload");
