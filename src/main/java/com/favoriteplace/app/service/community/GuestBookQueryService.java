@@ -30,7 +30,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class GuestBookQueryService {
-    private final GuestBookRepository guestBookRepository;
     private final GuestBookImplRepository guestBookImplRepository;
     private final LikedPostRepository likedPostRepository;
     private final PilgrimageRepository pilgrimageRepository;
@@ -42,10 +41,14 @@ public class GuestBookQueryService {
     private final SearchGuestBookByContent searchGuestBookByContent;
     private final SecurityUtil securityUtil;
 
+    /**
+     * 당일 실시간 인기글 5개를 보여줌
+     * @return
+     */
     public List<TrendingPostResponseDto.TrendingPostRank> getTodayTrendingGuestBook() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startOfDay = now.toLocalDate().atStartOfDay();
-        List<GuestBook> guestBooks = guestBookRepository.findByCreatedAtBetweenOrderByLikeCountDesc(startOfDay, now);
+        List<GuestBook> guestBooks = guestBookImplRepository.findByCreatedAtBetweenOrderByLikeCountDesc(startOfDay, now, 5);
         if(guestBooks.isEmpty()){
             throw new RestApiException(ErrorCode.GUESTBOOK_NOT_FOUND);
         }

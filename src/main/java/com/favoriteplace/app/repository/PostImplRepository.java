@@ -6,6 +6,7 @@ import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -96,4 +97,22 @@ public class PostImplRepository {
                 .setMaxResults(size)
                 .getResultList();
     }
+
+    public List<Post> findByCreatedAtBetweenOrderByLikeCountDesc(LocalDateTime startDateTime, LocalDateTime now, int size) {
+        return em.createQuery(
+                "select p from Post p"+
+                        " join fetch p.member m"+
+                        " left join fetch m.profileIcon pi"+
+                        " left join fetch m.profileTitle pt" +
+                        " left join fetch pi.image pii" +
+                        " left join fetch pt.image pti" +
+                        " where p.createdAt between :startDateTime and :now" +
+                        " order by p.likeCount desc", Post.class)
+                .setParameter("startDateTime", startDateTime)
+                .setParameter("now", now)
+                .setMaxResults(size)
+                .getResultList();
+    }
+
+
 }

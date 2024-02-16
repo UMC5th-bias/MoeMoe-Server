@@ -6,6 +6,7 @@ import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -97,6 +98,22 @@ public class GuestBookImplRepository {
                         " order by g.createdAt desc", GuestBook.class)
                 .setParameter("keyword", "%"+keyword+"%")
                 .setFirstResult((page-1)*size)
+                .setMaxResults(size)
+                .getResultList();
+    }
+
+    public List<GuestBook> findByCreatedAtBetweenOrderByLikeCountDesc(LocalDateTime startDateTime, LocalDateTime now, int size) {
+        return em.createQuery(
+                "select g from GuestBook g"+
+                        " join fetch g.member m" +
+                        " left join fetch m.profileTitle pt" +
+                        " left join fetch m.profileIcon pi" +
+                        " left join fetch pt.image pti" +
+                        " left join fetch pi.image pii" +
+                        " where g.createdAt between :startDateTime and :now" +
+                        " order by g.likeCount desc", GuestBook.class)
+                .setParameter("startDateTime", startDateTime)
+                .setParameter("now", now)
                 .setMaxResults(size)
                 .getResultList();
     }

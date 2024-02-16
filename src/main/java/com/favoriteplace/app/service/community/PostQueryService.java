@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class PostQueryService {
-    private final PostRepository postRepository;
     private final PostImplRepository postImplRepository;
     private final LikedPostRepository likedPostRepository;
     private final SortPostByLatestStrategy sortPostByLatestStrategy;
@@ -118,7 +117,7 @@ public class PostQueryService {
     public List<TrendingPostResponseDto.TrendingPostRank> getTodayTrendingPost() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startOfDay = now.toLocalDate().atStartOfDay();
-        List<Post> posts = postRepository.findByCreatedAtBetweenOrderByLikeCountDesc(startOfDay, now);
+        List<Post> posts = postImplRepository.findByCreatedAtBetweenOrderByLikeCountDesc(startOfDay, now, 5);
         if (posts.isEmpty()) {
             throw new RestApiException(ErrorCode.POST_NOT_FOUND);
         }
