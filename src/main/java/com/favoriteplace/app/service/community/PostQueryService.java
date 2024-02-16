@@ -1,12 +1,10 @@
 package com.favoriteplace.app.service.community;
 
 import com.favoriteplace.app.converter.PostConverter;
-import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.Post;
 import com.favoriteplace.app.dto.community.PostResponseDto;
 import com.favoriteplace.app.dto.community.TrendingPostResponseDto;
-import com.favoriteplace.app.repository.ImageRepository;
 import com.favoriteplace.app.repository.LikedPostRepository;
 import com.favoriteplace.app.repository.PostImplRepository;
 import com.favoriteplace.app.repository.PostRepository;
@@ -22,9 +20,6 @@ import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +27,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,7 +35,6 @@ import java.util.stream.Collectors;
 public class PostQueryService {
     private final PostRepository postRepository;
     private final PostImplRepository postImplRepository;
-    private final ImageRepository imageRepository;
     private final LikedPostRepository likedPostRepository;
     private final SortPostByLatestStrategy sortPostByLatestStrategy;
     private final SortPostByLikedStrategy sortPostByLikedStrategy;
@@ -83,8 +76,7 @@ public class PostQueryService {
      * @param keyword
      * @return
      */
-    public Page<PostResponseDto.MyPost> getTotalPostByKeyword(int page, int size, String searchType, String keyword) {
-        Pageable pageable = PageRequest.of(page - 1, size);
+    public List<PostResponseDto.MyPost> getTotalPostByKeyword(int page, int size, String searchType, String keyword) {
         SearchStrategy<Post> searchStrategy;
         if ("title".equals(searchType)) {
             searchStrategy = searchPostByTitle;
@@ -95,14 +87,12 @@ public class PostQueryService {
         } else {
             throw new RestApiException(ErrorCode.SEARCH_TYPE_NOT_ALLOWED);
         }
-        if (keyword.trim().isEmpty()) {
-            return Page.empty();
-        }
-        Page<Post> postPage = searchStrategy.search(keyword, pageable);
-        if (postPage.isEmpty()) {
-            return Page.empty();
-        }
-        return postPage.map(post -> PostConverter.toMyPost(post, post.getMember(), countPostComment(post)));
+        if (keyword.trim().isEmpty()) {return Collections.emptyList();}
+        List<Post> postPage = searchStrategy.search(keyword, page, size);
+        if (postPage.isEmpty()) {return Collections.emptyList();}
+        return postPage.stream()
+                .map(PostConverter::toMyPost)
+                .toList();
     }
 
     /**
@@ -175,17 +165,6 @@ public class PostQueryService {
      */
     private Boolean isLiked(Long postId, Long memberId) {
         return likedPostRepository.existsByPostIdAndMemberId(postId, memberId);
-    }
-
-    /**
-     * 게시글의 댓글이 몇개인지 counting하는 함수
-     *
-     * @param post
-     * @return
-     */
-    public Long countPostComment(Post post) {
-        return (long) post.getComments().size();
-        //return commentRepository.countByPostId(post.getId()) != null ? commentRepository.countByPostId(post.getId()) : 0L;
     }
 
 }

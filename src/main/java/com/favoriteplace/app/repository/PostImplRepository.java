@@ -60,4 +60,40 @@ public class PostImplRepository {
                 .setParameter("postId", postId)
                 .getSingleResult();
     }
+
+    public List<Post> searchByTitleUsingKeyword(String keyword, int page, int size) {
+        return em.createQuery(
+                "select p from Post p" +
+                        " join fetch p.member m" +
+                        " where p.title like :keyword" +
+                        " order by p.createdAt desc", Post.class)
+                .setParameter("keyword", "%"+keyword+"%")
+                .setFirstResult((page-1)*size)
+                .setMaxResults(size)
+                .getResultList();
+    }
+
+    public List<Post> searchByNicknameUsingKeyword(String keyword, int page, int size) {
+        return em.createQuery(
+                "select p from Post p" +
+                        " join fetch p.member m" +
+                        " where m.nickname like :keyword" +
+                        " order by p.createdAt desc", Post.class)
+                .setParameter("keyword", "%"+keyword+"%")
+                .setFirstResult((page-1)*size)
+                .setMaxResults(size)
+                .getResultList();
+    }
+
+    public List<Post> searchPostByContentUsingKeyword(String keyword, int page, int size) {
+        return em.createQuery(
+                "select p from Post p"+
+                        " join fetch p.member m"+
+                        " where p.content like :keyword" +
+                        " order by p.createdAt desc", Post.class)
+                .setParameter("keyword", "%"+keyword+"%")
+                .setFirstResult((page-1)*size)
+                .setMaxResults(size)
+                .getResultList();
+    }
 }

@@ -1,11 +1,8 @@
 package com.favoriteplace.app.service.community;
 
 import com.favoriteplace.app.converter.GuestBookConverter;
-import com.favoriteplace.app.converter.PilgrimageConverter;
-import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.GuestBook;
-import com.favoriteplace.app.domain.community.HashTag;
 import com.favoriteplace.app.domain.travel.Pilgrimage;
 import com.favoriteplace.app.dto.community.GuestBookResponseDto;
 import com.favoriteplace.app.dto.community.TrendingPostResponseDto;
@@ -20,11 +17,7 @@ import com.favoriteplace.app.service.community.sortStrategy.SortStrategy;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.util.SecurityUtil;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +25,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -137,15 +129,14 @@ public class GuestBookQueryService {
 
 
     /**
-     * searchType(제목, 닉네임, 내용)을 기반으로 성지순레 인증글을 가져오는 함 (게시글 생성일의 내림차순으로 정렬)
+     * searchTypeㅈ(제목, 닉네임, 내용)을 기반으로 성지순레 인증글을 가져오는 함 (게시글 생성일의 내림차순으로 정렬)
      * @param page
      * @param size
      * @param searchType
      * @param keyword
      * @return
      */
-    public Page<GuestBookResponseDto.TotalGuestBookInfo> getTotalPostByKeyword(int page, int size, String searchType, String keyword) {
-        Pageable pageable = PageRequest.of(page-1, size);
+    public List<GuestBookResponseDto.TotalGuestBookInfo> getTotalPostByKeyword(int page, int size, String searchType, String keyword) {
         SearchStrategy<GuestBook> searchStrategy;
         if("title".equals(searchType)){
             searchStrategy = searchGuestBookByTitle;
@@ -156,10 +147,11 @@ public class GuestBookQueryService {
         } else {
             throw new RestApiException(ErrorCode.SEARCH_TYPE_NOT_ALLOWED);
         }
-        if(keyword.trim().isEmpty()){return Page.empty();}
-        Page<GuestBook> guestBooks = searchStrategy.search(keyword, pageable);
-        if(guestBooks.isEmpty()){return Page.empty();}
-        return guestBooks.map(GuestBookConverter::toTotalGuestBookInfo);
+        if(keyword.trim().isEmpty()){return Collections.emptyList();}
+        List<GuestBook> guestBooks = searchStrategy.search(keyword, page, size);
+        if(guestBooks.isEmpty()){return Collections.emptyList();}
+        return guestBooks.stream()
+                .map(GuestBookConverter::toTotalGuestBookInfo).toList();
     }
 
     /**

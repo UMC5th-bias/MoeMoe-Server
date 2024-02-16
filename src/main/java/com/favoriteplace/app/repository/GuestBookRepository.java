@@ -24,12 +24,12 @@ public interface GuestBookRepository extends JpaRepository<GuestBook, Long> {
     //Page<GuestBook> findAllByOrderByCreatedAtDesc(Pageable pageable);
     Long countByMember(Member member);
 
-    @Query("select g from GuestBook g where g.title like %:keyword% order by g.createdAt desc")
-    Page<GuestBook> searchByTitleUsingKeyword(@Param("keyword")String keyword, Pageable pageable);
-
-    @Query("select g from GuestBook g where g.member.nickname like %:keyword% order by g.createdAt desc")
-    Page<GuestBook> searchByNicknameUsingKeyword(@Param("keyword")String keyword, Pageable pageable);
-
-    @Query("select g from GuestBook g where g.content like %:keyword% order by g.createdAt desc")
-    Page<GuestBook> searchByContentUsingKeyword(@Param("keyword")String keyword, Pageable pageable);
+//    @Query("select g from GuestBook g where g.title like %:keyword% order by g.createdAt desc")
+//    Page<GuestBook> searchByTitleUsingKeyword(@Param("keyword")String keyword, Pageable pageable);
+//
+//    @Query("select g from GuestBook g where g.member.nickname like %:keyword% order by g.createdAt desc")
+//    Page<GuestBook> searchByNicknameUsingKeyword(@Param("keyword")String keyword, Pageable pageable);
+//
+//    @Query("select g from GuestBook g where g.content like %:keyword% order by g.createdAt desc")
+//    Page<GuestBook> searchByContentUsingKeyword(@Param("keyword")String keyword, Pageable pageable);
 }

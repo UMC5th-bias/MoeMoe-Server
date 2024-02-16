@@ -13,17 +13,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class PostConverter {
-    public static PostResponseDto.MyPost toMyPost(Post post, Member member, Long comments){
-        return PostResponseDto.MyPost.builder()
-                .id(post.getId())
-                .title(post.getTitle())
-                .nickname(member.getNickname())
-                .views(post.getView())
-                .likes(post.getLikeCount())
-                .comments(comments)
-                .passedTime(DateTimeFormatUtils.getPassDateTime(post.getCreatedAt())).build();
-    }
-
     public static PostResponseDto.MyPost toMyPost(Post post){
         return PostResponseDto.MyPost.builder()
                 .id(post.getId())

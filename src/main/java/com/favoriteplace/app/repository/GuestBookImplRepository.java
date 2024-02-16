@@ -64,4 +64,40 @@ public class GuestBookImplRepository {
                 .setParameter("guestBookId", guestBookId)
                 .getSingleResult();
     }
+
+    public List<GuestBook> searchByTitleUsingKeyword(String keyword, int page, int size) {
+        return em.createQuery(
+                "select g from GuestBook g"+
+                        " join fetch g.member m"+
+                        " where g.title like :keyword" +
+                        " order by g.createdAt desc", GuestBook.class)
+                .setParameter("keyword", "%"+keyword+"%")
+                .setFirstResult((page-1)*size)
+                .setMaxResults(size)
+                .getResultList();
+    }
+
+    public List<GuestBook> searchByNicknameUsingKeyword(String keyword, int page, int size) {
+        return em.createQuery(
+                "select g from GuestBook g" +
+                        " join fetch g.member m" +
+                        " where m.nickname like :keyword" +
+                        " order by g.createdAt desc", GuestBook.class)
+                .setParameter("keyword", "%"+keyword+"%")
+                .setFirstResult((page-1)*size)
+                .setMaxResults(size)
+                .getResultList();
+    }
+
+    public List<GuestBook> searchByContentUsingKeyword(String keyword, int page, int size) {
+        return em.createQuery(
+                "select g from GuestBook g" +
+                        " join fetch g.member m" +
+                        " where g.content like :keyword" +
+                        " order by g.createdAt desc", GuestBook.class)
+                .setParameter("keyword", "%"+keyword+"%")
+                .setFirstResult((page-1)*size)
+                .setMaxResults(size)
+                .getResultList();
+    }
 }
