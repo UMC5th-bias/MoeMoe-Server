@@ -55,8 +55,8 @@ public class PostImplRepository {
                         " join fetch p.member m" +
                         " left join fetch m.profileIcon pi" +
                         " left join fetch m.profileTitle pt" +
-                        " left join fetch pi.image pii" +
-                        " left join fetch pt.image pti" +
+                        " left join fetch pi.defaultImage pii" +
+                        " left join fetch pt.defaultImage pti" +
                         " where p.id = :postId", Post.class)
                 .setParameter("postId", postId)
                 .getSingleResult();
@@ -104,8 +104,8 @@ public class PostImplRepository {
                         " join fetch p.member m"+
                         " left join fetch m.profileIcon pi"+
                         " left join fetch m.profileTitle pt" +
-                        " left join fetch pi.image pii" +
-                        " left join fetch pt.image pti" +
+                        " left join fetch pi.defaultImage pii" +
+                        " left join fetch pt.defaultImage pti" +
                         " where p.createdAt between :startDateTime and :now" +
                         " order by p.likeCount desc", Post.class)
                 .setParameter("startDateTime", startDateTime)
