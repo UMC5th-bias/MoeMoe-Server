@@ -28,7 +28,7 @@ public class RallyConverter {
                     .image(rally.getImage().getUrl())
                     .description(rally.getDescription())
                     .achieveNumber(rally.getAchieveNumber())
-                    .itemImage(rally.getItem().getImage().getUrl())
+                    .itemImage(rally.getItem().getDefaultImage().getUrl())
                     .isLike(isLike)
                     .build();
         } // 비회원
@@ -40,7 +40,7 @@ public class RallyConverter {
                     .image(rally.getImage().getUrl())
                     .description(rally.getDescription())
                     .achieveNumber(rally.getAchieveNumber())
-                    .itemImage(rally.getItem().getImage().getUrl())
+                    .itemImage(rally.getItem().getDefaultImage().getUrl())
                     .isLike(false)
                     .build();
         }

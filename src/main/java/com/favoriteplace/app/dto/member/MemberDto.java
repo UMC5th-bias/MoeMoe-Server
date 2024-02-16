@@ -56,7 +56,7 @@ public class MemberDto {
                 .nickname(member.getNickname())
                 .introduction(member.getDescription())
                 .profileImage(member.getProfileImageUrl())
-                .profileTitleItem(member.getProfileTitle().getImage().getUrl())
+                .profileTitleItem(member.getProfileTitle().getDefaultImage().getUrl())
                 .build();
         }
     }
@@ -126,8 +126,8 @@ public class MemberDto {
                 .nickname(member == null ? null : member.getNickname())
                 .point(member == null ? null : member.getPoint().intValue())
                 .profileImageUrl(member.getProfileImageUrl() == null ? null : member.getProfileImageUrl())
-                .profileIconUrl(member.getProfileIcon() == null ? null : member.getProfileIcon().getImage().getUrl())
-                .profileTitleUrl(member.getProfileTitle() == null ? null : member.getProfileTitle().getImage().getUrl())
+                .profileIconUrl(member.getProfileIcon() == null ? null : member.getProfileIcon().getDefaultImage().getUrl())
+                .profileTitleUrl(member.getProfileTitle() == null ? null : member.getProfileTitle().getDefaultImage().getUrl())
                 .build();
         }
     }

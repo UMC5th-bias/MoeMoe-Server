@@ -23,9 +23,9 @@ public class MyPageConverter {
                 .point(member.getPoint())
                 .profileImg(member.getProfileImageUrl())
                 .userTitleImg(member.getProfileTitle()==null?null
-                        :member.getProfileTitle().getImage().getUrl())
+                        :member.getProfileTitle().getDefaultImage().getUrl())
                 .userIconImg(member.getProfileIcon()==null?null
-                        :member.getProfileIcon().getImage().getUrl())
+                        :member.getProfileIcon().getDefaultImage().getUrl())
                 .email(member.getEmail())
                 .build();
     }
@@ -33,7 +33,7 @@ public class MyPageConverter {
     public static MyPageDto.MyItemDetailDto toMyItemDetailDto(Item item, Boolean isWear){
         return MyPageDto.MyItemDetailDto.builder()
                 .id(item.getId())
-                .imageUrl(item.getImage().getUrl())
+                .imageUrl(item.getDefaultImage().getUrl())
                 .isWear(isWear)
                 .build();
     }
@@ -53,8 +53,8 @@ public class MyPageConverter {
                 .userId(member.getId())
                 .nickname(member.getNickname())
                 .profileImg(member.getProfileImageUrl())
-                .userTitleImg(member.getProfileTitle() != null?member.getProfileTitle().getImage().getUrl():null)
-                .userIconImg(member.getProfileIcon() != null?member.getProfileIcon().getImage().getUrl():null)
+                .userTitleImg(member.getProfileTitle() != null?member.getProfileTitle().getDefaultImage().getUrl():null)
+                .userIconImg(member.getProfileIcon() != null?member.getProfileIcon().getDefaultImage().getUrl():null)
                 .build();
     }
 

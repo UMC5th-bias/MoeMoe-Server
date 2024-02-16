@@ -19,7 +19,7 @@ public class ShopConverter {
         return ItemDto.ItemList.builder()
             .id(item.getId().intValue())
             .name(item.getName())
-            .imageUrl(item.getImage().getUrl())
+            .imageUrl(item.getDefaultImage().getUrl())
             .point(item.getPoint().intValue())
             .build();
     }

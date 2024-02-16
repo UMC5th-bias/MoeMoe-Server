@@ -1,6 +1,5 @@
 package com.favoriteplace.app.service.community;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.Post;
@@ -22,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,7 +44,7 @@ public class PostCommandService {
                 .images(new ArrayList<>())
                 .content(data.getContent()).likeCount(0L).view(0L)
                 .build();
-        if(!images.isEmpty()){
+        if(images != null && !images.isEmpty()){
             newPost.getImages().addAll(setImageList(newPost, images));
         }
         postRepository.save(newPost);
@@ -63,7 +61,7 @@ public class PostCommandService {
         List<CompletableFuture<Image>> futures = new ArrayList<>();
 
         for(MultipartFile image: images){
-            if(!image.isEmpty()){
+            if(image != null && !image.isEmpty()){
                 /*
                 String uuid = uploadImage.uploadImageToCloud(image);
                 Image newImage = Image.builder().url(ConvertUuidToUrl.convertUuidToUrl(uuid)).post(post).build();
@@ -113,7 +111,7 @@ public class PostCommandService {
         //기존의 이미지 삭제 필요
         post.getImages().clear();
         imageRepository.deleteByPostId(post.getId());
-        if(!images.isEmpty()){
+        if(images != null && !images.isEmpty()){
             post.getImages().addAll(setImageList(post, images));
         }
         postRepository.save(post);
