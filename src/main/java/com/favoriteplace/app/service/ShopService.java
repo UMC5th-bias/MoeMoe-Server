@@ -48,10 +48,11 @@ public class ShopService {
 
         Boolean alreadyBought = acquiredItemRepository.findByMemberAndItem(member, item)
             .isPresent();
-        System.out.println(member);
+
         return ItemDetailResDto.from(item, member, alreadyBought);
 
     }
+
     @Transactional(readOnly = true)
     public ItemDto.ItemListResDto getLimitedProduct(HttpServletRequest request) {
         Member member = securityUtil.getUserFromHeader(request);
