@@ -23,7 +23,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Item> findAllByNEWCategory(@Param("type") ItemType type, @Param("now") LocalDateTime now);
 
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
-    @Query("SELECT it from Item it join fetch it.image im where it.id = :item_id")
+    @Query("SELECT it from Item it join fetch it.defaultImage im where it.id = :item_id")
     Optional<Item> findAllByIdWithImage(@Param("item_id") Long itemID);
 
     Optional<Item> findByName(String name);

@@ -37,6 +37,7 @@ public class ItemDto {
         private Integer userPoint;
         private String category;
         private String imageUrl;
+        private String imageCenterUrl;
         private String saleDeadline;
         private String status;
         private String name;
@@ -46,9 +47,10 @@ public class ItemDto {
 
         public static ItemDetailResDto from(Item item, Member member, Boolean alreadyBought) {
             return ItemDetailResDto.builder()
-                .userPoint(member == null ? null : member.getPoint().intValue())
+                .userPoint(member == null ? 0 : member.getPoint().intValue())
                 .category(item.getCategory().getName())
-                .imageUrl(item.getImage().getUrl())
+                .imageUrl(item.getDefaultImage().getUrl())
+                .imageCenterUrl(item.getCenterImage() == null ? null : item.getCenterImage().getUrl())
                 .saleDeadline(item.getSaleDeadline() == null ? null : DateTimeFormatUtils.convertDateToString(item.getSaleDeadline()))
                 .status(item.getStatus().toString())
                 .name(item.getName())

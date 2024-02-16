@@ -40,9 +40,13 @@ public class Item extends BaseTimeEntity{
     @Column(name = "item_id")
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "image_id", nullable = false)
-    private Image image;
+    private Image defaultImage;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "center_image_id")
+    private Image centerImage;
 
     @Column(nullable = false)
     private String name;
