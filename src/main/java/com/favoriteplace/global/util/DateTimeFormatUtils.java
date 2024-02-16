@@ -24,7 +24,7 @@ public class DateTimeFormatUtils {
             return days + "일 전";
         }
         else{
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
             return dateTime.format(formatter);
         }
     }
