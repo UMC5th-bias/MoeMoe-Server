@@ -117,4 +117,5 @@ public class MemberService {
         redisTemplate.opsForValue()
             .set(accessToken, "logout", expriation, TimeUnit.MICROSECONDS);
     }
+
 }
