@@ -80,6 +80,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(token) && token != null && jwtTokenProvider.validateToken(token)) {
             /*1. Redis에 해당 accessToken logout 여부 확인 */
             String isLogout = (String) redisTemplate.opsForValue().get(token);
+
             if(!ObjectUtils.isEmpty(isLogout)) {
                 throw new RestApiException(ErrorCode.TOKEN_NOT_VALID);
             } else {
