@@ -18,7 +18,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,9 +75,17 @@ public class PilgrimageCommandService {
         List<VisitedPilgrimage> visitedPilgrimages = visitedPilgrimageRepository
                 .findByPilgrimageAndMemberOrderByCreatedAtDesc(pilgrimage, member);
 
+        for(VisitedPilgrimage vp:visitedPilgrimages){
+            log.info("인증객체:"+vp.getId()+vp.getMember().getNickname()+vp.getPilgrimage().getRallyName());
+        }
+
         // 24시간 이내 방문이력 확인
+        Instant now = Instant.now();
+//        ZonedDateTime zonedDateTime = now.atZone(ZoneId.of("UTC"));
+//        log.info(zonedDateTime.toString());
+
         if (visitedPilgrimages.isEmpty()
-                || (!visitedPilgrimages.isEmpty() && visitedPilgrimages.get(0).getPilgrimage().getCreatedAt().plusHours(24L).isBefore(LocalDateTime.now()))) {
+                || (!visitedPilgrimages.isEmpty() && visitedPilgrimages.get(0).getPilgrimage().getCreatedAt().atZone(ZoneId.of("UTC")).plusHours(24L).isBefore(ZonedDateTime.now(ZoneId.of("UTC"))))) {
             // 현재 좌표가 성지순례 장소 좌표 기준 +-0.00135 이내인지 확인
             if (checkCoordinate(form, pilgrimage)){
                 throw new RestApiException(ErrorCode.PILGRIMAGE_CAN_NOT_CERTIFIED);
