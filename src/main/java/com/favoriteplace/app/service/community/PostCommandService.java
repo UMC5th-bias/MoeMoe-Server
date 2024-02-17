@@ -38,7 +38,7 @@ public class PostCommandService {
      * @throws IOException
      */
     @Transactional
-    public void createPost(PostRequestDto data, List<MultipartFile> images, Member member) throws IOException {
+    public Long createPost(PostRequestDto data, List<MultipartFile> images, Member member) throws IOException {
         Post newPost = Post.builder()
                 .member(member).title(data.getTitle())
                 .images(new ArrayList<>())
@@ -47,7 +47,8 @@ public class PostCommandService {
         if(images != null && !images.isEmpty()){
             newPost.getImages().addAll(setImageList(newPost, images));
         }
-        postRepository.save(newPost);
+        Post post = postRepository.save(newPost);
+        return post.getId();
     }
 
     /**
