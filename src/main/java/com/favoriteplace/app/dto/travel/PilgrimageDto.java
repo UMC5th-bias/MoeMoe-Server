@@ -98,7 +98,7 @@ public class PilgrimageDto {
     @NoArgsConstructor(access = PROTECTED)
     @AllArgsConstructor(access = PRIVATE)
     public static class PilgrimageCertifyRequestDto{
-        Long longitude;
-        Long latitude;
+        Double longitude;
+        Double latitude;
     }
 }
