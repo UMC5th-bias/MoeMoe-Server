@@ -1,21 +1,27 @@
 package com.favoriteplace.global.security.Filter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.favoriteplace.global.exception.ErrorCode;
+import com.favoriteplace.global.exception.ErrorResponse;
+import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.security.provider.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import java.beans.ExceptionListener;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -24,6 +30,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final RedisTemplate redisTemplate;
     private final List<ExcludePath> excludePaths = Arrays.asList(
         //인증이 필수인 경우 추가
         new ExcludePath("/auth/logout", HttpMethod.POST),
@@ -51,14 +58,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         new ExcludePath("/shop/purchase/**", HttpMethod.POST)
         // Add more paths and methods as needed
     );
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        String requestURI = request.getServletPath();
-        String method = request.getMethod();
 
-        return !excludePaths.stream()
-            .anyMatch(excludePath -> excludePath.matches(requestURI, method));
-    }
+//    @Override
+//    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+//        String requestURI = request.getServletPath();
+//        String method = request.getMethod();
+//
+//        return !excludePaths.stream()
+//            .anyMatch(excludePath -> excludePath.matches(requestURI, method));
+//    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -69,11 +77,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String requestURI = httpServletRequest.getRequestURI();
 
         // 2. validateToken 으로 토큰 유효성 검사
-        if (token != null && jwtTokenProvider.validateToken(token)) {
-            // 토큰이 유효할 경우 토큰에서 Authentication 객체를 가지고 와서 SecurityContext 에 저장
-            Authentication authentication = jwtTokenProvider.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            log.info("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestURI);
+        if (StringUtils.hasText(token) && token != null && jwtTokenProvider.validateToken(token)) {
+            /*1. Redis에 해당 accessToken logout 여부 확인 */
+            String isLogout = (String) redisTemplate.opsForValue().get(token);
+            if(!ObjectUtils.isEmpty(isLogout)) {
+                throw new RestApiException(ErrorCode.TOKEN_NOT_VALID);
+            } else {
+                /*2. 토큰이 유효할 경우 토큰에서 Authentication 객체를 가지고 와서 SecurityContext 에 저장 */
+                Authentication authentication = jwtTokenProvider.getAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                log.info("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestURI);
+            }
         } else {
             log.info("유효한 JWT 토큰이 없습니다, uri: {}", requestURI);
         }
@@ -113,4 +127,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return this.name().equalsIgnoreCase(requestMethod);
         }
     }
+
+    public void jwtExceptionHandler(HttpServletResponse response, ErrorCode errorCode) {
+        response.setStatus(errorCode.getCode());
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        try {
+            String json = new ObjectMapper().writeValueAsString(ErrorResponse.of(errorCode.getHttpStatus(), errorCode.getCode(), errorCode.getMessage()));
+            response.getOutputStream().write(json.getBytes());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+    }
+
 }

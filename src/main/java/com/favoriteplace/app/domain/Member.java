@@ -80,6 +80,10 @@ public class Member extends BaseTimeEntity {
         this.refreshToken = refreshToken;
     }
 
+    public void deleteRefreshToken(String refreshToken) {
+        this.refreshToken = null;
+    }
+
     public void updatePoint(Long point) {
         this.point += point;
     }
