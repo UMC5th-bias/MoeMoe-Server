@@ -81,14 +81,14 @@ public class PostController {
     }
 
     @PostMapping("")
-    public ResponseEntity<PostResponseDto.SuccessResponseDto> createPost(
+    public ResponseEntity<PostResponseDto.PostIdResponseDto> createPost(
             @RequestPart PostRequestDto data,
             @RequestPart(required = false) List<MultipartFile> images
     ) throws IOException {
         Member member = securityUtil.getUser();
-        postCommandService.createPost(data, images, member);
+        Long id = postCommandService.createPost(data, images, member);
         return new ResponseEntity<>(
-                PostResponseDto.SuccessResponseDto.builder().message("게시글을 성공적으로 등록했습니다.").build(),
+                PostResponseDto.PostIdResponseDto.builder().postId(id).build(),
                 HttpStatus.OK);
     }
 
