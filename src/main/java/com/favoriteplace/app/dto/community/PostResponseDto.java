@@ -20,6 +20,14 @@ public class PostResponseDto {
         private String message;
     }
 
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PostIdResponseDto{
+        private Long postId;
+    }
+
     @Builder
     @Getter
     @NoArgsConstructor

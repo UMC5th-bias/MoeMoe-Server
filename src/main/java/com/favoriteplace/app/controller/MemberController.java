@@ -62,4 +62,12 @@ public class MemberController {
         memberService.setNewPassword(email, password);
         return ResponseEntity.ok("성공했습니다.");
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request) {
+        String accessToken = securityUtil.resolveToken(request);
+        memberService.logout(accessToken);
+
+        return ResponseEntity.ok("로그아웃 되었습니다.");
+    }
 }

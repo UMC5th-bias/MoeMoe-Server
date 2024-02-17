@@ -41,7 +41,7 @@ public class SecurityUtil {
         return memberRepository.findByEmail(authentication.getName()).get();
     }
 
-    private String resolveToken(HttpServletRequest request) {
+    public String resolveToken(HttpServletRequest request) {
         // TODO: getUserFromHeader와 로직이 조금 겹치는 듯, 추후 수정 필요
         String bearerToken = request.getHeader("Authorization");
 

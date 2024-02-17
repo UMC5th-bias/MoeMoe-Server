@@ -1,5 +1,6 @@
 package com.favoriteplace.global.security.config;
 
+import com.favoriteplace.global.security.Filter.ExceptionHandlerFilter;
 import com.favoriteplace.global.security.Filter.JwtAuthenticationEntryPoint;
 import com.favoriteplace.global.security.Filter.JwtAuthenticationFilter;
 import com.favoriteplace.global.security.Filter.LoginFilter;
@@ -10,6 +11,7 @@ import com.favoriteplace.global.security.provider.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.Customizer;
@@ -30,6 +32,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
+    private final RedisTemplate redisTemplate;
+    private final ExceptionHandlerFilter exceptionHandlerFilter;
 
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
@@ -51,7 +55,8 @@ public class SecurityConfig {
             .cors(Customizer.withDefaults())
             .sessionManagement(configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilter(loginFilter)
-            .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(exceptionHandlerFilter, JwtAuthenticationFilter.class)
             ;
 
         return http.build();
