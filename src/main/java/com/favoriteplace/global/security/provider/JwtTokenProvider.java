@@ -75,6 +75,15 @@ public class JwtTokenProvider {
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
+    public Long getExpiration(String accessToken) {
+        Date expiration = Jwts.parserBuilder().setSigningKey(key)
+            .build().parseClaimsJws(accessToken).getBody().getExpiration();
+
+        long now = new Date().getTime();
+
+        return (expiration.getTime() - now);
+    }
+
     // 토큰 정보를 검증하는 메서드
     public boolean validateToken(String token) {
         try {
