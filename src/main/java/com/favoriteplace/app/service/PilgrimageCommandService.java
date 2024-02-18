@@ -77,11 +77,6 @@ public class PilgrimageCommandService {
         List<VisitedPilgrimage> visitedPilgrimages = visitedPilgrimageRepository
                 .findByPilgrimageAndMemberOrderByCreatedAtDesc(pilgrimage, member);
 
-        // 24시간 이내 방문이력 확인
-//        log.info("NOW="+LocalDateTime.now());
-//        log.info("pilgrimage create="+visitedPilgrimages.get(0).getPilgrimage().getCreatedAt());
-//        log.info("state="+visitedPilgrimages.get(0).getPilgrimage().getCreatedAt().plusHours(24L).isBefore(LocalDateTime.now()));
-
         ZoneId serverZoneId = ZoneId.of("Asia/Seoul");
         ZonedDateTime nowInServerTimeZone = ZonedDateTime.now(serverZoneId);
 
@@ -97,7 +92,6 @@ public class PilgrimageCommandService {
             if (checkCoordinate(form, pilgrimage)){
                 throw new RestApiException(ErrorCode.PILGRIMAGE_CAN_NOT_CERTIFIED);
             }
-            log.info("98");
             // 성공 시 포인트 지급 -> 15p & visitedPilgrimage 추가
             successVisitedAndPointProcess(member, pilgrimage);
 
@@ -107,7 +101,6 @@ public class PilgrimageCommandService {
                 return CommonConverter.toRallyResponseDto(true, true,"<"+pilgrimage.getRally().getItem().getName()+"> 칭호를 얻었습니다!");
         } else
             throw new RestApiException(ErrorCode.PILGRIMAGE_ALREADY_CERTIFIED);
-        log.info("108");
         return CommonConverter.toRallyResponseDto(true, false,"성지순례 인증하기 15P를 얻으셨습니다!");
     }
 
