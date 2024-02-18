@@ -10,6 +10,6 @@ import java.util.List;
 
 @Repository
 public interface CompleteRallyRepository extends JpaRepository<CompleteRally, Long> {
-    CompleteRally findByMemberAndRally(Member member, Rally rally);
+    List<CompleteRally> findByMemberAndRally(Member member, Rally rally);
     List<CompleteRally> findByMember(Member member);
 }
