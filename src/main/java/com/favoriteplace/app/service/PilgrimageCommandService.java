@@ -75,17 +75,15 @@ public class PilgrimageCommandService {
         List<VisitedPilgrimage> visitedPilgrimages = visitedPilgrimageRepository
                 .findByPilgrimageAndMemberOrderByCreatedAtDesc(pilgrimage, member);
 
-        for(VisitedPilgrimage vp:visitedPilgrimages){
-            log.info("인증객체:"+vp.getId()+vp.getMember().getNickname()+vp.getPilgrimage().getRallyName());
-        }
-
         // 24시간 이내 방문이력 확인
         Instant now = Instant.now();
-//        ZonedDateTime zonedDateTime = now.atZone(ZoneId.of("UTC"));
-//        log.info(zonedDateTime.toString());
+        ZonedDateTime zonedDateTime = now.atZone(ZoneId.of("UTC"));
+        log.info("UTC="+zonedDateTime.toString());
+        log.info("NOW="+LocalDateTime.now());
 
         if (visitedPilgrimages.isEmpty()
-                || (!visitedPilgrimages.isEmpty() && visitedPilgrimages.get(0).getPilgrimage().getCreatedAt().atZone(ZoneId.of("UTC")).plusHours(24L).isBefore(ZonedDateTime.now(ZoneId.of("UTC"))))) {
+                || (!visitedPilgrimages.isEmpty()
+                && visitedPilgrimages.get(0).getPilgrimage().getCreatedAt().plusHours(24L).isBefore(LocalDateTime.now()))) {
             // 현재 좌표가 성지순례 장소 좌표 기준 +-0.00135 이내인지 확인
             if (checkCoordinate(form, pilgrimage)){
                 throw new RestApiException(ErrorCode.PILGRIMAGE_CAN_NOT_CERTIFIED);
