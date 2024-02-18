@@ -17,6 +17,7 @@ import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -27,6 +28,7 @@ import java.util.Optional;
 
 @Service
 @Slf4j
+@Transactional
 @RequiredArgsConstructor
 public class PilgrimageCommandService {
     private final RallyRepository rallyRepository;
@@ -76,19 +78,26 @@ public class PilgrimageCommandService {
                 .findByPilgrimageAndMemberOrderByCreatedAtDesc(pilgrimage, member);
 
         // 24시간 이내 방문이력 확인
-        Instant now = Instant.now();
-        ZonedDateTime zonedDateTime = now.atZone(ZoneId.of("UTC"));
-        log.info("UTC="+zonedDateTime.toString());
-        log.info("NOW="+LocalDateTime.now());
+//        log.info("NOW="+LocalDateTime.now());
+//        log.info("pilgrimage create="+visitedPilgrimages.get(0).getPilgrimage().getCreatedAt());
+//        log.info("state="+visitedPilgrimages.get(0).getPilgrimage().getCreatedAt().plusHours(24L).isBefore(LocalDateTime.now()));
+
+        ZoneId serverZoneId = ZoneId.of("Asia/Seoul");
+        ZonedDateTime nowInServerTimeZone = ZonedDateTime.now(serverZoneId);
+
+        log.info("now="+nowInServerTimeZone);
+        if (!visitedPilgrimages.isEmpty()) {
+            log.info("pilgrimage="+visitedPilgrimages.get(0).getPilgrimage().getCreatedAt().atZone(serverZoneId));
+        }
 
         if (visitedPilgrimages.isEmpty()
                 || (!visitedPilgrimages.isEmpty()
-                && visitedPilgrimages.get(0).getPilgrimage().getCreatedAt().plusHours(24L).isBefore(LocalDateTime.now()))) {
+                && visitedPilgrimages.get(0).getPilgrimage().getCreatedAt().atZone(serverZoneId).plusHours(24L).isBefore(nowInServerTimeZone))) {
             // 현재 좌표가 성지순례 장소 좌표 기준 +-0.00135 이내인지 확인
             if (checkCoordinate(form, pilgrimage)){
                 throw new RestApiException(ErrorCode.PILGRIMAGE_CAN_NOT_CERTIFIED);
             }
-
+            log.info("98");
             // 성공 시 포인트 지급 -> 15p & visitedPilgrimage 추가
             successVisitedAndPointProcess(member, pilgrimage);
 
@@ -98,6 +107,7 @@ public class PilgrimageCommandService {
                 return CommonConverter.toRallyResponseDto(true, true,"<"+pilgrimage.getRally().getItem().getName()+"> 칭호를 얻었습니다!");
         } else
             throw new RestApiException(ErrorCode.PILGRIMAGE_ALREADY_CERTIFIED);
+        log.info("108");
         return CommonConverter.toRallyResponseDto(true, false,"성지순례 인증하기 15P를 얻으셨습니다!");
     }
 
