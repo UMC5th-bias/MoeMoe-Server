@@ -72,7 +72,6 @@ public class PilgrimageCommandService {
                                                                  PilgrimageDto.PilgrimageCertifyRequestDto form) {
         Pilgrimage pilgrimage = pilgrimageRepository.findById(pilgrimageId).orElseThrow(
                 () -> new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
-        log.info("pilgrimage coordinate="+pilgrimage.getLatitude().toString()+pilgrimage.getLongitude().toString());
 
         List<VisitedPilgrimage> visitedPilgrimages = visitedPilgrimageRepository
                 .findByPilgrimageAndMemberOrderByCreatedAtDesc(pilgrimage, member);
@@ -80,10 +79,10 @@ public class PilgrimageCommandService {
         ZoneId serverZoneId = ZoneId.of("Asia/Seoul");
         ZonedDateTime nowInServerTimeZone = ZonedDateTime.now(serverZoneId);
 
-        log.info("now="+nowInServerTimeZone);
-        if (!visitedPilgrimages.isEmpty()) {
-            log.info("pilgrimage="+visitedPilgrimages.get(0).getPilgrimage().getCreatedAt().atZone(serverZoneId));
-        }
+//        log.info("now="+nowInServerTimeZone);
+//        if (!visitedPilgrimages.isEmpty()) {
+//            log.info("pilgrimage="+visitedPilgrimages.get(0).getPilgrimage().getCreatedAt().atZone(serverZoneId));
+//        }
 
         if (visitedPilgrimages.isEmpty()
                 || (!visitedPilgrimages.isEmpty()
@@ -96,7 +95,8 @@ public class PilgrimageCommandService {
             successVisitedAndPointProcess(member, pilgrimage);
 
             Long completeCount = visitedPilgrimageRepository.findByDistinctCount(member.getId(), pilgrimage.getRally().getId());
-            // 랠리를 완료했는지 확인
+            log.info("completeCount="+completeCount);
+//            // 랠리를 완료했는지 확인
             if (checkCompleteRally(member, pilgrimage, completeCount))
                 return CommonConverter.toRallyResponseDto(true, true,"<"+pilgrimage.getRally().getItem().getName()+"> 칭호를 얻었습니다!");
         } else
@@ -106,9 +106,10 @@ public class PilgrimageCommandService {
 
     private boolean checkCompleteRally(Member member, Pilgrimage pilgrimage, Long completeCount) {
         if (completeCount == pilgrimage.getRally().getPilgrimageNumber()) {
-            CompleteRally completeRally = completeRallyRepository.findByMemberAndRally(member, pilgrimage.getRally());
+            List<CompleteRally> completeRally = completeRallyRepository.findByMemberAndRally(member, pilgrimage.getRally());
+            log.info("size="+completeRally.size());
             // 이전에 이미 랠리를 완료한 상태인지 확인
-            if (completeRally == null || !completeRally.getVersion().getVersion().equals(RallyVersion.v1)) {
+            if (completeRally.isEmpty()) {
                 // 최초 완료에 한해 칭호 획득
                 if (completeRally == null)
                     acquiredItemRepository.save(AcquiredItem.builder().item(pilgrimage.getRally().getItem()).member(member).build());
@@ -132,8 +133,10 @@ public class PilgrimageCommandService {
 
     private void successVisitedAndPointProcess(Member member, Pilgrimage pilgrimage) {
         VisitedPilgrimage newVisited = VisitedPilgrimage.builder().pilgrimage(pilgrimage).member(member).build();
+        log.info("visited="+newVisited.getId());
         visitedPilgrimageRepository.save(newVisited);
         pointHistoryRepository.save(PointHistoryConverter.toPointHistory(member, 15L, PointType.ACQUIRE));
         member.updatePoint(15L);
+        log.info("clear");
     }
 }
