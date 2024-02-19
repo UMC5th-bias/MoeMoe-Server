@@ -141,7 +141,7 @@ public class PilgrimageQueryService {
             result.setIsCertified(false);
         }
         // 이 성지순례에 인증 기록이 있다면 isWritable -> true
-        if (visitedLog.size() >= 1) {
+        if (visitedLog.size() == 1) {
             result.setIsWritable(true);
         }
         // 이 성지순례에 인증 기록이 두 개 이상이라면 isisMultiWritable -> true

@@ -59,8 +59,7 @@ public class RallyService {
 
     public long getCompletePilgrimageCount(Long memberId, Long rallyId){
         List<Pilgrimage> pilgrimages = pilgrimageRepository.findByRallyId(rallyId);
-        List<Long> pilgrimageIds = pilgrimages.stream().map(Pilgrimage::getId).toList();
-        return visitedPilgrimageRepository.countByMemberIdAndPilgrimageIdIn(memberId, pilgrimageIds);
+        return visitedPilgrimageRepository.findByDistinctCount(memberId, rallyId);
     }
 
 }

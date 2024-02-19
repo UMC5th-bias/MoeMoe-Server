@@ -15,13 +15,20 @@ import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
+@Transactional
 @RequiredArgsConstructor
 public class PilgrimageCommandService {
     private final RallyRepository rallyRepository;
@@ -66,21 +73,30 @@ public class PilgrimageCommandService {
         Pilgrimage pilgrimage = pilgrimageRepository.findById(pilgrimageId).orElseThrow(
                 () -> new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
 
-
         List<VisitedPilgrimage> visitedPilgrimages = visitedPilgrimageRepository
                 .findByPilgrimageAndMemberOrderByCreatedAtDesc(pilgrimage, member);
 
-        // 24시간 이내 방문이력 확인
+        ZoneId serverZoneId = ZoneId.of("Asia/Seoul");
+        ZonedDateTime nowInServerTimeZone = ZonedDateTime.now(serverZoneId);
+
+//        log.info("now="+nowInServerTimeZone);
+//        if (!visitedPilgrimages.isEmpty()) {
+//            log.info("pilgrimage="+visitedPilgrimages.get(0).getPilgrimage().getCreatedAt().atZone(serverZoneId));
+//        }
+
         if (visitedPilgrimages.isEmpty()
-                || (!visitedPilgrimages.isEmpty() && visitedPilgrimages.get(0).getPilgrimage().getCreatedAt().plusHours(24L).isBefore(LocalDateTime.now()))) {
+                || (!visitedPilgrimages.isEmpty()
+                && visitedPilgrimages.get(0).getPilgrimage().getCreatedAt().atZone(serverZoneId).plusHours(24L).isBefore(nowInServerTimeZone))) {
             // 현재 좌표가 성지순례 장소 좌표 기준 +-0.00135 이내인지 확인
-            if (checkCoordinate(form, pilgrimage))
+            if (checkCoordinate(form, pilgrimage)){
                 throw new RestApiException(ErrorCode.PILGRIMAGE_CAN_NOT_CERTIFIED);
+            }
             // 성공 시 포인트 지급 -> 15p & visitedPilgrimage 추가
             successVisitedAndPointProcess(member, pilgrimage);
 
             Long completeCount = visitedPilgrimageRepository.findByDistinctCount(member.getId(), pilgrimage.getRally().getId());
-            // 랠리를 완료했는지 확인
+            log.info("completeCount="+completeCount);
+//            // 랠리를 완료했는지 확인
             if (checkCompleteRally(member, pilgrimage, completeCount))
                 return CommonConverter.toRallyResponseDto(true, true,"<"+pilgrimage.getRally().getItem().getName()+"> 칭호를 얻었습니다!");
         } else
@@ -90,9 +106,10 @@ public class PilgrimageCommandService {
 
     private boolean checkCompleteRally(Member member, Pilgrimage pilgrimage, Long completeCount) {
         if (completeCount == pilgrimage.getRally().getPilgrimageNumber()) {
-            CompleteRally completeRally = completeRallyRepository.findByMemberAndRally(member, pilgrimage.getRally());
+            List<CompleteRally> completeRally = completeRallyRepository.findByMemberAndRally(member, pilgrimage.getRally());
+            log.info("size="+completeRally.size());
             // 이전에 이미 랠리를 완료한 상태인지 확인
-            if (completeRally == null || !completeRally.getVersion().getVersion().equals(RallyVersion.v1)) {
+            if (completeRally.isEmpty()) {
                 // 최초 완료에 한해 칭호 획득
                 if (completeRally == null)
                     acquiredItemRepository.save(AcquiredItem.builder().item(pilgrimage.getRally().getItem()).member(member).build());
@@ -116,8 +133,10 @@ public class PilgrimageCommandService {
 
     private void successVisitedAndPointProcess(Member member, Pilgrimage pilgrimage) {
         VisitedPilgrimage newVisited = VisitedPilgrimage.builder().pilgrimage(pilgrimage).member(member).build();
+        log.info("visited="+newVisited.getId());
         visitedPilgrimageRepository.save(newVisited);
         pointHistoryRepository.save(PointHistoryConverter.toPointHistory(member, 15L, PointType.ACQUIRE));
         member.updatePoint(15L);
+        log.info("clear");
     }
 }
