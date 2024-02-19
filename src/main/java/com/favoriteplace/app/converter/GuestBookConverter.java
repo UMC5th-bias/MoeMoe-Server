@@ -49,6 +49,8 @@ public class GuestBookConverter {
                 .longitude(pilgrimage.getLongitude())
                 .imageAnime(pilgrimage.getVirtualImage().getUrl())
                 .imageReal(pilgrimage.getRealImage().getUrl())
+                .addressEn(pilgrimage.getDetailAddressEn())
+                .addressJp(pilgrimage.getDetailAddressJp())
                 .build();
     }
 
