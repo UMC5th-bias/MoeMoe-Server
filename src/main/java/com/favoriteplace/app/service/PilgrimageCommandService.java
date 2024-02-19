@@ -57,7 +57,7 @@ public class PilgrimageCommandService {
             return CommonConverter.toPostResponseDto(true, "찜 목록에 추가됐습니다.");
         } else {
             likedRallyRepository.delete(likedRally);
-            return CommonConverter.toPostResponseDto(true, "찜을 취소했습니다.");
+            return CommonConverter.toPostResponseDto(false, "찜을 취소했습니다.");
         }
     }
 
