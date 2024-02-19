@@ -78,6 +78,8 @@ public class GuestBookResponseDto {
         private Double longitude;
         private String imageAnime;
         private String imageReal;
+        private String addressEn;
+        private String addressJp;
     }
 
     @Getter
