@@ -67,14 +67,8 @@ public class Comment extends BaseTimeEntity {
     @Builder.Default
     private Boolean isDeleted = false;
 
-    public void setGuestBook(GuestBook guestBook) {
-        this.guestBook = guestBook;
-    }
-
-    public void setPost(Post post){
-        this.post = post;
-        post.getComments().add(this);
-    }
+    public void setGuestBook(GuestBook guestBook) {this.guestBook = guestBook;}
+    public void setPost(Post post){this.post = post;}
 
     public void addParentComment(Comment parentComment){
         this.parentComment = parentComment;

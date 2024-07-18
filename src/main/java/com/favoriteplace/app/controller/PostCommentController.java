@@ -12,7 +12,6 @@ import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -64,8 +63,8 @@ public class PostCommentController {
             @PathVariable("post_id") long postId,
             @RequestBody CommentRequestDto.CreateComment dto
     ){
-        //Member member = securityUtil.getUser();
-        Member member = memberRepository.findById(1L).orElseThrow(() -> new RestApiException(ErrorCode.USER_NOT_FOUND));
+        Member member = securityUtil.getUser();
+//        Member member = memberRepository.findById(1L).orElseThrow(() -> new RestApiException(ErrorCode.USER_NOT_FOUND));
         commentCommandService.createPostComment(member, postId, dto);
         return new ResponseEntity<>(
                 PostResponseDto.SuccessResponseDto.builder().message("댓글을 성공적으로 등록했습니다.").build(),
@@ -78,9 +77,9 @@ public class PostCommentController {
             @PathVariable("comment_id") long commentId,
             @RequestBody CommentRequestDto.ModifyComment dto
     ){
-        //Member member = securityUtil.getUser();
-        Member member = memberRepository.findById(1L).orElseThrow(() -> new RestApiException(ErrorCode.USER_NOT_FOUND));
-        commentCommandService.modifyPostComment(member, commentId, dto.getContent());
+        Member member = securityUtil.getUser();
+//        Member member = memberRepository.findById(1L).orElseThrow(() -> new RestApiException(ErrorCode.USER_NOT_FOUND));
+        commentCommandService.modifyComment(member, commentId, dto.getContent());
         return new ResponseEntity<>(
                 PostResponseDto.SuccessResponseDto.builder().message("댓글을 성공적으로 수정했습니다.").build(),
                 HttpStatus.OK
@@ -91,9 +90,9 @@ public class PostCommentController {
     public ResponseEntity<PostResponseDto.SuccessResponseDto> deletePostComment(
             @PathVariable("comment_id") long commentId
     ){
-        //Member member = securityUtil.getUser();
-        Member member = memberRepository.findById(1L).orElseThrow(() -> new RestApiException(ErrorCode.USER_NOT_FOUND));
-        commentCommandService.deletePostComment(member, commentId);
+        Member member = securityUtil.getUser();
+//        Member member = memberRepository.findById(1L).orElseThrow(() -> new RestApiException(ErrorCode.USER_NOT_FOUND));
+        commentCommandService.deleteComment(member, commentId);
         return new ResponseEntity<>(
                 PostResponseDto.SuccessResponseDto.builder().message("댓글을 성공적으로 삭제했습니다.").build(),
                 HttpStatus.OK

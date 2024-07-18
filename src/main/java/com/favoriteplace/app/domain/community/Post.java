@@ -62,6 +62,10 @@ public class Post extends BaseTimeEntity {
 
     public void decreaseLikeCount(){this.likeCount--;}
 
+    public void addComment(Comment comment){
+        comment.setPost(this);
+        this.comments.add(comment);
+    }
 
     public void disconnectImages(){
         for(Image image:this.images){
