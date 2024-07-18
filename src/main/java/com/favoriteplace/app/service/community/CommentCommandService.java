@@ -4,6 +4,8 @@ import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.Comment;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.Post;
+import com.favoriteplace.app.domain.enums.CommentType;
+import com.favoriteplace.app.dto.community.CommentRequestDto;
 import com.favoriteplace.app.dto.community.GuestBookRequestDto;
 import com.favoriteplace.app.repository.CommentRepository;
 import com.favoriteplace.app.repository.GuestBookRepository;
@@ -27,18 +29,33 @@ public class CommentCommandService {
      * 자유게시글 새로운 댓글 작성
      * @param member
      * @param postId
-     * @param content
+     * @param dto
      */
     @Transactional
-    public void createPostComment(Member member, long postId, String content) {
+    public void createPostComment(Member member, long postId, CommentRequestDto dto) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new RestApiException(ErrorCode.POST_NOT_FOUND));
         Comment comment = Comment.builder()
-                .member(member)
-                .post(post)
-                .content(content)
-                .build();
-        post.getComments().add(comment);
-        postRepository.save(post);
+                .member(member).commentType(CommentType.PARENT_COMMENT).isDeleted(false)
+                .content(dto.getContent()).build();
+        comment.setPost(post);
+        // 대댓글
+        if(dto.getParentCommentId() != null){
+            Comment parentComment = commentRepository.findById(dto.getParentCommentId()).orElseThrow(() -> new RestApiException(ErrorCode.COMMENT_NOT_FOUND));
+            if(parentComment.getCommentType() != CommentType.PARENT_COMMENT){
+                throw new RestApiException(ErrorCode.COMMENT_NOT_PARENT);
+            }
+            comment.setCommentType(CommentType.CHILD_COMMENT);
+            comment.addParentComment(parentComment);
+            // 다른 대댓글 참조 O
+            if(dto.getReferenceCommentId() != null){
+                Comment referenecComment = commentRepository.findById(dto.getReferenceCommentId()).orElseThrow(() -> new RestApiException(ErrorCode.COMMENT_NOT_FOUND));
+                if(referenecComment.getCommentType() != CommentType.CHILD_COMMENT){
+                    throw new RestApiException(ErrorCode.COMMENT_NOT_CHILD);
+                }
+                comment.setReferenceComment(referenecComment);
+            }
+        }
+        commentRepository.save(comment);
     }
 
     /**
@@ -51,7 +68,7 @@ public class CommentCommandService {
     public void modifyPostComment(Member member, long commentId, String content) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new RestApiException(ErrorCode.COMMENT_NOT_FOUND));
         checkAuthOfComment(member, comment);
-        Optional.ofNullable(content).ifPresent(comment::setContent);
+        Optional.ofNullable(content).ifPresent(comment::modifyContent);
         commentRepository.save(comment);
     }
 
@@ -90,7 +107,7 @@ public class CommentCommandService {
     public void modifyGuestBookComment(Member member, Long commentId, String content) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new RestApiException(ErrorCode.COMMENT_NOT_FOUND));
         checkAuthOfComment(member, comment);
-        Optional.ofNullable(content).ifPresent(comment::setContent);
+        Optional.ofNullable(content).ifPresent(comment::modifyContent);
         commentRepository.save(comment);
     }
 

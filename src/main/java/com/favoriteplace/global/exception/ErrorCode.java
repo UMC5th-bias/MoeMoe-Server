@@ -57,6 +57,8 @@ public enum ErrorCode {
 
     //댓글 (10000번대)
     COMMENT_NOT_FOUND(HttpStatus.BAD_REQUEST, 10001, "댓글이 존재하지 않습니다."),
+    COMMENT_NOT_PARENT(HttpStatus.BAD_REQUEST, 10002, "해당 댓글은 최상위 댓글이 아닙니다."),
+    COMMENT_NOT_CHILD(HttpStatus.BAD_REQUEST, 10003, "해당 댓글은 대댓글이 아닙니다."),
 
     //이미지 (11000번대)
     IMAGE_FORMAT_ERROR(HttpStatus.BAD_REQUEST, 11001, "올바른 이미지 파일이 아닙니다."),

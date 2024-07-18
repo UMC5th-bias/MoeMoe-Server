@@ -4,8 +4,11 @@ import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.dto.community.CommentRequestDto;
 import com.favoriteplace.app.dto.community.CommentResponseDto;
 import com.favoriteplace.app.dto.community.PostResponseDto;
+import com.favoriteplace.app.repository.MemberRepository;
 import com.favoriteplace.app.service.community.CommentCommandService;
 import com.favoriteplace.app.service.community.CommentQueryService;
+import com.favoriteplace.global.exception.ErrorCode;
+import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +27,7 @@ public class PostCommentController {
     private final SecurityUtil securityUtil;
     private final CommentQueryService commentQueryService;
     private final CommentCommandService commentCommandService;
+    private final MemberRepository memberRepository;
 
     @GetMapping("/my-comments")
     public PostResponseDto.MyCommentDto getMyComments(
@@ -60,8 +64,9 @@ public class PostCommentController {
             @PathVariable("post_id") long postId,
             @RequestBody CommentRequestDto dto
     ){
-        Member member = securityUtil.getUser();
-        commentCommandService.createPostComment(member, postId, dto.getContent());
+        //Member member = securityUtil.getUser();
+        Member member = memberRepository.findById(1L).orElseThrow(() -> new RestApiException(ErrorCode.USER_NOT_FOUND));
+        commentCommandService.createPostComment(member, postId, dto);
         return new ResponseEntity<>(
                 PostResponseDto.SuccessResponseDto.builder().message("댓글을 성공적으로 등록했습니다.").build(),
                 HttpStatus.OK

@@ -10,5 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CommentRequestDto {
+    private Long parentCommentId;
+    private Long referenceCommentId;
     private String content;
 }
