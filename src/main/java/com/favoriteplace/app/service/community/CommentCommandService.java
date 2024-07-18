@@ -27,15 +27,12 @@ public class CommentCommandService {
 
     /**
      * 자유게시글 새로운 댓글 작성
-     * @param member
-     * @param postId
-     * @param dto
      */
     @Transactional
-    public void createPostComment(Member member, long postId, CommentRequestDto dto) {
+    public void createPostComment(Member member, long postId, CommentRequestDto.CreateComment dto) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new RestApiException(ErrorCode.POST_NOT_FOUND));
         Comment comment = Comment.builder()
-                .member(member).commentType(CommentType.PARENT_COMMENT).isDeleted(false)
+                .member(member).commentType(CommentType.PARENT_COMMENT)
                 .content(dto.getContent()).build();
         comment.setPost(post);
         // 대댓글
@@ -60,28 +57,49 @@ public class CommentCommandService {
 
     /**
      * 자유게시글 댓글 수정
-     * @param member
-     * @param commentId
-     * @param content
      */
     @Transactional
     public void modifyPostComment(Member member, long commentId, String content) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new RestApiException(ErrorCode.COMMENT_NOT_FOUND));
         checkAuthOfComment(member, comment);
+        checkIsDeleteOfComment(comment);
         Optional.ofNullable(content).ifPresent(comment::modifyContent);
-        commentRepository.save(comment);
+        //commentRepository.save(comment);
     }
 
     /**
      * 자유게시글 댓글 삭제
-     * @param member
-     * @param commendId
      */
     @Transactional
     public void deletePostComment(Member member, long commendId){
         Comment comment = commentRepository.findById(commendId).orElseThrow(() -> new RestApiException(ErrorCode.COMMENT_NOT_FOUND));
         checkAuthOfComment(member, comment);
-        commentRepository.delete(comment);
+        checkIsDeleteOfComment(comment);
+        // 최상위 댓글
+        if(comment.getCommentType() == CommentType.PARENT_COMMENT){
+            // 대댓글이 있는 경우 - soft delete
+            if(commentRepository.existsByParentComment(comment)){comment.softDeleteComment();}
+            // 대댓글이 없는 경우 - hard delete
+            else {commentRepository.delete(comment);}
+
+        } else {  // 대댓글
+            // 나를 참조하는 댓글이 있는 경우 - soft delete
+            if(commentRepository.existsByReferenceComment(comment)){comment.softDeleteComment();}
+            // 나를 참조하는 댓글이 없는 경우
+            else{
+                commentRepository.delete(comment);
+                // 내가 참조하는 댓글이 soft delete -> hard delete 가능한 경우
+                Comment referenceComment = comment.getReferenceComment();
+                if(referenceComment != null && referenceComment.getIsDeleted() && !commentRepository.existsByReferenceComment(referenceComment)){
+                    commentRepository.delete(referenceComment);
+                }
+                // 나의 최상위 댓글이 soft delete -> hard delete 가능한 경우
+                Comment parentComment = comment.getParentComment();
+                if(parentComment.getIsDeleted() && !commentRepository.existsByParentComment(parentComment)){
+                    commentRepository.delete(parentComment);
+                }
+            }
+        }
     }
 
     /**
@@ -131,6 +149,16 @@ public class CommentCommandService {
     private void checkAuthOfComment(Member member, Comment comment){
         if(!member.getId().equals(comment.getMember().getId())){
             throw new RestApiException(ErrorCode.USER_NOT_AUTHOR);
+        }
+    }
+
+    /**
+     * soft delete로 이미 삭제된 댓글인지 확인하는 함수 (삭제된 댓글이면 에러 출력)
+     * @param comment
+     */
+    private void checkIsDeleteOfComment(Comment comment) {
+        if(comment.getIsDeleted()){
+            throw new RestApiException(ErrorCode.COMMENT_ALREADY_DELETED);
         }
     }
 

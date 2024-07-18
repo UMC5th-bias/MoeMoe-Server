@@ -15,6 +15,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.aspectj.weaver.ArrayReferenceType;
 import org.checkerframework.checker.units.qual.A;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +27,7 @@ import java.util.List;
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor(access = PRIVATE)
 @Entity
+
 public class Comment extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = IDENTITY)
@@ -60,7 +64,8 @@ public class Comment extends BaseTimeEntity {
     private Comment referenceComment; // 대댓글 내에서 어떤 댓글을 참조한 것인지 (최상위 댓글을 참조하는 경우는 포함 X)
 
     @Column(nullable = false)
-    private Boolean isDeleted;
+    @Builder.Default
+    private Boolean isDeleted = false;
 
     public void setGuestBook(GuestBook guestBook) {
         this.guestBook = guestBook;
@@ -79,4 +84,8 @@ public class Comment extends BaseTimeEntity {
     public void setReferenceComment(Comment referenceComment){this.referenceComment = referenceComment;}
     public void setCommentType(CommentType commentType){this.commentType = commentType;}
     public void modifyContent(String content){this.content = content;}
+    public void softDeleteComment(){
+        this.isDeleted = true;
+        this.content = "[삭제된 댓글입니다.]";
+    }
 }

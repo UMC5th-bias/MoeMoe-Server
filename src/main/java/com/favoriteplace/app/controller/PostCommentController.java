@@ -62,7 +62,7 @@ public class PostCommentController {
     @PostMapping("/{post_id}/comments")
     public ResponseEntity<PostResponseDto.SuccessResponseDto> createPostComment(
             @PathVariable("post_id") long postId,
-            @RequestBody CommentRequestDto dto
+            @RequestBody CommentRequestDto.CreateComment dto
     ){
         //Member member = securityUtil.getUser();
         Member member = memberRepository.findById(1L).orElseThrow(() -> new RestApiException(ErrorCode.USER_NOT_FOUND));
@@ -76,9 +76,10 @@ public class PostCommentController {
     @PutMapping("/comments/{comment_id}")
     public ResponseEntity<PostResponseDto.SuccessResponseDto> modifyPostComment(
             @PathVariable("comment_id") long commentId,
-            @RequestBody CommentRequestDto dto
+            @RequestBody CommentRequestDto.ModifyComment dto
     ){
-        Member member = securityUtil.getUser();
+        //Member member = securityUtil.getUser();
+        Member member = memberRepository.findById(1L).orElseThrow(() -> new RestApiException(ErrorCode.USER_NOT_FOUND));
         commentCommandService.modifyPostComment(member, commentId, dto.getContent());
         return new ResponseEntity<>(
                 PostResponseDto.SuccessResponseDto.builder().message("댓글을 성공적으로 수정했습니다.").build(),
@@ -90,7 +91,8 @@ public class PostCommentController {
     public ResponseEntity<PostResponseDto.SuccessResponseDto> deletePostComment(
             @PathVariable("comment_id") long commentId
     ){
-        Member member = securityUtil.getUser();
+        //Member member = securityUtil.getUser();
+        Member member = memberRepository.findById(1L).orElseThrow(() -> new RestApiException(ErrorCode.USER_NOT_FOUND));
         commentCommandService.deletePostComment(member, commentId);
         return new ResponseEntity<>(
                 PostResponseDto.SuccessResponseDto.builder().message("댓글을 성공적으로 삭제했습니다.").build(),
