@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     Long countByMember(Member member);
+    Boolean existsByParentComment(Comment parentComment);
+    Boolean existsByReferenceComment(Comment referenceComment);
 }
