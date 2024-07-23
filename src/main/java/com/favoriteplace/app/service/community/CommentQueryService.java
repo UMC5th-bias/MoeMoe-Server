@@ -27,27 +27,28 @@ public class CommentQueryService {
      * @param postId
      * @return
      */
-    public List<CommentResponseDto.PostComment> getPostComments(Member member, int page, int size, Long postId) {
-        List<Comment> commentPage = commentImplRepository.findAllByPostIdOrderByCreatedAtAsc(postId, page, size);
+    public List<CommentResponseDto.Comment> getPostComments(Member member, int page, int size, Long postId) {
+        List<Comment> commentPage = commentImplRepository.findParentCommentsByPostId(postId, page, size);
         if(commentPage.isEmpty()){return Collections.emptyList();}
         return commentPage.stream()
-                .map(comment -> CommentConverter.toPostComment(comment, isCommentWriter(member, comment)))
+                .map(comment -> CommentConverter.toComment(comment, member, commentImplRepository.findSubCommentByCommentId(comment.getId())))
                 .toList();
     }
 
     /**
-     * 커뷰니티 : 성지순례 인증글의 댓글 전부 보여주기 (페이징 적용)
+     * 커뷰니티 : 성지순례 인증글의 댓글 전부 보여주기
      * @param page
      * @param size
      * @param member
      * @param guestbookId
      * @return 페이징 된 댓글 리스트
      */
-    public List<CommentResponseDto.PostComment> getGuestBookComments(int page, int size, Member member, Long guestbookId) {
-        List<Comment> commentPage = commentImplRepository.findAllByGuestBookIdOrderByCreatedAtAsc(guestbookId, page, size);
+    public List<CommentResponseDto.Comment> getGuestBookComments(int page, int size, Member member, Long guestbookId) {
+        // 부모 댓글 가져옴
+        List<Comment> commentPage = commentImplRepository.findParentCommentByGuestBookId(guestbookId, page, size);
         if(commentPage.isEmpty()){return Collections.emptyList();}
         return commentPage.stream()
-                .map(comment -> CommentConverter.toPostComment(comment, isCommentWriter(member, comment)))
+                .map(comment -> CommentConverter.toComment(comment, member, commentImplRepository.findSubCommentByCommentId(comment.getId())))
                 .toList();
     }
 
@@ -77,17 +78,5 @@ public class CommentQueryService {
         return pageComment.stream()
                 .map(CommentConverter::toMyGuestBookComment).toList();
     }
-
-
-    /**
-     * 사용자(앱을 사용하는 유저)가 댓글 작성자가 맞는지 확인하는 함수
-     * @param member
-     * @param comment
-     * @return 댓글 작성자가 맞으면 true, 아니면 false
-     */
-    private Boolean isCommentWriter(Member member, Comment comment){
-        if(member == null){return false;}
-        return member.getId().equals(comment.getMember().getId());
-    }
-
+    
 }

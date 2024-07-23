@@ -7,8 +7,6 @@ import com.favoriteplace.app.dto.community.PostResponseDto;
 import com.favoriteplace.app.repository.MemberRepository;
 import com.favoriteplace.app.service.community.CommentCommandService;
 import com.favoriteplace.app.service.community.CommentQueryService;
-import com.favoriteplace.global.exception.ErrorCode;
-import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -43,15 +41,15 @@ public class PostCommentController {
     }
 
     @GetMapping("/{post_id}/comments")
-    public CommentResponseDto.PostCommentDto getPostComments(
+    public CommentResponseDto.CommentDto getPostComments(
             @PathVariable("post_id") Long postId,
             @RequestParam(required = false, defaultValue = "1") int page,
-            @RequestParam(required = false, defaultValue = "10") int size,
+            @RequestParam(required = false, defaultValue = "5") int size,
             HttpServletRequest request
     ){
         Member member = securityUtil.getUserFromHeader(request);
-        List<CommentResponseDto.PostComment> comments = commentQueryService.getPostComments(member, page, size, postId);
-        return CommentResponseDto.PostCommentDto.builder()
+        List<CommentResponseDto.Comment> comments = commentQueryService.getPostComments(member, page, size, postId);
+        return CommentResponseDto.CommentDto.builder()
                 .page((long)page)
                 .size((long)size)
                 .comment(comments)
