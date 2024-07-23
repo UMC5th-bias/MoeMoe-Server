@@ -1,6 +1,7 @@
 package com.favoriteplace.app.converter;
 
 import com.favoriteplace.app.domain.Image;
+import com.favoriteplace.app.domain.community.Comment;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.HashTag;
 import com.favoriteplace.app.domain.travel.Pilgrimage;
@@ -18,7 +19,7 @@ public class GuestBookConverter {
                 .nickname(guestBook.getMember().getNickname())
                 .views(guestBook.getView())
                 .likes(guestBook.getLikeCount())
-                .comments((long) guestBook.getComments().size())
+                .comments(getNotDeletedComment(guestBook.getComments()))
                 .passedTime(DateTimeFormatUtils.getPassDateTime(guestBook.getCreatedAt()))
                 .build();
     }
@@ -30,7 +31,7 @@ public class GuestBookConverter {
                 .content(guestBook.getContent())
                 .views(guestBook.getView())
                 .likes(guestBook.getLikeCount())
-                .comments((long) guestBook.getComments().size())
+                .comments(getNotDeletedComment(guestBook.getComments()))
                 .isLike(isLike)
                 .isWrite(isWrite)
                 .passedTime(DateTimeFormatUtils.getPassDateTime(guestBook.getCreatedAt()))
@@ -62,7 +63,7 @@ public class GuestBookConverter {
                 .thumbnail(!guestBook.getImages().isEmpty() ? guestBook.getImages().get(0).getUrl() : null)
                 .views(guestBook.getView())
                 .likes(guestBook.getLikeCount())
-                .comments((long) guestBook.getComments().size())
+                .comments(getNotDeletedComment(guestBook.getComments()))
                 .passedTime(DateTimeFormatUtils.getPassDateTime(guestBook.getCreatedAt()))
                 .hashTags(guestBook.getHashTags().stream().map(HashTag::getTagName).toList())
                 .build();
@@ -76,6 +77,12 @@ public class GuestBookConverter {
                 .guestBook(toGuestBookInfo(guestBook, isLike, isWrite))
                 .build();
 
+    }
+
+    private static long getNotDeletedComment(List<Comment> comments){
+        return comments.stream()
+                .filter(comment -> !comment.getIsDeleted())
+                .count();
     }
 
 }

@@ -1,7 +1,7 @@
 package com.favoriteplace.app.converter;
 
 import com.favoriteplace.app.domain.Image;
-import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.domain.community.Comment;
 import com.favoriteplace.app.domain.community.Post;
 import com.favoriteplace.app.dto.UserInfoResponseDto;
 import com.favoriteplace.app.dto.community.PostResponseDto;
@@ -20,7 +20,7 @@ public class PostConverter {
                 .nickname(post.getMember().getNickname())
                 .views(post.getView())
                 .likes(post.getLikeCount())
-                .comments((long) post.getComments().size())
+                .comments(getNotDeletedComment(post.getComments()))
                 .passedTime(DateTimeFormatUtils.getPassDateTime(post.getCreatedAt())).build();
     }
 
@@ -42,11 +42,17 @@ public class PostConverter {
                 .content(post.getContent())
                 .view(post.getView())
                 .likes(post.getLikeCount())
-                .comments((long) post.getComments().size())
+                .comments(getNotDeletedComment(post.getComments()))
                 .isLike(isLike)
                 .isWrite(isWrite)
                 .passedTime(DateTimeFormatUtils.getPassDateTime(post.getCreatedAt()))
                 .image(images)
                 .build();
+    }
+
+    private static long getNotDeletedComment(List<Comment> comments){
+        return comments.stream()
+                .filter(comment -> !comment.getIsDeleted())
+                .count();
     }
 }

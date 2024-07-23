@@ -75,7 +75,7 @@ public class CommentConverter {
                         .nickname(guestBook.getMember().getNickname())
                         .views(guestBook.getView())
                         .likes(guestBook.getLikeCount())
-                        .comments((long) guestBook.getComments().size())
+                        .comments(getNotDeletedComment(guestBook.getComments()))
                         .passedTime(DateTimeFormatUtils.getPassDateTime(guestBook.getCreatedAt()))
                         .build())
                 .build();
@@ -121,5 +121,11 @@ public class CommentConverter {
                 .profileTitleUrl(member.getProfileTitle()!= null ? member.getProfileTitle().getDefaultImage().getUrl() : null)
                 .profileIconUrl(member.getProfileIcon()!= null ? member.getProfileIcon().getDefaultImage().getUrl() : null)
                 .build();
+    }
+
+    private static long getNotDeletedComment(List<Comment> comments){
+        return comments.stream()
+                .filter(comment -> !comment.getIsDeleted())
+                .count();
     }
 }
