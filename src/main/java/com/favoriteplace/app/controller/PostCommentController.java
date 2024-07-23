@@ -29,34 +29,24 @@ public class PostCommentController {
     private final MemberRepository memberRepository;
 
     @GetMapping("/my-comments")
-    public PostResponseDto.MyCommentDto getMyComments(
+    public ResponseEntity<PostResponseDto.MyCommentDto> getMyComments(
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false, defaultValue = "10") int size
     ){
         //Member member = securityUtil.getUser();
         Member member = memberRepository.findById(1L).orElseThrow(() -> new RestApiException(ErrorCode.USER_NOT_FOUND));
-        List<PostResponseDto.MyComment> comments = commentQueryService.getMyPostComments(member, page, size);
-        return PostResponseDto.MyCommentDto.builder()
-                .page((long) page)
-                .size((long) size)
-                .comment(comments)
-                .build();
+        return ResponseEntity.ok(commentQueryService.getMyPostComments(member, page, size));
     }
 
     @GetMapping("/{post_id}/comments")
-    public CommentResponseDto.CommentDto getPostComments(
+    public ResponseEntity<CommentResponseDto.CommentDto> getPostComments(
             @PathVariable("post_id") Long postId,
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false, defaultValue = "5") int size,
             HttpServletRequest request
     ){
         Member member = securityUtil.getUserFromHeader(request);
-        List<CommentResponseDto.Comment> comments = commentQueryService.getPostComments(member, page, size, postId);
-        return CommentResponseDto.CommentDto.builder()
-                .page((long)page)
-                .size((long)size)
-                .comment(comments)
-                .build();
+        return ResponseEntity.ok(commentQueryService.getPostComments(member, page, size, postId));
     }
 
     @PostMapping("/{post_id}/comments")

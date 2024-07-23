@@ -16,14 +16,14 @@ public class CommentResponseDto {
     public static class CommentDto {
         private Long page;
         private Long size;
-        private List<Comment> comment;
+        private List<ParentComment> parentComment;
     }
 
     @Getter
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Comment {
+    public static class ParentComment {
         private UserInfoResponseDto userInfo;
         private Long id;
         private String content;

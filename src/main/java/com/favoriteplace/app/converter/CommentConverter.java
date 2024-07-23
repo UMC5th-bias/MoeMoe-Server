@@ -14,9 +14,9 @@ import java.util.List;
 
 public class CommentConverter {
 
-    public static CommentResponseDto.Comment toComment(Comment comment, Member member, List<Comment> subComments){
+    public static CommentResponseDto.ParentComment toComment(Comment comment, Member member, List<Comment> subComments){
         if(comment.getIsDeleted()){
-            return CommentResponseDto.Comment.builder()
+            return CommentResponseDto.ParentComment.builder()
                     .userInfo(hideUserInfo(comment))
                     .id(null)
                     .content("[삭제된 댓글입니다.]")
@@ -26,7 +26,7 @@ public class CommentConverter {
                     .build();
         }
         else{
-            return CommentResponseDto.Comment.builder()
+            return CommentResponseDto.ParentComment.builder()
                     .userInfo(showUserInfo(comment))
                     .id(comment.getId())
                     .content(comment.getContent())
