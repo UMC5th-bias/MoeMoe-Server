@@ -7,6 +7,8 @@ import com.favoriteplace.app.dto.community.PostResponseDto;
 import com.favoriteplace.app.repository.MemberRepository;
 import com.favoriteplace.app.service.community.CommentCommandService;
 import com.favoriteplace.app.service.community.CommentQueryService;
+import com.favoriteplace.global.exception.ErrorCode;
+import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +33,8 @@ public class PostCommentController {
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false, defaultValue = "10") int size
     ){
-        Member member = securityUtil.getUser();
+        //Member member = securityUtil.getUser();
+        Member member = memberRepository.findById(1L).orElseThrow(() -> new RestApiException(ErrorCode.USER_NOT_FOUND));
         List<PostResponseDto.MyComment> comments = commentQueryService.getMyPostComments(member, page, size);
         return PostResponseDto.MyCommentDto.builder()
                 .page((long) page)

@@ -53,13 +53,13 @@ public class CommentQueryService {
     }
 
     /**
-     * 자유게시판에서 내가 작성한 댓글을 불려오는 기능
+     * 자유게시판에서 내가 작성한 댓글을 불려오는 기능 (삭제한 댓글은 안보여줌)
      * @param page
      * @param size
      * @return
      */
     public List<PostResponseDto.MyComment> getMyPostComments(Member member, int page, int size) {
-        List<Comment> pageComment = commentImplRepository.findAllByMemberIdAndPostIsNotNullAndGuestBookIsNullOrderByCreatedAtDesc(member.getId(), page, size);
+        List<Comment> pageComment = commentImplRepository.findMyPostComments(member.getId(), page, size);
         if(pageComment.isEmpty()){return Collections.emptyList();}
         return pageComment.stream()
                 .map(CommentConverter::toMyPostComment)
@@ -67,16 +67,16 @@ public class CommentQueryService {
     }
 
     /**
-     * 사용자가 성지순례 인증글에서 작성한 댓글들을 모두 보여주는 함수
+     * 사용자가 성지순례 인증글에서 작성한 댓글들을 모두 보여주는 함수 (삭제한 댓글은 안보여줌)
      * @param page
      * @param size
      * @return
      */
     public List<GuestBookResponseDto.MyGuestBookComment> getMyGuestBookComments(Member member, int page, int size) {
-        List<Comment> pageComment = commentImplRepository.findAllByMemberIdAndPostIsNullAndGuestBookIsNotNullOrderByCreatedAtDesc(member.getId(), page, size);
+        List<Comment> pageComment = commentImplRepository.findMyGuestBookComments(member.getId(), page, size);
         if(pageComment.isEmpty()){return Collections.emptyList();}
         return pageComment.stream()
                 .map(CommentConverter::toMyGuestBookComment).toList();
     }
-    
+
 }

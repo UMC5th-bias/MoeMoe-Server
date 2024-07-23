@@ -15,12 +15,12 @@ public class CommentImplRepository {
     @PersistenceContext
     private final EntityManager em;
 
-    public List<Comment> findAllByMemberIdAndPostIsNotNullAndGuestBookIsNullOrderByCreatedAtDesc(Long memberId, int page, int size) {
+    public List<Comment> findMyPostComments(Long memberId, int page, int size) {
         return em.createQuery(
                 "select c from Comment c" +
                         " join fetch c.post p" +
                         " join fetch p.member m" +
-                        " where c.member.id = :memberId and c.guestBook.id is null" +
+                        " where c.member.id = :memberId and c.guestBook.id is null and c.isDeleted != true" +
                         " order by c.createdAt desc", Comment.class)
                 .setParameter("memberId", memberId)
                 .setFirstResult((page-1)*size)
@@ -28,12 +28,12 @@ public class CommentImplRepository {
                 .getResultList();
     }
 
-    public List<Comment> findAllByMemberIdAndPostIsNullAndGuestBookIsNotNullOrderByCreatedAtDesc(Long memberId, int page, int size) {
+    public List<Comment> findMyGuestBookComments(Long memberId, int page, int size) {
         return em.createQuery(
                 "select c from Comment c" +
                         " join fetch c.guestBook g" +
                         " join fetch g.member m" +
-                        " where c.member.id = :memberId and c.post.id is null" +
+                        " where c.member.id = :memberId and c.post.id is null and c.isDeleted != true" +
                         " order by c.createdAt desc", Comment.class)
                 .setParameter("memberId", memberId)
                 .setFirstResult((page-1)*size)
