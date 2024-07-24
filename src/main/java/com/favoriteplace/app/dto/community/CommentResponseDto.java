@@ -13,21 +13,36 @@ public class CommentResponseDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class PostCommentDto {
+    public static class CommentDto {
         private Long page;
         private Long size;
-        private List<PostComment> comment;
+        private List<ParentComment> parentComment;
     }
 
     @Getter
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class PostComment{
+    public static class ParentComment {
         private UserInfoResponseDto userInfo;
         private Long id;
         private String content;
         private String passedTime;
         private Boolean isWrite;
+        private List<SubComment> subComments;
     }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SubComment {
+        private UserInfoResponseDto userInfo;
+        private Long id;
+        private String content;
+        private String passedTime;
+        private Boolean isWrite;
+        private String referenceNickname;
+    }
+
 }

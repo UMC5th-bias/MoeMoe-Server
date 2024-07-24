@@ -22,4 +22,5 @@ public class UserInfoResponseDto {
                 .profileIconUrl(member.getProfileIcon()!= null ? member.getProfileIcon().getDefaultImage().getUrl() : null)
                 .build();
     }
+
 }

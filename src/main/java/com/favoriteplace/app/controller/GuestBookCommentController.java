@@ -5,9 +5,8 @@ import com.favoriteplace.app.dto.community.*;
 import com.favoriteplace.app.repository.MemberRepository;
 import com.favoriteplace.app.service.community.CommentCommandService;
 import com.favoriteplace.app.service.community.CommentQueryService;
-import com.favoriteplace.global.exception.ErrorCode;
-import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.util.SecurityUtil;
+import com.google.api.Http;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,33 +25,23 @@ public class GuestBookCommentController {
     private final MemberRepository memberRepository;
 
     @GetMapping("/my-comments")
-    public GuestBookResponseDto.MyGuestBookCommentDto getMyComments(
+    public ResponseEntity<GuestBookResponseDto.MyGuestBookCommentDto> getMyComments(
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false, defaultValue = "10") int size
     ){
         Member member = securityUtil.getUser();
-        List<GuestBookResponseDto.MyGuestBookComment> myComments = commentQueryService.getMyGuestBookComments(member, page, size);
-        return GuestBookResponseDto.MyGuestBookCommentDto.builder()
-                .page((long) page)
-                .size((long) size)
-                .comment(myComments)
-                .build();
+        return ResponseEntity.ok(commentQueryService.getMyGuestBookComments(member, page, size));
     }
 
     @GetMapping("/{guestbook_id}/comments")
-    public CommentResponseDto.PostCommentDto getGuestBookComments(
+    public ResponseEntity<CommentResponseDto.CommentDto> getGuestBookComments(
             @PathVariable("guestbook_id") Long guestbookId,
             @RequestParam(required = false, defaultValue = "1") int page,
-            @RequestParam(required = false, defaultValue = "10") int size,
+            @RequestParam(required = false, defaultValue = "5") int size,
             HttpServletRequest request
     ){
         Member member = securityUtil.getUserFromHeader(request);
-        List<CommentResponseDto.PostComment> comments = commentQueryService.getGuestBookComments(page, size, member, guestbookId);
-        return CommentResponseDto.PostCommentDto.builder()
-                .page((long) page)
-                .size((long) size)
-                .comment(comments)
-                .build();
+        return ResponseEntity.ok(commentQueryService.getGuestBookComments(page, size, member, guestbookId));
     }
 
     @PostMapping("/{guestbook_id}/comments")
