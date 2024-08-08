@@ -50,13 +50,17 @@ public class MemberDto {
         private String introduction;
         private String profileImage;
         private String profileTitleItem;
+        private String accessToken;
+        private String refreshToken;
 
-        public static MemberDetailResDto from(Member member) {
+        public static MemberDetailResDto from(Member member, TokenInfo tokenInfo) {
             return MemberDetailResDto.builder()
                 .nickname(member.getNickname())
                 .introduction(member.getDescription())
                 .profileImage(member.getProfileImageUrl())
                 .profileTitleItem(member.getProfileTitle().getDefaultImage().getUrl())
+                .accessToken(tokenInfo.accessToken)
+                .refreshToken(tokenInfo.refreshToken)
                 .build();
         }
     }
