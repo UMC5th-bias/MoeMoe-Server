@@ -59,14 +59,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // Add more paths and methods as needed
     );
 
-//    @Override
-//    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-//        String requestURI = request.getServletPath();
-//        String method = request.getMethod();
-//
-//        return !excludePaths.stream()
-//            .anyMatch(excludePath -> excludePath.matches(requestURI, method));
-//    }
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String requestURI = request.getServletPath();
+        String method = request.getMethod();
+
+        return !excludePaths.stream()
+            .anyMatch(excludePath -> excludePath.matches(requestURI, method));
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
