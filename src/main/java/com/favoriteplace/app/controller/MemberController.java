@@ -70,5 +70,4 @@ public class MemberController {
 
         return ResponseEntity.ok("로그아웃 되었습니다.");
     }
-
 }
