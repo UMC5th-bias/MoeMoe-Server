@@ -139,4 +139,12 @@ public class PilgrimageCommandService {
         member.updatePoint(15L);
         log.info("clear");
     }
+
+    public boolean isUserAtPilgrimage(Long pilgrimageId, Double latitude, Double longitude) {
+        Pilgrimage pilgrimage = pilgrimageRepository.findById(pilgrimageId)
+                .orElseThrow(() -> new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
+
+        return pilgrimage.getLatitude() + 0.00135 < latitude || pilgrimage.getLatitude() - 0.00135 > latitude
+                || pilgrimage.getLongitude() + 0.00135 < longitude || pilgrimage.getLongitude() - 0.00135 > longitude;
+    }
 }
