@@ -1,5 +1,7 @@
 package com.favoriteplace.app.service.fcm;
 
+import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.repository.LikedRallyRepository;
 import com.favoriteplace.app.service.fcm.enums.TokenMessage;
 import com.favoriteplace.app.service.fcm.enums.TotalTopicMessage;
 import com.favoriteplace.global.exception.ErrorCode;
@@ -21,6 +23,7 @@ import java.util.List;
 @Slf4j
 public class FCMNotificationService {
     private final FirebaseMessaging firebaseMessaging;
+    private final LikedRallyRepository likedRallyRepository;
 
     /**
      * token - 단일 기기
@@ -47,7 +50,6 @@ public class FCMNotificationService {
                 .putData("title", tokenMessage.getTitle())
                 .putData("message", tokenMessage.getMessage())
                 .putData("postId", postId.toString())
-                //.putData("date", LocalDateTime.now().toString())
                 .build();
         return message;
     }
@@ -114,14 +116,12 @@ public class FCMNotificationService {
      * topic - 애니메이션 Message 제작
      */
     private Message makeAnimationTopicMessage(Long animationId, String name){
-        String topic = "animation" + animationId.toString();
         Message message = Message.builder()
-                .setTopic(topic)
+                .setTopic(makeAnimationTopicName(animationId))
                 .putData("type", "animation")
                 .putData("title", String.format("애니메이션 %s의 성지순례가 추가되었습니다!", name))
                 .putData("message", "지금 확인하러 가기")
                 .putData("animationId", animationId.toString())
-                //.putData("date", LocalDateTime.now().toString())
                 .build();
         return message;
     }
@@ -135,10 +135,39 @@ public class FCMNotificationService {
                 .putData("type", totalTopicMessage.getType())
                 .putData("title", totalTopicMessage.getTitle())
                 .putData("message", totalTopicMessage.getMessage())
-                //.putData("date", LocalDateTime.now().toString())
                 .build();
         return message;
     }
 
+    public static String makeAnimationTopicName(Long animationId){
+        return "animation" + animationId.toString();
+    }
+
+    /**
+     * topic - 로그인 시 FCM 처리
+     * a. 신규 회원일 경우(old FCM token 존재 X) - 추가로 해야할 작업 없음
+     * b. 신규 회원이 아닌데, 기기 변경이 없는 경우 (old FCM == new FCM) - 추가로 해야할 작업 없음
+     * c. 신규 회원이 아닌데, 기기 변경이 있는 경우 (old FCM != new FCM)
+     *  c-1. 전체 사용자 알림 : 전체 topic 에서 old FCM 구독 해제 & new FCM 구독
+     *  c-2. 애니메이션 개별 알림 : 사용자가 좋아요한 애니메이션들의 PK다 가져옴 -> old FCM 구독 해제 & new FCM 구독
+     * 이 행위가 다 끝나고 DB에서 FCM 필드 교체
+     */
+    @Transactional
+    public void refreshFCMTopicAndToken(Member member, String newFcm){
+        String oldFcm = member.getFcmToken();
+        if(oldFcm != null && !oldFcm.equals(newFcm)){
+            // 전체 사용자 알림
+            unsubscribeTopic("total", oldFcm);
+            subscribeTopic("total", newFcm);
+            // 애니메이션 개별 알림
+            List<Long> likedAnimations = likedRallyRepository.findDistinctRallyIdsByMember(member.getId());
+            for(Long id:likedAnimations){
+                String topic = makeAnimationTopicName(id);
+                unsubscribeTopic(topic, oldFcm);
+                subscribeTopic(topic, newFcm);
+            }
+        }
+        member.refreshFcmToken(newFcm);
+    }
 
 }

@@ -6,11 +6,11 @@ import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.enums.PointType;
 import com.favoriteplace.app.domain.enums.RallyVersion;
 import com.favoriteplace.app.domain.item.AcquiredItem;
-import com.favoriteplace.app.domain.item.PointHistory;
 import com.favoriteplace.app.domain.travel.*;
 import com.favoriteplace.app.dto.CommonResponseDto;
 import com.favoriteplace.app.dto.travel.PilgrimageDto;
 import com.favoriteplace.app.repository.*;
+import com.favoriteplace.app.service.fcm.FCMNotificationService;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 import jakarta.persistence.EntityManager;
@@ -19,12 +19,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Optional;
+
+import static com.favoriteplace.app.service.fcm.FCMNotificationService.makeAnimationTopicName;
 
 @Service
 @Slf4j
@@ -38,6 +37,7 @@ public class PilgrimageCommandService {
     private final PointHistoryRepository pointHistoryRepository;
     private final CompleteRallyRepository completeRallyRepository;
     private final AcquiredItemRepository acquiredItemRepository;
+    private final FCMNotificationService fcmNotificationService;
     private final EntityManager em;
 
     /***
@@ -54,9 +54,13 @@ public class PilgrimageCommandService {
         if (likedRally == null) {
             LikedRally newLikedRally = LikedRally.builder().rally(rally).member(member).build();
             likedRallyRepository.save(newLikedRally);
+            // 해당 랠리 구독 (for FCM)
+            fcmNotificationService.subscribeTopic(makeAnimationTopicName(rallyId), member.getFcmToken());
             return CommonConverter.toPostResponseDto(true, "찜 목록에 추가됐습니다.");
         } else {
             likedRallyRepository.delete(likedRally);
+            // 해당 랠리 구독 (for FCM)
+            fcmNotificationService.unsubscribeTopic(makeAnimationTopicName(rallyId), member.getFcmToken());
             return CommonConverter.toPostResponseDto(true, "찜을 취소했습니다.");
         }
     }
