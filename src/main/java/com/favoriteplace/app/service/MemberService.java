@@ -44,6 +44,11 @@ public class MemberService {
     private final ItemRepository itemRepository;
     private final RedisTemplate redisTemplate;
 
+    public void kakoLogin(final String token) {
+
+
+    }
+
     @Transactional
     public MemberDto.MemberDetailResDto signup(MemberSignUpReqDto memberSignUpReqDto, List<MultipartFile> images)
         throws IOException {
@@ -108,8 +113,7 @@ public class MemberService {
         }
 
         Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
-        Member member = memberRepository.findByEmail(authentication.getName())
-            .orElseThrow(() -> new RestApiException(USER_NOT_FOUND));
+        Member member = findMember(authentication.getName());
 
         if(member.getRefreshToken() != null && !member.getRefreshToken().isEmpty()) {
             member.deleteRefreshToken(member.getRefreshToken());
@@ -119,6 +123,11 @@ public class MemberService {
         Long expriation = jwtTokenProvider.getExpiration(accessToken);
         redisTemplate.opsForValue()
             .set(accessToken, "logout", expriation, TimeUnit.MICROSECONDS);
+    }
+
+    public Member findMember(final String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new RestApiException(USER_NOT_FOUND));
     }
 
 }
