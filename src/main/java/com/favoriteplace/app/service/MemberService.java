@@ -3,6 +3,7 @@ package com.favoriteplace.app.service;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.item.Item;
 import com.favoriteplace.app.dto.UserInfoResponseDto;
+import com.favoriteplace.app.dto.member.AuthKakaoLoginDto;
 import com.favoriteplace.app.dto.member.MemberDto;
 import com.favoriteplace.app.dto.member.MemberDto.EmailDuplicateResDto;
 import com.favoriteplace.app.dto.member.MemberDto.EmailSendReqDto;
@@ -12,6 +13,7 @@ import com.favoriteplace.app.repository.ItemRepository;
 import com.favoriteplace.app.repository.MemberRepository;
 import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.gcpImage.UploadImage;
+import com.favoriteplace.global.security.kakao.KakaoClient;
 import com.favoriteplace.global.security.provider.JwtTokenProvider;
 import com.favoriteplace.global.util.SecurityUtil;
 import com.google.rpc.context.AttributeContext.Auth;
@@ -27,9 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
-import static com.favoriteplace.global.exception.ErrorCode.TOKEN_NOT_VALID;
-import static com.favoriteplace.global.exception.ErrorCode.USER_ALREADY_EXISTS;
-import static com.favoriteplace.global.exception.ErrorCode.USER_NOT_FOUND;
+import static com.favoriteplace.global.exception.ErrorCode.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -43,10 +43,16 @@ public class MemberService {
     private final UploadImage uploadImage;
     private final ItemRepository itemRepository;
     private final RedisTemplate redisTemplate;
+    private final KakaoClient kakaoClient;
 
-    public void kakoLogin(final String token) {
+    public MemberDto.TokenInfo kakaoLogin(final String token) {
+        AuthKakaoLoginDto userInfo = kakaoClient.getUserInfo(token);
 
+        // 최초 로그인이라면 회원가입 API로 통신하도록
+        Member member = memberRepository.findByEmail(userInfo.kakaoAccount().email())
+                .orElseThrow(() -> new RestApiException(NOT_SIGNUP_WITH_KAKAO));
 
+        return jwtTokenProvider.generateToken(userInfo.kakaoAccount().email());
     }
 
     @Transactional
@@ -90,8 +96,7 @@ public class MemberService {
 
     @Transactional
     public void setNewPassword(String email, String password) {
-        Member member = memberRepository.findByEmail(email)
-            .orElseThrow(() -> new RestApiException(USER_NOT_FOUND));
+        Member member = findMember(email);
 
         String newPassword = passwordEncoder.encode(password);
         member.updatePassword(newPassword);

@@ -30,10 +30,10 @@ public class MemberController {
     private final SecurityUtil securityUtil;
 
     @PostMapping("/login/kakao")
-    public ResponseEntity<Void> kakaoLogin(
+    public ResponseEntity<TokenInfo> kakaoLogin(
             @RequestHeader("Authorization") final String token
     ) {
-        memberService.kakoLogin(token);
+        return ResponseEntity.ok(memberService.kakaoLogin(token));
     }
 
     @PostMapping("/signup")

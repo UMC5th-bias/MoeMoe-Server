@@ -5,6 +5,7 @@ import com.favoriteplace.global.exception.RestApiException;
 import feign.FeignException;
 import feign.Response;
 import feign.codec.ErrorDecoder;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

@@ -26,6 +26,8 @@ public enum ErrorCode {
     USER_NOT_AUTHOR(HttpStatus.FORBIDDEN, 2005, "해당 게시글의 작성자가 아닙니다."),
     CANT_BLOCK_SELF(HttpStatus.FORBIDDEN, 2006, "스스로를 차단할 수 없습니다."),
     TOKEN_NOT_VALID(HttpStatus.BAD_REQUEST, 2007, "not valid token"),
+    NOT_SIGNUP_WITH_KAKAO(HttpStatus.BAD_REQUEST, 2008, "해당 계정으로 회원가입한 이력이 없습니다. 카카오 회원가입 필요."),
+
 
     //Pilgrimage (3000번대)
     PILGRIMAGE_NOT_FOUND(HttpStatus.BAD_REQUEST, 3001, "성지순례 정보를 찾을 수 없습니다."),
