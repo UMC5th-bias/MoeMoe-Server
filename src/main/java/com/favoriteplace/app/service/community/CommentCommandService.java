@@ -9,6 +9,7 @@ import com.favoriteplace.app.dto.community.CommentRequestDto;
 import com.favoriteplace.app.repository.CommentRepository;
 import com.favoriteplace.app.repository.GuestBookRepository;
 import com.favoriteplace.app.repository.PostRepository;
+import com.favoriteplace.app.service.fcm.FCMNotificationService;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
@@ -17,12 +18,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+import static com.favoriteplace.app.converter.FcmConverter.*;
+
 @Service
 @RequiredArgsConstructor
 public class CommentCommandService {
     private final PostRepository postRepository;
     private final GuestBookRepository guestBookRepository;
     private final CommentRepository commentRepository;
+    private final FCMNotificationService fcmNotificationService;
 
     /**
      * 자유게시글 새로운 댓글 작성
@@ -33,6 +37,16 @@ public class CommentCommandService {
         Comment newComment = setCommentRelation(member, dto);
         post.addComment(newComment);
         commentRepository.save(newComment);
+
+        // 알림 전송
+        fcmNotificationService.sendNotificationByToken(toPostWriter(post, newComment));
+        if(newComment.getParentComment() != null){ // 부모 댓글에게 전송
+            if(newComment.getReferenceComment() == null){
+                fcmNotificationService.sendNotificationByToken(toParentCommentWriter(post, newComment));
+            }else{ // reference 댓글에게 전송
+                fcmNotificationService.sendNotificationByToken(toReferCommentWriter(post, newComment));
+            }
+        }
     }
 
     /**
@@ -44,6 +58,17 @@ public class CommentCommandService {
         Comment newComment = setCommentRelation(member, dto);
         guestBook.addComment(newComment);
         commentRepository.save(newComment);
+
+        //알림 전송
+        fcmNotificationService.sendNotificationByToken(toGuestBookWriter(guestBook, newComment));
+        if(newComment.getParentComment() != null){
+            if(newComment.getReferenceComment() == null){  // 부모 댓글에게 전송
+                fcmNotificationService.sendNotificationByToken(toParentCommentWriter(guestBook, newComment));
+            }else{ // reference 댓글에게 전송
+                fcmNotificationService.sendNotificationByToken(toReferCommentWriter(guestBook, newComment));
+            }
+        }
+
     }
 
     /**

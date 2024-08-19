@@ -1,6 +1,7 @@
 package com.favoriteplace.app.controller;
 
 import com.favoriteplace.app.service.fcm.FCMNotificationService;
+import com.favoriteplace.app.service.fcm.dto.PostTokenCond;
 import com.favoriteplace.app.service.fcm.enums.TokenMessage;
 import com.favoriteplace.app.service.fcm.enums.TotalTopicMessage;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,9 @@ public class FCMNotificationController {
     public String sendNotificationByToken(
             @RequestParam String token
     ){
-        return fcmNotificationService.sendNotificationByToken(token, 1L, TokenMessage.POST_NEW_COMMENT);
+        return fcmNotificationService.sendNotificationByToken(PostTokenCond.builder()
+                        .token(token).postId(1L).tokenMessage(TokenMessage.POST_NEW_COMMENT).message("댓글 내용")
+                .build());
     }
 
     @PostMapping("/topic/subscribe")

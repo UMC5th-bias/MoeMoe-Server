@@ -2,7 +2,7 @@ package com.favoriteplace.app.service.fcm;
 
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.repository.LikedRallyRepository;
-import com.favoriteplace.app.service.fcm.enums.TokenMessage;
+import com.favoriteplace.app.service.fcm.dto.PostTokenCond;
 import com.favoriteplace.app.service.fcm.enums.TotalTopicMessage;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
@@ -29,9 +29,9 @@ public class FCMNotificationService {
      * token - 단일 기기
      */
     @Transactional
-    public String sendNotificationByToken(String token, Long postId, TokenMessage tokenMessage) {
+    public String sendNotificationByToken(PostTokenCond postTokenCond) {
         try{
-            Message message = makeTokenMessage(token, postId, tokenMessage);
+            Message message = makeTokenMessage(postTokenCond);
             return firebaseMessaging.send(message);
         } catch (FirebaseMessagingException e) {
             log.warn("fcm: {}", e.getErrorCode());
@@ -43,15 +43,14 @@ public class FCMNotificationService {
     /**
      * token - Message 제작
      */
-    private Message makeTokenMessage(String token, Long postId, TokenMessage tokenMessage){
-        Message message = Message.builder()
-                .setToken(token)
-                .putData("type", tokenMessage.getType())
-                .putData("title", tokenMessage.getTitle())
-                .putData("message", tokenMessage.getMessage())
-                .putData("postId", postId.toString())
+    private Message makeTokenMessage(PostTokenCond postTokenCond){
+        return Message.builder()
+                .setToken(postTokenCond.token())
+                .putData("type", postTokenCond.tokenMessage().getType())
+                .putData("title", postTokenCond.tokenMessage().getTitle())
+                .putData("message", postTokenCond.message())
+                .putData("postId", postTokenCond.postId().toString())
                 .build();
-        return message;
     }
 
     /**
