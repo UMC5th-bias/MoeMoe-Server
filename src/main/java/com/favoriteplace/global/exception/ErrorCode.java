@@ -65,7 +65,14 @@ public enum ErrorCode {
     IMAGE_FORMAT_ERROR(HttpStatus.BAD_REQUEST, 11001, "올바른 이미지 파일이 아닙니다."),
     IMAGE_NOT_READABLE(HttpStatus.BAD_REQUEST, 11002, "이미지 파일을 읽을 수 없습니다."),
     IMAGE_CANNOT_UPLOAD(HttpStatus.BAD_REQUEST, 11003, "이미지 파일을 업로드할 수 없습니다."),
-    IMAGE_SIZE_TOO_BIG(HttpStatus.PAYLOAD_TOO_LARGE, 11004, "각각의 이미지 파일의 사이즈가 4MB를 넘어갈 수 없습니다.");
+    IMAGE_SIZE_TOO_BIG(HttpStatus.PAYLOAD_TOO_LARGE, 11004, "각각의 이미지 파일의 사이즈가 4MB를 넘어갈 수 없습니다."),
+
+    //알림 (12000번대)
+    TOKEN_ALARM_NOT_SEND(HttpStatus.BAD_REQUEST, 120001, "[token] push 알림이 전송되지 않았습니다."),
+    TOPIC_ALARM_NOT_SEND(HttpStatus.BAD_REQUEST, 120002, "[topic] push 알림이 전송되지 않았습니다."),
+    TOPIC_SUBSCRIBE_FAIL(HttpStatus.BAD_REQUEST, 12003, "[topic] 구독에 실패했습니다."),
+    TOPIC_UNSUBSCRIBE_FAIL(HttpStatus.BAD_REQUEST, 12004, "[topic] 구독 취소에 실패했습니다."),
+    ;
 
     private final HttpStatus httpStatus;
     private final int code;
