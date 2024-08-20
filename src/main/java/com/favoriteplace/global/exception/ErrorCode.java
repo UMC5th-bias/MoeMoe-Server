@@ -10,6 +10,7 @@ public enum ErrorCode {
     /**
      * 에러코드 자유롭게 추가
      */
+    NOT_FOUND(HttpStatus.NOT_FOUND,404, "요청한 리소스를 찾을 수 없습니다."),
     INVALID_ARGUMENT_ERROR(HttpStatus.BAD_REQUEST, 400, "올바르지 않은 파라미터입니다."),
     INVALID_FORMAT_ERROR(HttpStatus.BAD_REQUEST,400, "올바르지 않은 포맷입니다."),
     INVALID_TYPE_ERROR(HttpStatus.BAD_REQUEST, 400, "올바르지 않은 타입입니다."),
@@ -25,6 +26,8 @@ public enum ErrorCode {
     USER_NOT_AUTHOR(HttpStatus.FORBIDDEN, 2005, "해당 게시글의 작성자가 아닙니다."),
     CANT_BLOCK_SELF(HttpStatus.FORBIDDEN, 2006, "스스로를 차단할 수 없습니다."),
     TOKEN_NOT_VALID(HttpStatus.BAD_REQUEST, 2007, "not valid token"),
+    NOT_SIGNUP_WITH_KAKAO(HttpStatus.BAD_REQUEST, 2008, "해당 계정으로 회원가입한 이력이 없습니다. 카카오 회원가입 필요."),
+
 
     //Pilgrimage (3000번대)
     PILGRIMAGE_NOT_FOUND(HttpStatus.BAD_REQUEST, 3001, "성지순례 정보를 찾을 수 없습니다."),
@@ -57,6 +60,9 @@ public enum ErrorCode {
 
     //댓글 (10000번대)
     COMMENT_NOT_FOUND(HttpStatus.BAD_REQUEST, 10001, "댓글이 존재하지 않습니다."),
+    COMMENT_NOT_PARENT(HttpStatus.BAD_REQUEST, 10002, "해당 댓글은 최상위 댓글이 아닙니다."),
+    COMMENT_NOT_CHILD(HttpStatus.BAD_REQUEST, 10003, "해당 댓글은 대댓글이 아닙니다."),
+    COMMENT_ALREADY_DELETED(HttpStatus.BAD_REQUEST, 10004, "해당 댓글은 삭제되어 존재하지 않습니다."),
 
     //이미지 (11000번대)
     IMAGE_FORMAT_ERROR(HttpStatus.BAD_REQUEST, 11001, "올바른 이미지 파일이 아닙니다."),

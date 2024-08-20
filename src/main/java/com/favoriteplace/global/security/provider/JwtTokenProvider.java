@@ -29,8 +29,8 @@ public class JwtTokenProvider {
     private final Long refreshExpirePeriod = 24 * 60 * 60 * 1000L * 40;
     private final UserDetailsService userDetailsService;
 
-    public TokenInfo generateToken(Authentication authentication) {
-        Claims claims = Jwts.claims().setSubject(authentication.getName());
+    public TokenInfo generateToken(String userEmail) {
+        Claims claims = Jwts.claims().setSubject(userEmail);
         Date now = new Date();
 
         // Access Token 생성
@@ -42,7 +42,7 @@ public class JwtTokenProvider {
             .compact();
 
         // Refresh Token 생성
-        String refreshToken = createRefreshToken(authentication);
+        String refreshToken = createRefreshToken(userEmail);
         return TokenInfo.builder()
             .grantType("Bearer")
             .accessToken(accessToken)
@@ -50,8 +50,8 @@ public class JwtTokenProvider {
             .build();
     }
 
-    public String createRefreshToken(Authentication authentication){
-        Claims claims = Jwts.claims().setSubject(authentication.getName());
+    public String createRefreshToken(String userEmail){
+        Claims claims = Jwts.claims().setSubject(userEmail);
         Date now = new Date();
 
         String refreshToken = Jwts.builder()

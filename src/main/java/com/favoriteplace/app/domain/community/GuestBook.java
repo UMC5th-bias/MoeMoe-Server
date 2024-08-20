@@ -86,4 +86,5 @@ public class GuestBook extends BaseTimeEntity {
         comment.setGuestBook(this);
         this.comments.add(comment);
     }
+
 }
