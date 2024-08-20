@@ -69,7 +69,10 @@ public class MemberService {
         Member member = memberSignUpReqDto.toEntity(password, uuid, titleItem);
         memberRepository.save(member);
 
-        return MemberDetailResDto.from(member);
+        MemberDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(member.getEmail());
+        member.updateRefreshToken(tokenInfo.getRefreshToken());
+
+        return MemberDetailResDto.from(member, tokenInfo);
     }
 
     @Transactional
