@@ -1,7 +1,11 @@
 package com.favoriteplace.app.controller;
 
+import com.favoriteplace.app.domain.travel.Pilgrimage;
 import com.favoriteplace.app.dto.travel.PilgrimageDto;
+import com.favoriteplace.app.repository.PilgrimageRepository;
 import com.favoriteplace.app.service.PilgrimageCommandService;
+import com.favoriteplace.global.exception.ErrorCode;
+import com.favoriteplace.global.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -15,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class PilgrimageSocketController {
     private final PilgrimageCommandService pilgrimageService;
+    private final PilgrimageRepository pilgrimageRepository;
 
     /**
      * 테스트 컨트롤러
@@ -41,8 +46,11 @@ public class PilgrimageSocketController {
     @MessageMapping("/location/{pilgrimageId}")
     @SendTo("/pub/statusUpdate/{pilgrimageId}")
     public Boolean checkUserLocation(@DestinationVariable Long pilgrimageId, PilgrimageDto.PilgrimageCertifyRequestDto userLocation) {
-        log.info("socket pilgrimage: "+pilgrimageId);
-        boolean isUserAtPilgrimage = pilgrimageService.isUserAtPilgrimage(pilgrimageId, userLocation.getLatitude(), userLocation.getLongitude());
+        Pilgrimage pilgrimage = pilgrimageRepository.findById(pilgrimageId)
+                .orElseThrow(()->new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
+
+        boolean isUserAtPilgrimage = pilgrimageService.isUserAtPilgrimage(pilgrimage, userLocation.getLatitude(), userLocation.getLongitude());
+
         if (!isUserAtPilgrimage) {
             // 여기에 이벤트 동작 추가
             return false;
@@ -54,7 +62,7 @@ public class PilgrimageSocketController {
      * 최초 접근 시 버튼 상태 전달하는 컨트롤러
      * 요청 컨트롤러 /app/connect/{pilgrimageId}
      * 응답 컨트롤러 /pub/statusUpdate/{pilgrimageId}
-     * @param pilgrimageId
+     * @param pilgrimageId 성지순례 ID
      * @return
      */
     @MessageMapping("/connect/{pilgrimageId}")
