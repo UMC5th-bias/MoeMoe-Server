@@ -127,8 +127,8 @@ public class PilgrimageCommandService {
     }
 
     private boolean checkCoordinate(PilgrimageDto.PilgrimageCertifyRequestDto form, Pilgrimage pilgrimage) {
-        return pilgrimage.getLatitude() + 0.00135 < form.getLatitude() || pilgrimage.getLatitude() - 0.00135 > form.getLatitude()
-                || pilgrimage.getLongitude() + 0.00135 < form.getLongitude() || pilgrimage.getLongitude() - 0.00135 > form.getLongitude();
+        return pilgrimage.getLatitude() + 0.00135 >= form.getLatitude() && pilgrimage.getLatitude() - 0.00135 <= form.getLatitude()
+                && pilgrimage.getLongitude() + 0.00135 >= form.getLongitude() && pilgrimage.getLongitude() - 0.00135 <= form.getLongitude();
     }
 
     private void successVisitedAndPointProcess(Member member, Pilgrimage pilgrimage) {
@@ -144,7 +144,7 @@ public class PilgrimageCommandService {
         Pilgrimage pilgrimage = pilgrimageRepository.findById(pilgrimageId)
                 .orElseThrow(() -> new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
 
-        return pilgrimage.getLatitude() + 0.00135 < latitude || pilgrimage.getLatitude() - 0.00135 > latitude
-                || pilgrimage.getLongitude() + 0.00135 < longitude || pilgrimage.getLongitude() - 0.00135 > longitude;
+        return (pilgrimage.getLatitude() + 0.00135 >= latitude && pilgrimage.getLatitude() - 0.00135 <= latitude) &&
+                (pilgrimage.getLongitude() + 0.00135 >= longitude && pilgrimage.getLongitude() - 0.00135 <= longitude);
     }
 }

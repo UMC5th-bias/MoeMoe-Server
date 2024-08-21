@@ -55,8 +55,6 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
 
                     Authentication authentication = jwtProvider.getAuthentication(jwt);
 
-//                    log.info("websocket authentication: "+authentication.getName());
-
                     Member member = userUtilityService.findByEmail(authentication.getName())
                             .orElseThrow(()-> new RestApiException(ErrorCode.USER_NOT_FOUND));
 
