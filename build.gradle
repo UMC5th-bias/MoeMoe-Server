@@ -42,6 +42,7 @@ dependencies {
 
 	//email
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
 //	implementation 'com.sun.mail:javax.mail:1.6.2' // 또는 최신 버전
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
@@ -50,9 +51,11 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
 	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
+	//FeignClient
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.0.4'
+
 	// swagger
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
-
 
 	//image
 	implementation 'com.google.cloud:google-cloud-storage:2.20.1'

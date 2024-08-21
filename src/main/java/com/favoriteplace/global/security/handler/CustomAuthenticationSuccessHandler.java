@@ -44,7 +44,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
         //인증 정보를 기반으로 JWT 토큰 생성
         response.setContentType(APPLICATION_JSON_VALUE);
-        TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
+        TokenInfo tokenInfo = jwtTokenProvider.generateToken(member.getEmail());
 
         //refreshToken 업데이트
         member.updateRefreshToken(tokenInfo.getRefreshToken());
