@@ -25,7 +25,7 @@ public class WebSocketService {
         Pilgrimage pilgrimage = pilgrimageRepository.findById(pilgrimageId)
                 .orElseThrow(()->new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
 
-        PilgrimageSocketDto.ButtonState newState = pilgrimageService.determineButtonState(userId, pilgrimage, latitude, longitude);
+        PilgrimageSocketDto.ButtonState newState = pilgrimageService.determineButtonState(userId, pilgrimage.getId(), latitude, longitude);
 
         PilgrimageSocketDto.ButtonState lastState = lastButtonStateCache.get(userId);
 

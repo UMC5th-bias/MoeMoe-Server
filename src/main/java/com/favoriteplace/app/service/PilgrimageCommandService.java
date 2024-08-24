@@ -200,15 +200,16 @@ public class PilgrimageCommandService {
         ZoneId serverZoneId = ZoneId.of("Asia/Seoul");
         ZonedDateTime nowInServerTimeZone = ZonedDateTime.now(serverZoneId);
 
+        return false;
     }
 
     private boolean checkIfGuestbookWritten(Member member, Pilgrimage pilgrimage) {
         // 방명록 작성 여부 확인
-
+        return false;
     }
 
     private boolean checkIfMultiGuestbookWritten(Member member, Pilgrimage pilgrimage) {
         // 방명록 다회 작성 여부 확인
-
+        return false;
     }
 }
