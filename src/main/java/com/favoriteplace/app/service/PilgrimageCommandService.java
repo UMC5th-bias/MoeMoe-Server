@@ -10,9 +10,11 @@ import com.favoriteplace.app.domain.item.PointHistory;
 import com.favoriteplace.app.domain.travel.*;
 import com.favoriteplace.app.dto.CommonResponseDto;
 import com.favoriteplace.app.dto.travel.PilgrimageDto;
+import com.favoriteplace.app.dto.travel.PilgrimageSocketDto;
 import com.favoriteplace.app.repository.*;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
+import com.favoriteplace.global.websocket.RedisService;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +33,7 @@ import java.util.Optional;
 @Transactional
 @RequiredArgsConstructor
 public class PilgrimageCommandService {
+    private final MemberRepository memberRepository;
     private final RallyRepository rallyRepository;
     private final PilgrimageRepository pilgrimageRepository;
     private final LikedRallyRepository likedRallyRepository;
@@ -38,7 +41,7 @@ public class PilgrimageCommandService {
     private final PointHistoryRepository pointHistoryRepository;
     private final CompleteRallyRepository completeRallyRepository;
     private final AcquiredItemRepository acquiredItemRepository;
-    private final EntityManager em;
+    private final RedisService redisService;
 
     /***
      * 랠리 찜하기
@@ -127,8 +130,8 @@ public class PilgrimageCommandService {
     }
 
     private boolean checkCoordinate(PilgrimageDto.PilgrimageCertifyRequestDto form, Pilgrimage pilgrimage) {
-        return pilgrimage.getLatitude() + 0.00135 < form.getLatitude() || pilgrimage.getLatitude() - 0.00135 > form.getLatitude()
-                || pilgrimage.getLongitude() + 0.00135 < form.getLongitude() || pilgrimage.getLongitude() - 0.00135 > form.getLongitude();
+        return pilgrimage.getLatitude() + 0.00135 >= form.getLatitude() && pilgrimage.getLatitude() - 0.00135 <= form.getLatitude()
+                && pilgrimage.getLongitude() + 0.00135 >= form.getLongitude() && pilgrimage.getLongitude() - 0.00135 <= form.getLongitude();
     }
 
     private void successVisitedAndPointProcess(Member member, Pilgrimage pilgrimage) {
@@ -138,5 +141,75 @@ public class PilgrimageCommandService {
         pointHistoryRepository.save(PointHistoryConverter.toPointHistory(member, 15L, PointType.ACQUIRE));
         member.updatePoint(15L);
         log.info("clear");
+    }
+
+    public boolean isUserAtPilgrimage(Pilgrimage pilgrimage, Double latitude, Double longitude) {
+        return (pilgrimage.getLatitude() + 0.00135 >= latitude && pilgrimage.getLatitude() - 0.00135 <= latitude) &&
+                (pilgrimage.getLongitude() + 0.00135 >= longitude && pilgrimage.getLongitude() - 0.00135 <= longitude);
+    }
+
+    /**
+     * 웹소켓 버튼 상태 이벤트
+     * @param memberId
+     * @param pilgrimageId
+     * @param latitude
+     * @param longitude
+     * @return
+     */
+    public PilgrimageSocketDto.ButtonState determineButtonState(Long memberId,
+                                                                Long pilgrimageId,
+                                                                double latitude, double longitude) {
+        Pilgrimage pilgrimage = pilgrimageRepository.findById(pilgrimageId)
+                .orElseThrow(() -> new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(()->new RestApiException(ErrorCode.USER_NOT_FOUND));
+
+        // 사용자가 인증 장소에 있는지 확인
+        boolean nearPilgrimage = isUserAtPilgrimage(pilgrimage, latitude, longitude);
+        // redis에 사용자의 인증 기록이 남아있는지 확인 (24시간 이후 만료됨)
+        boolean isCertificationExpired = redisService.isCertificationExpired(member, pilgrimage);
+        // 사용자가 지난 24시간 내에 인증 버튼 눌렀는지 확인
+        boolean certifiedInLast24Hours = checkIfCertifiedInLast24Hours(member, pilgrimage);
+        // 사용자가 이번 인증하기에 이미 방명록을 작성했는지 확인
+        boolean hasWrittenGuestbook = checkIfGuestbookWritten(member, pilgrimage);
+        // 사용자가 24시간 전에 작성한 방명록이 1개 이상인지 확인
+        boolean hasMultiWrittenGuestbook = checkIfMultiGuestbookWritten(member, pilgrimage);
+
+        PilgrimageSocketDto.ButtonState newState = new PilgrimageSocketDto.ButtonState();
+        if (nearPilgrimage && !certifiedInLast24Hours) {
+            newState.setCertifyButtonEnabled(true);  // 인증하기 버튼 활성화
+            newState.setGuestbookButtonEnabled(false); // 방명록 쓰기 버튼 비활성화
+        }
+        else if (certifiedInLast24Hours && !hasWrittenGuestbook) {
+            newState.setCertifyButtonEnabled(false);  // 인증하기 버튼 비활성화
+            newState.setGuestbookButtonEnabled(true); // 방명록 쓰기 버튼 활성화
+        }
+        else {
+            newState.setCertifyButtonEnabled(false);  // 인증하기 버튼 비활성화
+            newState.setGuestbookButtonEnabled(false); // 방명록 쓰기 버튼 비활성화
+        }
+        return newState;
+    }
+
+    private boolean checkIfCertifiedInLast24Hours(Member member, Pilgrimage pilgrimage) {
+        // 인증 버튼을 누른 시간 확인
+        List<VisitedPilgrimage> visitedPilgrimages = visitedPilgrimageRepository
+                .findByPilgrimageAndMemberOrderByCreatedAtDesc(pilgrimage, member);
+
+        ZoneId serverZoneId = ZoneId.of("Asia/Seoul");
+        ZonedDateTime nowInServerTimeZone = ZonedDateTime.now(serverZoneId);
+
+        return false;
+    }
+
+    private boolean checkIfGuestbookWritten(Member member, Pilgrimage pilgrimage) {
+        // 방명록 작성 여부 확인
+        return false;
+    }
+
+    private boolean checkIfMultiGuestbookWritten(Member member, Pilgrimage pilgrimage) {
+        // 방명록 다회 작성 여부 확인
+        return false;
     }
 }

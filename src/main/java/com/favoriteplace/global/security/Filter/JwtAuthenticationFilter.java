@@ -74,6 +74,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // 1. Request Header 에서 JWT 토큰 추출
         String token = resolveToken((HttpServletRequest) request);
+
+        if ("websocket".equalsIgnoreCase(request.getHeader("Upgrade"))) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         String requestURI = httpServletRequest.getRequestURI();
 
         // 2. validateToken 으로 토큰 유효성 검사
