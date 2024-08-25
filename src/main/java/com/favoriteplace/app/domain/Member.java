@@ -72,8 +72,6 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false)
     private LoginType loginType;
 
-    private Long authId;
-
     private String refreshToken;
 
     public void updatePassword(String password) { this.password = password; }
