@@ -54,13 +54,9 @@ public class PilgrimageCommandService {
         if (likedRally == null) {
             LikedRally newLikedRally = LikedRally.builder().rally(rally).member(member).build();
             likedRallyRepository.save(newLikedRally);
-            // 해당 랠리 구독 (for FCM)
-            fcmNotificationService.subscribeTopic(makeAnimationTopicName(rallyId), member.getFcmToken());
             return CommonConverter.toPostResponseDto(true, "찜 목록에 추가됐습니다.");
         } else {
             likedRallyRepository.delete(likedRally);
-            // 해당 랠리 구독 (for FCM)
-            fcmNotificationService.unsubscribeTopic(makeAnimationTopicName(rallyId), member.getFcmToken());
             return CommonConverter.toPostResponseDto(true, "찜을 취소했습니다.");
         }
     }
@@ -142,5 +138,25 @@ public class PilgrimageCommandService {
         pointHistoryRepository.save(PointHistoryConverter.toPointHistory(member, 15L, PointType.ACQUIRE));
         member.updatePoint(15L);
         log.info("clear");
+    }
+
+    /**
+     * 랠리 구독 (FCM 토픽에 해당 사용자의 토큰 추가)
+     */
+    public void subscribeRally(Long rallyId, Member member) {
+        if(member.getFcmToken() == null){
+            throw new RestApiException(ErrorCode.FCM_TOKEN_NOT_FOUND);
+        }
+        fcmNotificationService.subscribeTopic(makeAnimationTopicName(rallyId), member.getFcmToken());
+    }
+
+    /**
+     * 랠리 구독 취소 (FCM 토픽에 해당 사용자의 토큰 제거)
+     */
+    public void unsubscribeRally(Long rallyId, Member member) {
+        if(member.getFcmToken() == null){
+            throw new RestApiException(ErrorCode.FCM_TOKEN_NOT_FOUND);
+        }
+        fcmNotificationService.unsubscribeTopic(makeAnimationTopicName(rallyId), member.getFcmToken());
     }
 }

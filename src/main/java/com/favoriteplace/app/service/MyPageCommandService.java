@@ -7,10 +7,12 @@ import com.favoriteplace.app.domain.enums.ItemType;
 import com.favoriteplace.app.domain.item.Item;
 import com.favoriteplace.app.dto.CommonResponseDto;
 import com.favoriteplace.app.dto.MyPageDto;
+import com.favoriteplace.app.dto.MyPageDto.MyFcmTokenDto;
 import com.favoriteplace.app.repository.AcquiredItemRepository;
 import com.favoriteplace.app.repository.BlockRepository;
 import com.favoriteplace.app.repository.ItemRepository;
 import com.favoriteplace.app.repository.MemberRepository;
+import com.favoriteplace.app.service.fcm.FCMNotificationService;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ public class MyPageCommandService {
     private final MemberRepository memberRepository;
     private final ItemRepository itemRepository;
     private final AcquiredItemRepository acquiredItemRepository;
+    private final FCMNotificationService fcmNotificationService;
 
     /**
      * 다른 유저를 차단 또는 차단 해제
@@ -56,6 +59,7 @@ public class MyPageCommandService {
      * @param member 착용자
      * @return
      */
+    @Transactional
     public CommonResponseDto.PostResponseDto wearItem(Long itemId, Member member) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(()->new RestApiException(ErrorCode.ITEM_NOT_EXISTS));
@@ -68,5 +72,15 @@ public class MyPageCommandService {
         }
         memberRepository.save(member);
         return CommonConverter.toPostResponseDto(true, "착용이 완료되었습니다.");
+    }
+
+    /**
+     * FCM 토큰 등록 & 변경
+     * @param member  사용자
+     * @param request RequestBody
+     */
+    @Transactional
+    public void modifyFcmToken(Member member, MyFcmTokenDto request) {
+        fcmNotificationService.refreshFCMTopicAndToken(member, request.getFcmToken());
     }
 }

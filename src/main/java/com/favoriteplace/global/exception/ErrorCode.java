@@ -73,6 +73,8 @@ public enum ErrorCode {
     TOPIC_ALARM_NOT_SEND(HttpStatus.BAD_REQUEST, 120002, "[topic] push 알림이 전송되지 않았습니다."),
     TOPIC_SUBSCRIBE_FAIL(HttpStatus.BAD_REQUEST, 12003, "[topic] 구독에 실패했습니다."),
     TOPIC_UNSUBSCRIBE_FAIL(HttpStatus.BAD_REQUEST, 12004, "[topic] 구독 취소에 실패했습니다."),
+    NOTIFICATION_NOT_EXIST(HttpStatus.NOT_FOUND, 12005, "해당 알림이 존재하지 않습니다."),
+    NOTIFICATION_NOT_BELONG(HttpStatus.CONFLICT, 12006, "해당 사용자의 알림이 아닙니다.")
     ;
 
     private final HttpStatus httpStatus;

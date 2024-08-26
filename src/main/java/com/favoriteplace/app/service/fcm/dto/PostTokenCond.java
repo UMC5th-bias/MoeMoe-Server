@@ -8,6 +8,8 @@ public record PostTokenCond(
         String token,
         TokenMessage tokenMessage,
         Long postId,
-        String message
+        Long guestBookId,
+        String message,
+        Long notificationId
 ) {
 }

@@ -49,7 +49,9 @@ public class FCMNotificationService {
                 .putData("type", postTokenCond.tokenMessage().getType())
                 .putData("title", postTokenCond.tokenMessage().getTitle())
                 .putData("message", postTokenCond.message())
-                .putData("postId", postTokenCond.postId().toString())
+                .putData("postId", postTokenCond.postId() != null ? postTokenCond.postId().toString() : null)
+                .putData("guestBookId", postTokenCond.guestBookId() != null ? postTokenCond.guestBookId().toString() : null)
+                .putData("notificationId", postTokenCond.notificationId().toString())
                 .build();
     }
 
@@ -61,7 +63,6 @@ public class FCMNotificationService {
         try{
             List<String> tokens = Collections.singletonList(token);
             TopicManagementResponse response = FirebaseMessaging.getInstance().subscribeToTopic(tokens, topic);
-
         } catch (FirebaseMessagingException e){
             throw new RestApiException(ErrorCode.TOPIC_SUBSCRIBE_FAIL);
         }
@@ -87,7 +88,7 @@ public class FCMNotificationService {
     @Transactional
     public String sendAnimationAlarmByTopic(Long animationId, String name) {
         try{
-            Message message = makeAnimationTopicMessage(animationId, name);
+            Message message = makeAnimationTopicMessage(animationId, name, 1L);
             return firebaseMessaging.send(message);
         } catch (FirebaseMessagingException e) {
             log.warn("fcm: {}", e.getErrorCode());
@@ -114,13 +115,14 @@ public class FCMNotificationService {
     /**
      * topic - 애니메이션 Message 제작
      */
-    private Message makeAnimationTopicMessage(Long animationId, String name){
+    private Message makeAnimationTopicMessage(Long animationId, String name, Long notificationId){
         Message message = Message.builder()
                 .setTopic(makeAnimationTopicName(animationId))
                 .putData("type", "animation")
                 .putData("title", String.format("애니메이션 %s의 성지순례가 추가되었습니다!", name))
                 .putData("message", "지금 확인하러 가기")
                 .putData("animationId", animationId.toString())
+                .putData("notificationId", notificationId.toString())
                 .build();
         return message;
     }
