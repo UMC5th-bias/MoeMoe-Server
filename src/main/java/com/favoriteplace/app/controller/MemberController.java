@@ -34,7 +34,7 @@ public class MemberController {
         return "hello success!";
     }
 
-    @PostMapping("/login/kakaos")
+    @PostMapping("/login/kakao")
     public ResponseEntity<TokenInfo> kakaoLogin(
             @RequestHeader("Authorization") final String token
     ) {
