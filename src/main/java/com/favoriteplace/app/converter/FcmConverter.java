@@ -13,7 +13,6 @@ public class FcmConverter {
     /**
      * 게시글 작성자에게 알림 전송
      */
-    // TODO : notification 만들어서 처리
     public static PostTokenCond toPostWriter(Post post, Comment newComment){
         if(post.getMember().getFcmToken() == null){
             throw new RestApiException(ErrorCode.FCM_TOKEN_NOT_FOUND);
@@ -47,7 +46,7 @@ public class FcmConverter {
         }
         return PostTokenCond.builder()
                 .token(newComment.getParentComment().getMember().getFcmToken())
-                .tokenMessage(TokenMessage.GUESTBOOK_COMMENT_NEW_SUBCOMMENT)
+                .tokenMessage(TokenMessage.POST_COMMENT_NEW_SUBCOMMENT)
                 .postId(post.getId())
                 .message(newComment.getContent())
                 .build();
@@ -59,7 +58,7 @@ public class FcmConverter {
         }
         return PostTokenCond.builder()
                 .token(newComment.getReferenceComment().getMember().getFcmToken())
-                .tokenMessage(TokenMessage.GUESTBOOK_COMMENT_NEW_SUBCOMMENT)
+                .tokenMessage(TokenMessage.POST_COMMENT_NEW_SUBCOMMENT)
                 .postId(post.getId())
                 .message(newComment.getContent())
                 .build();

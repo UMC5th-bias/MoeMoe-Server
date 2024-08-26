@@ -1,4 +1,4 @@
-package com.favoriteplace.global.security.Filter;
+package com.favoriteplace.global.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.favoriteplace.global.exception.ErrorCode;
@@ -15,7 +15,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -58,8 +57,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         new ExcludePath("/posts/guestbooks/comments/**", HttpMethod.PUT),
         new ExcludePath("/posts/guestbooks/comments/**", HttpMethod.DELETE),
         new ExcludePath("/shop/purchase/**", HttpMethod.POST),
-        new ExcludePath("/notification/**", HttpMethod.PATCH),
-        new ExcludePath("/notification", HttpMethod.GET)
+        new ExcludePath("/notifications", HttpMethod.PATCH),
+        new ExcludePath("/notifications", HttpMethod.GET),
+        new ExcludePath("/notifications/**", HttpMethod.PATCH),
+        new ExcludePath("/notifications/**", HttpMethod.DELETE)
         // Add more paths and methods as needed
     );
 

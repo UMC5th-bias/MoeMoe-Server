@@ -51,7 +51,7 @@ public class PostCommentController {
 
     @PostMapping("/{post_id}/comments")
     public ResponseEntity<PostResponseDto.SuccessResponseDto> createPostComment(
-            @PathVariable("post_id") long postId,
+            @PathVariable("post_id") Long postId,
             @RequestBody CommentRequestDto.CreateComment dto
     ){
         Member member = securityUtil.getUser();
@@ -61,6 +61,15 @@ public class PostCommentController {
                 PostResponseDto.SuccessResponseDto.builder().message("댓글을 성공적으로 등록했습니다.").build(),
                 HttpStatus.OK
         );
+    }
+
+    @PostMapping("/{post_id}/comments/{comment_id}/notification")
+    public ResponseEntity<?> sendPostNotification(
+            @PathVariable("post_id") long postId,
+            @PathVariable("comment_id") long commentId
+    ){
+        commentCommandService.sendPostNotification(postId, commentId);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/comments/{comment_id}")

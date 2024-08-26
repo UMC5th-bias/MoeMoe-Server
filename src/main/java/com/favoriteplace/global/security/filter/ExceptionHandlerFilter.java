@@ -1,4 +1,4 @@
-package com.favoriteplace.global.security.Filter;
+package com.favoriteplace.global.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.favoriteplace.global.exception.ErrorCode;
