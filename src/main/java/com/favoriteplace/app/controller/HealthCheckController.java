@@ -13,5 +13,4 @@ public class HealthCheckController {
     public String hello(){
         return "hello success!";
     }
-
 }
