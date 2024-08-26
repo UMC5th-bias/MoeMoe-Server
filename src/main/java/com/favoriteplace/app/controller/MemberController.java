@@ -29,6 +29,11 @@ public class MemberController {
     private final JwtTokenProvider jwtTokenProvider;
     private final SecurityUtil securityUtil;
 
+    @GetMapping("/hello")
+    public String hello(){
+        return "hello success!";
+    }
+
     @PostMapping("/login/kakao")
     public ResponseEntity<TokenInfo> kakaoLogin(
             @RequestHeader("Authorization") final String token
