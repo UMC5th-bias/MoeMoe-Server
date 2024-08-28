@@ -36,22 +36,24 @@ public class CommentCommandService {
      * 자유게시글 새로운 댓글 작성
      */
     @Transactional
-    public void createPostComment(Member member, long postId, CommentRequestDto.CreateComment dto) {
+    public Long createPostComment(Member member, long postId, CommentRequestDto.CreateComment dto) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new RestApiException(ErrorCode.POST_NOT_FOUND));
         Comment newComment = setCommentRelation(member, dto);
         post.addComment(newComment);
         commentRepository.save(newComment);
+        return newComment.getId();
     }
 
     /**
      * 성지순례 인증글에 댓글 추가
      */
     @Transactional
-    public void createGuestBookComment(Member member, Long guestbookId, CommentRequestDto.CreateComment dto) {
+    public Long createGuestBookComment(Member member, Long guestbookId, CommentRequestDto.CreateComment dto) {
         GuestBook guestBook = guestBookRepository.findById(guestbookId).orElseThrow(() -> new RestApiException(ErrorCode.GUESTBOOK_NOT_FOUND));
         Comment newComment = setCommentRelation(member, dto);
         guestBook.addComment(newComment);
         commentRepository.save(newComment);
+        return newComment.getId();
     }
 
     /**

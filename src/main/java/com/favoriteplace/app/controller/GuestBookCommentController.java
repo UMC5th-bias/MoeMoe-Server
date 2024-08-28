@@ -52,9 +52,9 @@ public class GuestBookCommentController {
     ){
         Member member = securityUtil.getUser();
 //        Member member = memberRepository.findById(1L).orElseThrow(() -> new RestApiException(ErrorCode.USER_NOT_FOUND));
-        commentCommandService.createGuestBookComment(member, guestbookId, guestBookCommentDto);
+        Long commentId = commentCommandService.createGuestBookComment(member, guestbookId, guestBookCommentDto);
         return new ResponseEntity<>(
-                PostResponseDto.SuccessResponseDto.builder().message("댓글이 성공적으로 등록했습니다.").build(),
+                PostResponseDto.SuccessResponseDto.builder().commentId(commentId).message("댓글이 성공적으로 등록했습니다.").build(),
                 HttpStatus.OK
         );
     }

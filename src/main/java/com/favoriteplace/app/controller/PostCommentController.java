@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.favoriteplace.app.dto.community.PostResponseDto.*;
+
 @RestController
 @RequestMapping("/posts/free")
 @RequiredArgsConstructor
@@ -29,7 +31,7 @@ public class PostCommentController {
     private final MemberRepository memberRepository;
 
     @GetMapping("/my-comments")
-    public ResponseEntity<PostResponseDto.MyCommentDto> getMyComments(
+    public ResponseEntity<MyCommentDto> getMyComments(
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false, defaultValue = "10") int size
     ){
@@ -50,15 +52,15 @@ public class PostCommentController {
     }
 
     @PostMapping("/{post_id}/comments")
-    public ResponseEntity<PostResponseDto.SuccessResponseDto> createPostComment(
+    public ResponseEntity<SuccessResponseDto> createPostComment(
             @PathVariable("post_id") Long postId,
             @RequestBody CommentRequestDto.CreateComment dto
     ){
         Member member = securityUtil.getUser();
 //        Member member = memberRepository.findById(1L).orElseThrow(() -> new RestApiException(ErrorCode.USER_NOT_FOUND));
-        commentCommandService.createPostComment(member, postId, dto);
+        Long commentId = commentCommandService.createPostComment(member, postId, dto);
         return new ResponseEntity<>(
-                PostResponseDto.SuccessResponseDto.builder().message("댓글을 성공적으로 등록했습니다.").build(),
+                SuccessResponseDto.builder().commentId(commentId).message("댓글을 성공적으로 등록했습니다.").build(),
                 HttpStatus.OK
         );
     }
@@ -73,7 +75,7 @@ public class PostCommentController {
     }
 
     @PutMapping("/comments/{comment_id}")
-    public ResponseEntity<PostResponseDto.SuccessResponseDto> modifyPostComment(
+    public ResponseEntity<SuccessResponseDto> modifyPostComment(
             @PathVariable("comment_id") long commentId,
             @RequestBody CommentRequestDto.ModifyComment dto
     ){
@@ -81,20 +83,20 @@ public class PostCommentController {
 //        Member member = memberRepository.findById(1L).orElseThrow(() -> new RestApiException(ErrorCode.USER_NOT_FOUND));
         commentCommandService.modifyComment(member, commentId, dto.getContent());
         return new ResponseEntity<>(
-                PostResponseDto.SuccessResponseDto.builder().message("댓글을 성공적으로 수정했습니다.").build(),
+                SuccessResponseDto.builder().message("댓글을 성공적으로 수정했습니다.").build(),
                 HttpStatus.OK
         );
     }
 
     @DeleteMapping("/comments/{comment_id}")
-    public ResponseEntity<PostResponseDto.SuccessResponseDto> deletePostComment(
+    public ResponseEntity<SuccessResponseDto> deletePostComment(
             @PathVariable("comment_id") long commentId
     ){
         Member member = securityUtil.getUser();
 //        Member member = memberRepository.findById(1L).orElseThrow(() -> new RestApiException(ErrorCode.USER_NOT_FOUND));
         commentCommandService.deleteComment(member, commentId);
         return new ResponseEntity<>(
-                PostResponseDto.SuccessResponseDto.builder().message("댓글을 성공적으로 삭제했습니다.").build(),
+                SuccessResponseDto.builder().message("댓글을 성공적으로 삭제했습니다.").build(),
                 HttpStatus.OK
         );
     }

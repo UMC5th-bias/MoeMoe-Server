@@ -1,8 +1,6 @@
 package com.favoriteplace.app.dto.community;
 
-import com.favoriteplace.app.domain.community.Post;
 import com.favoriteplace.app.dto.UserInfoResponseDto;
-import com.favoriteplace.global.util.DateTimeFormatUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,6 +15,7 @@ public class PostResponseDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class SuccessResponseDto{
+        private Long commentId;
         private String message;
     }
 
