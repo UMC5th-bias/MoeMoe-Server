@@ -16,9 +16,9 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RestController;
 
-import java.awt.*;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Controller
 @Slf4j
@@ -26,11 +26,14 @@ import java.awt.*;
 public class PilgrimageSocketController {
     private final PilgrimageCommandService pilgrimageService;
     private final PilgrimageRepository pilgrimageRepository;
+    private Map<Long, PilgrimageSocketDto.ButtonState> lastButtonStateCache = new ConcurrentHashMap<>();
 
     /**
      * 테스트 컨트롤러
+     *
      * 요청 /app/test
      * 응답 /pub/pilgrimage
+     *
      * @param testMsg
      * @return
      */
@@ -43,8 +46,10 @@ public class PilgrimageSocketController {
 
     /**
      * 위도/경도 전달 시 상태 변경 알리는 컨트롤러
+     *
      * 요청 컨트롤러 /app/location/{pilgrimageId}
      * 응답 컨트롤러  /pub/statusUpdate/{pilgrimageId}
+     *
      * @param pilgrimageId 성지순례 ID
      * @param userLocation 위도/경도
      * @return 버튼 상태 json
@@ -63,20 +68,37 @@ public class PilgrimageSocketController {
                 userLocation.getLatitude(), userLocation.getLongitude());
 
         // 버튼 상태 업데이트
-        return pilgrimageService.determineButtonState(userDetails.getMember(), pilgrimage);
+        PilgrimageSocketDto.ButtonState buttonState =
+                pilgrimageService.determineButtonState(userDetails.getMember(), pilgrimage);
+
+        // 이전 버튼 상태와 비교해서 달라졌다면 전송, 아니면 null
+        PilgrimageSocketDto.ButtonState lastState = lastButtonStateCache.get(userDetails.getMember().getId());
+
+        if (lastState == null || !buttonState.equals(lastState)) {
+            lastButtonStateCache.put(userDetails.getMember().getId(), buttonState);
+            return buttonState;
+        }
+        return null;
     }
 
     /**
      * 최초 접근 시 버튼 상태 전달하는 컨트롤러
+     *
      * 요청 컨트롤러 /app/connect/{pilgrimageId}
      * 응답 컨트롤러 /pub/statusUpdate/{pilgrimageId}
+     *
      * @param pilgrimageId 성지순례 ID
      * @return
      */
     @MessageMapping("/connect/{pilgrimageId}")
     @SendTo("/pub/statusUpdate/{pilgrimageId}")
-    public Boolean sendInitialStatus(@DestinationVariable Long pilgrimageId) {
-        log.info("User connected to pilgrimage: " + pilgrimageId);
-        return true; // 초기 버튼 상태
+    public PilgrimageSocketDto.ButtonState sendInitialStatus(@DestinationVariable Long pilgrimageId) {
+        Pilgrimage pilgrimage = pilgrimageRepository.findById(pilgrimageId)
+                .orElseThrow(()->new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+        return pilgrimageService.determineButtonState(userDetails.getMember(), pilgrimage);
     }
 }
