@@ -145,51 +145,59 @@ public class PilgrimageCommandService {
     }
 
     /**
-     * 웹소켓 버튼 상태 이벤트
-     * @param memberId
-     * @param pilgrimageId
-     * @param latitude
-     * @param longitude
+     * 사용자가 성지순례 위치 100M 이내에 존재하는지 확인, 맞다면 redis 저장
+     * @param pilgrimage 성지순례
+     * @param latitude 사용자의 위도
+     * @param longitude 사용자의 경도
+     */
+    public void isLocationVerified(Member member, Pilgrimage pilgrimage, Double latitude, Double longitude) {
+        if (isUserAtPilgrimage(pilgrimage, latitude, longitude)) {
+            redisService.saveCertificationTime(member.getId(), pilgrimage.getId());
+        }
+    }
+
+    /**
+     * 웹소켓 버튼 상태 지정
+     * @param member 사용자
+     * @param pilgrimage 성지순례
      * @return
      */
-    public PilgrimageSocketDto.ButtonState determineButtonState(long memberId,
-                                                                long pilgrimageId,
-                                                                double latitude, double longitude) {
-        Pilgrimage pilgrimage = pilgrimageRepository.findById(pilgrimageId)
-                .orElseThrow(() -> new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
-
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(()->new RestApiException(ErrorCode.USER_NOT_FOUND));
-
-        // 사용자가 인증 장소에 있는지 확인
-        boolean nearPilgrimage = isUserAtPilgrimage(pilgrimage, latitude, longitude);
-        // redis에 사용자의 인증 기록이 남아있는지 확인 (24시간 이후 만료됨)
-        boolean isCertificationExpired = redisService.isCertificationExpired(member, pilgrimage);
+    public PilgrimageSocketDto.ButtonState determineButtonState(Member member, Pilgrimage pilgrimage) {
         // 사용자가 지난 24시간 내에 인증 버튼 눌렀는지 확인
-        boolean certifiedInLast24Hours = checkIfCertifiedInLast24Hours(member, pilgrimage);
-        // 사용자가 이번 인증하기에 이미 방명록을 작성했는지 확인
+        boolean certifiedInLast = checkIfCertifiedInLast24Hours(member, pilgrimage);
+        // redis에 사용자의 기록이 남아있는지 확인
+        boolean isCertificationExpired = redisService.isCertificationExpired(member, pilgrimage);
+        // 사용자가 이번 인증하기에 이미 방명록을 작성했는지 확인 (모든 상호작용 완료했는지)
         boolean hasWrittenGuestbook = checkIfGuestbookWritten(member, pilgrimage);
-        // 사용자가 24시간 전에 작성한 방명록이 1개 이상인지 확인
+        // 사용자가 이 성지순례에 작성한 방명록이 있는지 확인
         boolean hasMultiWrittenGuestbook = checkIfMultiGuestbookWritten(member, pilgrimage);
 
         PilgrimageSocketDto.ButtonState newState = new PilgrimageSocketDto.ButtonState();
-        if (nearPilgrimage && !certifiedInLast24Hours) {
-            newState.setCertifyButtonEnabled(true);  // 인증하기 버튼 활성화
-            newState.setGuestbookButtonEnabled(false); // 방명록 쓰기 버튼 비활성화
+        newState.setCertifyButtonEnabled(false);
+        newState.setGuestbookButtonEnabled(false);
+        newState.setGuestbookButtonEnabled(false);
+
+        // 24시간 내 인증 기록이 있는가?
+        if (!certifiedInLast) {
+            // redis에 데이터가 있는가?
+            newState.setCertifyButtonEnabled((!isCertificationExpired) ? true : false);
         }
-        else if (certifiedInLast24Hours && !hasWrittenGuestbook) {
-            newState.setCertifyButtonEnabled(false);  // 인증하기 버튼 비활성화
-            newState.setGuestbookButtonEnabled(true); // 방명록 쓰기 버튼 활성화
-        }
-        else {
-            newState.setCertifyButtonEnabled(false);  // 인증하기 버튼 비활성화
-            newState.setGuestbookButtonEnabled(false); // 방명록 쓰기 버튼 비활성화
+        // 이번 인증 기록에 대한 방명록이 있는가?
+        else if (certifiedInLast && !hasWrittenGuestbook) {
+            // 이번이 이 성지순례에 대한 첫번째 방명록인가?
+            newState.setGuestbookButtonEnabled(hasMultiWrittenGuestbook? false : true);
+            newState.setMultiGuestbookButtonEnabled(hasMultiWrittenGuestbook? true : false);
         }
         return newState;
     }
 
+    /**
+     * 24시간 이내 인증 기록이 있는지 확인
+     * @param member
+     * @param pilgrimage
+     * @return
+     */
     private boolean checkIfCertifiedInLast24Hours(Member member, Pilgrimage pilgrimage) {
-        // 인증 버튼을 누른 시간 확인
         List<VisitedPilgrimage> visitedPilgrimages = visitedPilgrimageRepository
                 .findByPilgrimageAndMemberOrderByCreatedAtDesc(pilgrimage, member);
 
@@ -199,13 +207,23 @@ public class PilgrimageCommandService {
         return false;
     }
 
+    /**
+     * 방명록 작성 여부 확인
+     * @param member
+     * @param pilgrimage
+     * @return
+     */
     private boolean checkIfGuestbookWritten(Member member, Pilgrimage pilgrimage) {
-        // 방명록 작성 여부 확인
         return false;
     }
 
+    /**
+     * 방명록 다회 작성 여부 확인
+     * @param member
+     * @param pilgrimage
+     * @return
+     */
     private boolean checkIfMultiGuestbookWritten(Member member, Pilgrimage pilgrimage) {
-        // 방명록 다회 작성 여부 확인
         return false;
     }
 }

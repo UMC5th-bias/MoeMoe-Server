@@ -5,9 +5,12 @@ import com.favoriteplace.app.dto.travel.PilgrimageSocketDto;
 import com.favoriteplace.app.repository.PilgrimageRepository;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
+import com.favoriteplace.global.security.CustomUserDetails;
 import com.google.api.gax.rpc.ApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -21,16 +24,18 @@ public class WebSocketService {
     private final PilgrimageRepository pilgrimageRepository;
     private Map<Long, PilgrimageSocketDto.ButtonState> lastButtonStateCache = new ConcurrentHashMap<>();
 
-    public void handleLocationUpdate(Long userId, Long pilgrimageId, double latitude, double longitude) {
+    public void handleLocationUpdate(Long pilgrimageId, double latitude, double longitude) {
         Pilgrimage pilgrimage = pilgrimageRepository.findById(pilgrimageId)
                 .orElseThrow(()->new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
 
-        PilgrimageSocketDto.ButtonState newState = pilgrimageService.determineButtonState(userId, pilgrimage.getId(), latitude, longitude);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
-        PilgrimageSocketDto.ButtonState lastState = lastButtonStateCache.get(userId);
+        PilgrimageSocketDto.ButtonState newState = pilgrimageService.determineButtonState(userDetails.getMember(), pilgrimage);
+        PilgrimageSocketDto.ButtonState lastState = lastButtonStateCache.get(userDetails.getMember().getId());
 
         if (lastState == null || !newState.equals(lastState)) {
-            lastButtonStateCache.put(userId, newState);
+            lastButtonStateCache.put(userDetails.getMember().getId(), newState);
             messagingTemplate.convertAndSend("/pub/statusUpdate/" + pilgrimageId, newState);
         }
     }

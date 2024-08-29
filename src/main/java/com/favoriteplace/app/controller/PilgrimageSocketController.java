@@ -2,17 +2,23 @@ package com.favoriteplace.app.controller;
 
 import com.favoriteplace.app.domain.travel.Pilgrimage;
 import com.favoriteplace.app.dto.travel.PilgrimageDto;
+import com.favoriteplace.app.dto.travel.PilgrimageSocketDto;
 import com.favoriteplace.app.repository.PilgrimageRepository;
 import com.favoriteplace.app.service.PilgrimageCommandService;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
+import com.favoriteplace.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.awt.*;
 
 @Controller
 @Slf4j
@@ -41,21 +47,23 @@ public class PilgrimageSocketController {
      * 응답 컨트롤러  /pub/statusUpdate/{pilgrimageId}
      * @param pilgrimageId 성지순례 ID
      * @param userLocation 위도/경도
-     * @return
+     * @return 버튼 상태 json
      */
     @MessageMapping("/location/{pilgrimageId}")
     @SendTo("/pub/statusUpdate/{pilgrimageId}")
-    public Boolean checkUserLocation(@DestinationVariable Long pilgrimageId, PilgrimageDto.PilgrimageCertifyRequestDto userLocation) {
+    public PilgrimageSocketDto.ButtonState checkUserLocation(@DestinationVariable Long pilgrimageId, PilgrimageDto.PilgrimageCertifyRequestDto userLocation) {
         Pilgrimage pilgrimage = pilgrimageRepository.findById(pilgrimageId)
                 .orElseThrow(()->new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
 
-        boolean isUserAtPilgrimage = pilgrimageService.isUserAtPilgrimage(pilgrimage, userLocation.getLatitude(), userLocation.getLongitude());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
-        if (!isUserAtPilgrimage) {
-            // 여기에 이벤트 동작 추가
-            return false;
-        }
-        return true;
+        // 위치 정보 바탕으로 인증 가능 여부 Redis 저장
+        pilgrimageService.isLocationVerified(userDetails.getMember(), pilgrimage,
+                userLocation.getLatitude(), userLocation.getLongitude());
+
+        // 버튼 상태 업데이트
+        return pilgrimageService.determineButtonState(userDetails.getMember(), pilgrimage);
     }
 
     /**

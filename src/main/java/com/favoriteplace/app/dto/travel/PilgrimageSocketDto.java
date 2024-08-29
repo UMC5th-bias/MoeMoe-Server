@@ -4,7 +4,6 @@ import lombok.*;
 
 public class PilgrimageSocketDto {
     @Data
-    @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
