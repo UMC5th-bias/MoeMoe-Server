@@ -33,6 +33,7 @@ import java.util.Optional;
 @Transactional
 @RequiredArgsConstructor
 public class PilgrimageCommandService {
+    private static final Double MAX_DISTANCE_WITHIN_100M = 0.00135;
     private final MemberRepository memberRepository;
     private final RallyRepository rallyRepository;
     private final PilgrimageRepository pilgrimageRepository;
@@ -82,15 +83,10 @@ public class PilgrimageCommandService {
         ZoneId serverZoneId = ZoneId.of("Asia/Seoul");
         ZonedDateTime nowInServerTimeZone = ZonedDateTime.now(serverZoneId);
 
-//        log.info("now="+nowInServerTimeZone);
-//        if (!visitedPilgrimages.isEmpty()) {
-//            log.info("pilgrimage="+visitedPilgrimages.get(0).getPilgrimage().getCreatedAt().atZone(serverZoneId));
-//        }
-
         if (visitedPilgrimages.isEmpty()
                 || (!visitedPilgrimages.isEmpty()
                 && visitedPilgrimages.get(0).getPilgrimage().getCreatedAt().atZone(serverZoneId).plusHours(24L).isBefore(nowInServerTimeZone))) {
-            // 현재 좌표가 성지순례 장소 좌표 기준 +-0.00135 이내인지 확인
+            // 현재 좌표가 성지순례 장소 좌표 기준 100M 이내인지 확인
             if (checkCoordinate(form, pilgrimage)){
                 throw new RestApiException(ErrorCode.PILGRIMAGE_CAN_NOT_CERTIFIED);
             }
@@ -99,7 +95,7 @@ public class PilgrimageCommandService {
 
             Long completeCount = visitedPilgrimageRepository.findByDistinctCount(member.getId(), pilgrimage.getRally().getId());
             log.info("completeCount="+completeCount);
-//            // 랠리를 완료했는지 확인
+            // 랠리를 완료했는지 확인
             if (checkCompleteRally(member, pilgrimage, completeCount))
                 return CommonConverter.toRallyResponseDto(true, true,"<"+pilgrimage.getRally().getItem().getName()+"> 칭호를 얻었습니다!");
         } else
@@ -130,8 +126,8 @@ public class PilgrimageCommandService {
     }
 
     private boolean checkCoordinate(PilgrimageDto.PilgrimageCertifyRequestDto form, Pilgrimage pilgrimage) {
-        return pilgrimage.getLatitude() + 0.00135 >= form.getLatitude() && pilgrimage.getLatitude() - 0.00135 <= form.getLatitude()
-                && pilgrimage.getLongitude() + 0.00135 >= form.getLongitude() && pilgrimage.getLongitude() - 0.00135 <= form.getLongitude();
+        return pilgrimage.getLatitude() + MAX_DISTANCE_WITHIN_100M >= form.getLatitude() && pilgrimage.getLatitude() - MAX_DISTANCE_WITHIN_100M <= form.getLatitude()
+                && pilgrimage.getLongitude() + MAX_DISTANCE_WITHIN_100M >= form.getLongitude() && pilgrimage.getLongitude() - MAX_DISTANCE_WITHIN_100M <= form.getLongitude();
     }
 
     private void successVisitedAndPointProcess(Member member, Pilgrimage pilgrimage) {
@@ -144,8 +140,8 @@ public class PilgrimageCommandService {
     }
 
     public boolean isUserAtPilgrimage(Pilgrimage pilgrimage, Double latitude, Double longitude) {
-        return (pilgrimage.getLatitude() + 0.00135 >= latitude && pilgrimage.getLatitude() - 0.00135 <= latitude) &&
-                (pilgrimage.getLongitude() + 0.00135 >= longitude && pilgrimage.getLongitude() - 0.00135 <= longitude);
+        return (pilgrimage.getLatitude() + MAX_DISTANCE_WITHIN_100M >= latitude && pilgrimage.getLatitude() - MAX_DISTANCE_WITHIN_100M <= latitude) &&
+                (pilgrimage.getLongitude() + MAX_DISTANCE_WITHIN_100M >= longitude && pilgrimage.getLongitude() - MAX_DISTANCE_WITHIN_100M <= longitude);
     }
 
     /**
@@ -156,8 +152,8 @@ public class PilgrimageCommandService {
      * @param longitude
      * @return
      */
-    public PilgrimageSocketDto.ButtonState determineButtonState(Long memberId,
-                                                                Long pilgrimageId,
+    public PilgrimageSocketDto.ButtonState determineButtonState(long memberId,
+                                                                long pilgrimageId,
                                                                 double latitude, double longitude) {
         Pilgrimage pilgrimage = pilgrimageRepository.findById(pilgrimageId)
                 .orElseThrow(() -> new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
