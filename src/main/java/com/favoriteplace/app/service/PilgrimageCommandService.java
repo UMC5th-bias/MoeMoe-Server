@@ -34,7 +34,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PilgrimageCommandService {
     private static final Double MAX_DISTANCE_WITHIN_100M = 0.00135;
-    private final MemberRepository memberRepository;
     private final RallyRepository rallyRepository;
     private final PilgrimageRepository pilgrimageRepository;
     private final LikedRallyRepository likedRallyRepository;
@@ -165,12 +164,8 @@ public class PilgrimageCommandService {
     public PilgrimageSocketDto.ButtonState determineButtonState(Member member, Pilgrimage pilgrimage) {
         // 사용자가 지난 24시간 내에 인증 버튼 눌렀는지 확인
         boolean certifiedInLast = checkIfCertifiedInLast24Hours(member, pilgrimage);
-        // redis에 사용자의 기록이 남아있는지 확인
-        boolean isCertificationExpired = redisService.isCertificationExpired(member, pilgrimage);
         // 사용자가 이번 인증하기에 이미 방명록을 작성했는지 확인 (모든 상호작용 완료했는지)
         boolean hasWrittenGuestbook = checkIfGuestbookWritten(member, pilgrimage);
-        // 사용자가 이 성지순례에 작성한 방명록이 있는지 확인
-        boolean hasMultiWrittenGuestbook = checkIfMultiGuestbookWritten(member, pilgrimage);
 
         PilgrimageSocketDto.ButtonState newState = new PilgrimageSocketDto.ButtonState();
         newState.setCertifyButtonEnabled(false);
@@ -179,12 +174,12 @@ public class PilgrimageCommandService {
 
         // 24시간 내 인증 기록이 있는가?
         if (!certifiedInLast) {
-            // redis에 데이터가 있는가?
+            boolean isCertificationExpired = redisService.isCertificationExpired(member, pilgrimage);
             newState.setCertifyButtonEnabled((!isCertificationExpired) ? true : false);
         }
         // 이번 인증 기록에 대한 방명록이 있는가?
         else if (certifiedInLast && !hasWrittenGuestbook) {
-            // 이번이 이 성지순례에 대한 첫번째 방명록인가?
+            boolean hasMultiWrittenGuestbook = checkIfMultiGuestbookWritten(member, pilgrimage);
             newState.setGuestbookButtonEnabled(hasMultiWrittenGuestbook? false : true);
             newState.setMultiGuestbookButtonEnabled(hasMultiWrittenGuestbook? true : false);
         }
