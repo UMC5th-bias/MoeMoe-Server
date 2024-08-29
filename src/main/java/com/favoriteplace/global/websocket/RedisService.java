@@ -3,6 +3,7 @@ package com.favoriteplace.global.websocket;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.travel.Pilgrimage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -12,8 +13,8 @@ import java.time.Instant;
 @Service
 @RequiredArgsConstructor
 public class RedisService {
+    @Qualifier("customRedisTemplate")
     private final RedisTemplate<String, Object> redisTemplate;
-
     private static final String CERTIFICATION_KEY_PREFIX = "certification:";
     private static final Duration CERTIFICATION_EXPIRATION = Duration.ofHours(24);
 
