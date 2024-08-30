@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +22,7 @@ public class RedisService {
     // 사용자가 인증 장소에 접속한 시점을 저장
     public void saveCertificationTime(Long userId, Long pilgrimageId) {
         String key = CERTIFICATION_KEY_PREFIX + userId + ":" + pilgrimageId;
-        Instant now = Instant.now();
+        String now = DateTimeFormatter.ISO_INSTANT.format(Instant.now());
         redisTemplate.opsForValue().set(key, now);
         redisTemplate.expire(key, CERTIFICATION_EXPIRATION);
     }
@@ -29,8 +30,14 @@ public class RedisService {
     // 인증 시점에서 1분이 지났는지 확인
     public boolean isCertificationExpired(Member member, Pilgrimage pilgrimage) {
         String key = CERTIFICATION_KEY_PREFIX + member.getId() + ":" + pilgrimage.getId();
-        Instant savedTime = (Instant) redisTemplate.opsForValue().get(key);
-        return savedTime == null || savedTime.isBefore(Instant.now().minus(CERTIFICATION_EXPIRATION));
+        String savedTimeString = (String) redisTemplate.opsForValue().get(key);
+
+        if (savedTimeString == null) {
+            return true;
+        }
+
+        Instant savedTime = Instant.parse(savedTimeString);
+        return savedTime.isBefore(Instant.now().minus(CERTIFICATION_EXPIRATION));
     }
 
     public void deleteCertificationTime(Long userId, Long pilgrimageId) {

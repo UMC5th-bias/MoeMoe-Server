@@ -3,6 +3,7 @@ package com.favoriteplace.app.service;
 import com.favoriteplace.app.converter.CommonConverter;
 import com.favoriteplace.app.converter.PointHistoryConverter;
 import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.enums.PointType;
 import com.favoriteplace.app.domain.enums.RallyVersion;
 import com.favoriteplace.app.domain.item.AcquiredItem;
@@ -33,6 +34,7 @@ import java.util.Optional;
 @Transactional
 @RequiredArgsConstructor
 public class PilgrimageCommandService {
+    private final GuestBookRepository guestBookRepository;
     private static final Double MAX_DISTANCE_WITHIN_100M = 0.00135;
     private final RallyRepository rallyRepository;
     private final PilgrimageRepository pilgrimageRepository;
@@ -170,7 +172,7 @@ public class PilgrimageCommandService {
         PilgrimageSocketDto.ButtonState newState = new PilgrimageSocketDto.ButtonState();
         newState.setCertifyButtonEnabled(false);
         newState.setGuestbookButtonEnabled(false);
-        newState.setGuestbookButtonEnabled(false);
+        newState.setMultiGuestbookButtonEnabled(false);
 
         // 24시간 내 인증 기록이 있는가?
         if (!certifiedInLast) {
@@ -196,10 +198,16 @@ public class PilgrimageCommandService {
         List<VisitedPilgrimage> visitedPilgrimages = visitedPilgrimageRepository
                 .findByPilgrimageAndMemberOrderByCreatedAtDesc(pilgrimage, member);
 
-        ZoneId serverZoneId = ZoneId.of("Asia/Seoul");
-        ZonedDateTime nowInServerTimeZone = ZonedDateTime.now(serverZoneId);
+        if (visitedPilgrimages.isEmpty()) {
+            return false;
+        }
 
-        return false;
+        VisitedPilgrimage lastVisited = visitedPilgrimages.get(0);
+        ZonedDateTime lastVisitedTime = lastVisited.getCreatedAt().atZone(ZoneId.of("Asia/Seoul"));
+
+        ZonedDateTime nowInServerTimeZone = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
+
+        return lastVisitedTime.isAfter(nowInServerTimeZone.minusHours(24));
     }
 
     /**
@@ -209,6 +217,31 @@ public class PilgrimageCommandService {
      * @return
      */
     private boolean checkIfGuestbookWritten(Member member, Pilgrimage pilgrimage) {
+        // 방명록 목록 조회
+        List<GuestBook> guestBookList = guestBookRepository.findByMemberAndPilgrimageOrderByCreatedAtDesc(member, pilgrimage);
+        if (guestBookList == null || guestBookList.isEmpty()) {
+            return false;
+        }
+
+        // 방문 인증 정보 조회
+        List<VisitedPilgrimage> visitedPilgrimages = visitedPilgrimageRepository
+                .findByPilgrimageAndMemberOrderByCreatedAtDesc(pilgrimage, member);
+
+        if (visitedPilgrimages.isEmpty()) {
+            return false;
+        }
+
+        VisitedPilgrimage lastVisited = visitedPilgrimages.get(0);
+        ZonedDateTime lastVisitedTime = lastVisited.getCreatedAt().atZone(ZoneId.of("Asia/Seoul"));
+
+        // 최근 방문 인증 정보에 대한 방명록이 존재하는지 확인
+        for (GuestBook guestBook : guestBookList) {
+            ZonedDateTime guestBookCreatedTime = guestBook.getCreatedAt().atZone(ZoneId.of("Asia/Seoul"));
+
+            if (guestBookCreatedTime.isAfter(lastVisitedTime)) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -219,6 +252,10 @@ public class PilgrimageCommandService {
      * @return
      */
     private boolean checkIfMultiGuestbookWritten(Member member, Pilgrimage pilgrimage) {
-        return false;
+        List<GuestBook> guestBookList = guestBookRepository.findByMemberAndPilgrimageOrderByCreatedAtDesc(member, pilgrimage);
+        if (guestBookList == null || guestBookList.isEmpty()) {
+            return false;
+        }
+        return true;
     }
 }

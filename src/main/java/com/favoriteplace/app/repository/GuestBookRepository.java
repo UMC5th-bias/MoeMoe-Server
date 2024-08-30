@@ -2,6 +2,7 @@ package com.favoriteplace.app.repository;
 
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.GuestBook;
+import com.favoriteplace.app.domain.travel.Pilgrimage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,4 +18,6 @@ public interface GuestBookRepository extends JpaRepository<GuestBook, Long> {
     List<GuestBook> findByMemberOrderByCreatedAtDesc(Member member);
 
     Long countByMember(Member member);
+
+    List<GuestBook> findByMemberAndPilgrimageOrderByCreatedAtDesc(Member member, Pilgrimage pilgrimage);
 }
