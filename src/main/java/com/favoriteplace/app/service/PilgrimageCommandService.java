@@ -27,7 +27,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @Slf4j
@@ -44,6 +46,7 @@ public class PilgrimageCommandService {
     private final CompleteRallyRepository completeRallyRepository;
     private final AcquiredItemRepository acquiredItemRepository;
     private final RedisService redisService;
+    public static Map<Long, Map<Long, PilgrimageSocketDto.ButtonState>> lastButtonStateCache = new ConcurrentHashMap<>();
 
     /***
      * 랠리 찜하기
@@ -143,6 +146,42 @@ public class PilgrimageCommandService {
     }
 
     /**
+     * WebSocket location 이벤트
+     * @param pilgrimageId
+     * @param userLocation
+     * @param member
+     * @return
+     */
+    public PilgrimageSocketDto.ButtonState buttonStatusUpdate(Long pilgrimageId, PilgrimageDto.PilgrimageCertifyRequestDto userLocation, Member member) {
+        Pilgrimage pilgrimage = pilgrimageRepository.findById(pilgrimageId)
+                .orElseThrow(() -> new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
+
+        // 위치 정보 바탕으로 인증 가능 여부 Redis 저장
+        isLocationVerified(member, pilgrimage, userLocation.getLatitude(), userLocation.getLongitude());
+        // 버튼 상태 업데이트
+        PilgrimageSocketDto.ButtonState buttonState = determineButtonState(member, pilgrimage);
+
+        // 이전 버튼 상태와 비교해서 달라졌다면 전송, 아니면 null
+        synchronized (this) {
+            lastButtonStateCache.putIfAbsent(member.getId(), new ConcurrentHashMap<>());
+            Map<Long, PilgrimageSocketDto.ButtonState> pilgrimageStateMap = lastButtonStateCache.get(member.getId());
+
+            if (pilgrimageStateMap == null) {
+                pilgrimageStateMap = new ConcurrentHashMap<>();
+                lastButtonStateCache.put(member.getId(), pilgrimageStateMap);
+            }
+
+            PilgrimageSocketDto.ButtonState lastState = pilgrimageStateMap.get(pilgrimageId);
+
+            if (lastState == null || !buttonState.equals(lastState)) {
+                pilgrimageStateMap.put(pilgrimageId, buttonState);
+                return buttonState;
+            }
+        }
+        return null;
+    }
+
+    /**
      * 사용자가 성지순례 위치 100M 이내에 존재하는지 확인, 맞다면 redis 저장
      * @param pilgrimage 성지순례
      * @param latitude 사용자의 위도
@@ -157,10 +196,13 @@ public class PilgrimageCommandService {
     /**
      * 웹소켓 버튼 상태 지정
      * @param member 사용자
-     * @param pilgrimage 성지순례
+     * @param pilgrimageId 성지순례 ID
      * @return
      */
-    public PilgrimageSocketDto.ButtonState determineButtonState(Member member, Pilgrimage pilgrimage) {
+    public PilgrimageSocketDto.ButtonState determineButtonState(Member member, Long pilgrimageId) {
+        Pilgrimage pilgrimage = pilgrimageRepository.findById(pilgrimageId)
+                .orElseThrow(()->new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
+
         // 사용자가 지난 24시간 내에 인증 버튼 눌렀는지 확인
         boolean certifiedInLast = checkIfCertifiedInLast24Hours(member, pilgrimage);
         // 사용자가 이번 인증하기에 이미 방명록을 작성했는지 확인 (모든 상호작용 완료했는지)

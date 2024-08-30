@@ -19,16 +19,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import static com.favoriteplace.app.service.PilgrimageCommandService.lastButtonStateCache;
 
 @Controller
 @Slf4j
 @RequiredArgsConstructor
 public class PilgrimageSocketController {
     private final PilgrimageCommandService pilgrimageService;
-    private final PilgrimageRepository pilgrimageRepository;
-    private Map<Long, Map<Long, PilgrimageSocketDto.ButtonState>> lastButtonStateCache = new ConcurrentHashMap<>();
 
     /**
      * 위도/경도 전달 시 상태 변경 알리는 컨트롤러
@@ -50,35 +47,7 @@ public class PilgrimageSocketController {
                 ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
         Member member = userDetails.getMember();
 
-        Pilgrimage pilgrimage = pilgrimageRepository.findById(pilgrimageId)
-                .orElseThrow(() -> new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
-
-        // 위치 정보 바탕으로 인증 가능 여부 Redis 저장
-        pilgrimageService.isLocationVerified(member, pilgrimage,
-                userLocation.getLatitude(), userLocation.getLongitude());
-
-        // 버튼 상태 업데이트
-        PilgrimageSocketDto.ButtonState buttonState =
-                pilgrimageService.determineButtonState(member, pilgrimage);
-
-        // 이전 버튼 상태와 비교해서 달라졌다면 전송, 아니면 null
-        synchronized (this) {
-            lastButtonStateCache.putIfAbsent(member.getId(), new ConcurrentHashMap<>());
-            Map<Long, PilgrimageSocketDto.ButtonState> pilgrimageStateMap = lastButtonStateCache.get(member.getId());
-
-            if (pilgrimageStateMap == null) {
-                pilgrimageStateMap = new ConcurrentHashMap<>();
-                lastButtonStateCache.put(member.getId(), pilgrimageStateMap);
-            }
-
-            PilgrimageSocketDto.ButtonState lastState = pilgrimageStateMap.get(pilgrimageId);
-
-            if (lastState == null || !buttonState.equals(lastState)) {
-                pilgrimageStateMap.put(pilgrimageId, buttonState);
-                return buttonState;
-            }
-        }
-        return null;
+        return pilgrimageService.buttonStatusUpdate(pilgrimageId, userLocation, member);
     }
 
     /**
@@ -100,10 +69,7 @@ public class PilgrimageSocketController {
                 ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
         Member member = userDetails.getMember();
 
-        Pilgrimage pilgrimage = pilgrimageRepository.findById(pilgrimageId)
-                .orElseThrow(()->new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
-
-        PilgrimageSocketDto.ButtonState buttonState = pilgrimageService.determineButtonState(member, pilgrimage);
+        PilgrimageSocketDto.ButtonState buttonState = pilgrimageService.determineButtonState(member, pilgrimageId);
         lastButtonStateCache.get(member.getId()).put(pilgrimageId, buttonState);
         return buttonState;
     }
