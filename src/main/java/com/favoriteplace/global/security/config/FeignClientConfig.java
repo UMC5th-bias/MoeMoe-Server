@@ -1,6 +1,6 @@
 package com.favoriteplace.global.security.config;
 
-import com.favoriteplace.global.exception.ErrorCode;
+
 import com.favoriteplace.global.exception.RestApiException;
 import feign.FeignException;
 import feign.Response;
@@ -9,7 +9,9 @@ import feign.codec.ErrorDecoder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static com.favoriteplace.global.exception.ErrorCode.NOT_FOUND;
 import static com.favoriteplace.global.exception.ErrorCode.TOKEN_NOT_VALID;
+
 
 @Configuration
 public class FeignClientConfig {
@@ -28,7 +30,7 @@ public class FeignClientConfig {
                 return new RestApiException(TOKEN_NOT_VALID);
             } else if (response.status() == 404) {
                 // Not Found (404) 에러 처리
-                return new RestApiException(ErrorCode.NOT_FOUND);
+                return new RestApiException(NOT_FOUND);
             }
 
             // 기본적으로는 FeignException을 던집니다.

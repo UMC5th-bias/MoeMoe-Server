@@ -1,10 +1,10 @@
 package com.favoriteplace.app.controller;
 
+import com.favoriteplace.app.dto.member.KaKaoSignUpRequestDto;
 import com.favoriteplace.app.dto.member.MemberDto;
 import com.favoriteplace.app.dto.member.MemberDto.EmailCheckReqDto;
 import com.favoriteplace.app.dto.member.MemberDto.EmailDuplicateResDto;
 import com.favoriteplace.app.dto.member.MemberDto.EmailSendResDto;
-import com.favoriteplace.app.dto.member.MemberDto.MemberDetailResDto;
 import com.favoriteplace.app.dto.member.MemberDto.MemberSignUpReqDto;
 import com.favoriteplace.app.dto.member.MemberDto.TokenInfo;
 import com.favoriteplace.app.service.MailSendService;
@@ -36,8 +36,17 @@ public class MemberController {
         return ResponseEntity.ok(memberService.kakaoLogin(token));
     }
 
+    @PostMapping("/signup/kakao")
+    public ResponseEntity<MemberDto.MemberSignUpResDto> kakaoSignUp(
+            @RequestHeader("Authorization") final String token,
+            @RequestPart(required = false) final List<MultipartFile> images,
+            @RequestPart final KaKaoSignUpRequestDto data
+    ) {
+        return ResponseEntity.ok(memberService.kakaoSignUp(token, data));
+    }
+
     @PostMapping("/signup")
-    public ResponseEntity<MemberDetailResDto> signup(
+    public ResponseEntity<MemberDto.MemberSignUpResDto> signup(
             @RequestPart(required = false) List<MultipartFile> images,
             @RequestPart MemberSignUpReqDto data) throws IOException {
         return ResponseEntity.ok(memberService.signup(data, images));
