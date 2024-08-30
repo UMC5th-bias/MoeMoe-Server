@@ -73,8 +73,7 @@ public class PilgrimageCommandService {
      * @return
      */
     public CommonResponseDto.RallyResponseDto certifyToPilgrimage(Long pilgrimageId,
-                                                                 Member member,
-                                                                 PilgrimageDto.PilgrimageCertifyRequestDto form) {
+                                                                 Member member) {
         Pilgrimage pilgrimage = pilgrimageRepository.findById(pilgrimageId).orElseThrow(
                 () -> new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
 
@@ -87,15 +86,13 @@ public class PilgrimageCommandService {
         if (visitedPilgrimages.isEmpty()
                 || (!visitedPilgrimages.isEmpty()
                 && visitedPilgrimages.get(0).getPilgrimage().getCreatedAt().atZone(serverZoneId).plusHours(24L).isBefore(nowInServerTimeZone))) {
-            // 현재 좌표가 성지순례 장소 좌표 기준 100M 이내인지 확인
-            if (checkCoordinate(form, pilgrimage)){
-                throw new RestApiException(ErrorCode.PILGRIMAGE_CAN_NOT_CERTIFIED);
-            }
+
             // 성공 시 포인트 지급 -> 15p & visitedPilgrimage 추가
             successVisitedAndPointProcess(member, pilgrimage);
 
             Long completeCount = visitedPilgrimageRepository.findByDistinctCount(member.getId(), pilgrimage.getRally().getId());
             log.info("completeCount="+completeCount);
+
             // 랠리를 완료했는지 확인
             if (checkCompleteRally(member, pilgrimage, completeCount))
                 return CommonConverter.toRallyResponseDto(true, true,"<"+pilgrimage.getRally().getItem().getName()+"> 칭호를 얻었습니다!");

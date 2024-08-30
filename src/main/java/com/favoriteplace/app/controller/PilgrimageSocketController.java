@@ -2,6 +2,7 @@ package com.favoriteplace.app.controller;
 
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.travel.Pilgrimage;
+import com.favoriteplace.app.dto.CommonResponseDto;
 import com.favoriteplace.app.dto.travel.PilgrimageDto;
 import com.favoriteplace.app.dto.travel.PilgrimageSocketDto;
 import com.favoriteplace.app.repository.PilgrimageRepository;
@@ -72,9 +73,6 @@ public class PilgrimageSocketController {
 
             PilgrimageSocketDto.ButtonState lastState = pilgrimageStateMap.get(pilgrimageId);
 
-            log.debug("Last state: {}", lastState);
-            log.debug("Current state: {}", buttonState);
-
             if (lastState == null || !buttonState.equals(lastState)) {
                 pilgrimageStateMap.put(pilgrimageId, buttonState);
                 return buttonState;
@@ -108,5 +106,27 @@ public class PilgrimageSocketController {
         PilgrimageSocketDto.ButtonState buttonState = pilgrimageService.determineButtonState(member, pilgrimage);
         lastButtonStateCache.get(member.getId()).put(pilgrimageId, buttonState);
         return buttonState;
+    }
+
+    /**
+     * 성지순례 인증하기 버튼 클릭 이벤트
+     *
+     * 요청 컨트롤러 /app/certify/{pilgrimageId}
+     * 응답 컨트롤러 /pub/cerfity/{pilgrimageId}
+     *
+     * @param pilgrimageId 성지순례 ID
+     * @return
+     */
+    @MessageMapping("/certify/{pilgrimageId}")
+    @SendTo("/pub/certify/{pilgrimageId}")
+    public CommonResponseDto.RallyResponseDto certifyPilgrimage(@DestinationVariable Long pilgrimageId, Principal principal) {
+        if (principal == null)
+            throw new RestApiException(ErrorCode.USER_NOT_AUTHOR);
+
+        CustomUserDetails userDetails = (CustomUserDetails)
+                ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
+        Member member = userDetails.getMember();
+
+        return pilgrimageService.certifyToPilgrimage(pilgrimageId, member);
     }
 }

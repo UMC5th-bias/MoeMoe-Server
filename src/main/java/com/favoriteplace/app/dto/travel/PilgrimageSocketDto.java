@@ -29,4 +29,14 @@ public class PilgrimageSocketDto {
             return Objects.hash(certifyButtonEnabled, guestbookButtonEnabled, multiGuestbookButtonEnabled);
         }
     }
+
+    @Data
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CertifyMessageDto {
+        private Boolean success;
+        private Boolean isComplete;
+        private String message;
+    }
 }
