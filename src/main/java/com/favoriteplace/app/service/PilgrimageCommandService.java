@@ -46,7 +46,7 @@ public class PilgrimageCommandService {
     private final CompleteRallyRepository completeRallyRepository;
     private final AcquiredItemRepository acquiredItemRepository;
     private final RedisService redisService;
-    public static Map<Long, Map<Long, PilgrimageSocketDto.ButtonState>> lastButtonStateCache = new ConcurrentHashMap<>();
+    private Map<Long, Map<Long, PilgrimageSocketDto.ButtonState>> lastButtonStateCache = new ConcurrentHashMap<>();
 
     /***
      * 랠리 찜하기
@@ -224,6 +224,7 @@ public class PilgrimageCommandService {
             newState.setGuestbookButtonEnabled(hasMultiWrittenGuestbook? false : true);
             newState.setMultiGuestbookButtonEnabled(hasMultiWrittenGuestbook? true : false);
         }
+        lastButtonStateCache.get(member.getId()).put(pilgrimageId, newState);
         return newState;
     }
 
