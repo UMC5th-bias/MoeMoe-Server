@@ -4,6 +4,7 @@ import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.item.Item;
 import com.favoriteplace.app.dto.UserInfoResponseDto;
 import com.favoriteplace.app.dto.member.AuthKakaoLoginDto;
+import com.favoriteplace.app.dto.member.KaKaoSignUpRequestDto;
 import com.favoriteplace.app.dto.member.MemberDto;
 import com.favoriteplace.app.dto.member.MemberDto.EmailDuplicateResDto;
 import com.favoriteplace.app.dto.member.MemberDto.EmailSendReqDto;
@@ -54,18 +55,16 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberDto.MemberSignUpResDto kakaoSignUp(final String token, final MemberSignUpReqDto memberSignUpReqDto) {
+    public MemberDto.MemberSignUpResDto kakaoSignUp(final String token, final KaKaoSignUpRequestDto memberSignUpReqDto) {
         String userEmail = kakaoClient.getUserInfo(token).kakaoAccount().email();
 
         memberRepository.findByEmail(userEmail)
                 .ifPresent(a -> {throw new RestApiException(USER_ALREADY_EXISTS);});
 
         //TODO: 이미지 저장 로직(S3)
-        String password = passwordEncoder.encode(memberSignUpReqDto.getPassword());
-
         Item titleItem = itemRepository.findByName("새싹회원").get();
 
-        Member member = memberSignUpReqDto.toEntity(null, titleItem);
+        Member member = memberSignUpReqDto.toEntity(null, titleItem, userEmail);
         memberRepository.save(member);
 
         MemberDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(userEmail);

@@ -1,5 +1,6 @@
 package com.favoriteplace.app.controller;
 
+import com.favoriteplace.app.dto.member.KaKaoSignUpRequestDto;
 import com.favoriteplace.app.dto.member.MemberDto;
 import com.favoriteplace.app.dto.member.MemberDto.EmailCheckReqDto;
 import com.favoriteplace.app.dto.member.MemberDto.EmailDuplicateResDto;
@@ -35,11 +36,11 @@ public class MemberController {
         return ResponseEntity.ok(memberService.kakaoLogin(token));
     }
 
-    @PostMapping("/auth/signup/kakao")
+    @PostMapping("/signup/kakao")
     public ResponseEntity<MemberDto.MemberSignUpResDto> kakaoSignUp(
             @RequestHeader("Authorization") final String token,
             @RequestPart(required = false) final List<MultipartFile> images,
-            @RequestPart final MemberSignUpReqDto data
+            @RequestPart final KaKaoSignUpRequestDto data
     ) {
         return ResponseEntity.ok(memberService.kakaoSignUp(token, data));
     }

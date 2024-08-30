@@ -40,20 +40,6 @@ public class MemberDto {
                 .status(MemberStatus.Y)
                 .build();
         }
-
-        public Member toEntity(String profileImg, Item titleItem) {
-            return Member.builder()
-                    .nickname(nickname)
-                    .email(email)
-                    .alarmAllowance(snsAllow)
-                    .description(introduction)
-                    .profileImageUrl(profileImg == null ? null : ConvertUuidToUrl.convertUuidToUrl(profileImg))
-                    .point(0L)
-                    .loginType(LoginType.KAKAO)
-                    .profileTitle(titleItem)
-                    .status(MemberStatus.Y)
-                    .build();
-        }
     }
 
     @Builder
