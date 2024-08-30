@@ -45,7 +45,6 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false)
     private String email;
 
-    @Column(nullable = false)
     private String password;
 
     private String birthday;
@@ -71,8 +70,6 @@ public class Member extends BaseTimeEntity {
     @Enumerated(STRING)
     @Column(nullable = false)
     private LoginType loginType;
-
-    private Long authId;
 
     private String refreshToken;
 
