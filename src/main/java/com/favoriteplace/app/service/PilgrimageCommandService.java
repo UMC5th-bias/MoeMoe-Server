@@ -159,7 +159,7 @@ public class PilgrimageCommandService {
         // 위치 정보 바탕으로 인증 가능 여부 Redis 저장
         isLocationVerified(member, pilgrimage, userLocation.getLatitude(), userLocation.getLongitude());
         // 버튼 상태 업데이트
-        PilgrimageSocketDto.ButtonState buttonState = determineButtonState(member, pilgrimage);
+        PilgrimageSocketDto.ButtonState buttonState = determineButtonState(member, pilgrimageId);
 
         // 이전 버튼 상태와 비교해서 달라졌다면 전송, 아니면 null
         synchronized (this) {
