@@ -7,7 +7,6 @@ import com.favoriteplace.app.dto.member.AuthKakaoLoginDto;
 import com.favoriteplace.app.dto.member.MemberDto;
 import com.favoriteplace.app.dto.member.MemberDto.EmailDuplicateResDto;
 import com.favoriteplace.app.dto.member.MemberDto.EmailSendReqDto;
-import com.favoriteplace.app.dto.member.MemberDto.MemberDetailResDto;
 import com.favoriteplace.app.dto.member.MemberDto.MemberSignUpReqDto;
 import com.favoriteplace.app.repository.ItemRepository;
 import com.favoriteplace.app.repository.MemberRepository;
@@ -16,7 +15,6 @@ import com.favoriteplace.global.gcpImage.UploadImage;
 import com.favoriteplace.global.security.kakao.KakaoClient;
 import com.favoriteplace.global.security.provider.JwtTokenProvider;
 import com.favoriteplace.global.util.SecurityUtil;
-import com.google.rpc.context.AttributeContext.Auth;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -56,34 +54,53 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberDto.MemberDetailResDto signup(MemberSignUpReqDto memberSignUpReqDto, List<MultipartFile> images)
+    public MemberDto.MemberSignUpResDto kakaoSignUp(final String token, final MemberSignUpReqDto memberSignUpReqDto) {
+        String userEmail = kakaoClient.getUserInfo(token).kakaoAccount().email();
+
+        memberRepository.findByEmail(userEmail)
+                .ifPresent(a -> {throw new RestApiException(USER_ALREADY_EXISTS);});
+
+        //TODO: 이미지 저장 로직(S3)
+        String password = passwordEncoder.encode(memberSignUpReqDto.getPassword());
+
+        Item titleItem = itemRepository.findByName("새싹회원").get();
+
+        Member member = memberSignUpReqDto.toEntity(null, titleItem);
+        memberRepository.save(member);
+
+        MemberDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(userEmail);
+        member.updateRefreshToken(tokenInfo.getRefreshToken());
+
+        return MemberDto.MemberSignUpResDto.from(member, tokenInfo);
+
+    }
+
+    @Transactional
+    public MemberDto.MemberSignUpResDto signup(MemberSignUpReqDto memberSignUpReqDto, List<MultipartFile> images)
         throws IOException {
         memberRepository.findByEmail(memberSignUpReqDto.getEmail())
-            .ifPresentOrElse(
+            .ifPresent(
                 existingMember -> {
                     throw new RestApiException(USER_ALREADY_EXISTS);
-                },
-                () -> {
-                    // 값이 없을 때 수행할 동작 (예외를 발생시키지 않는 경우)
                 }
             );
 
-        String uuid = null;
+        String profileImageUrl = null;
         String password = passwordEncoder.encode(memberSignUpReqDto.getPassword());
 
         if (images != null && !images.get(0).isEmpty()) {
-            uuid = uploadImage.uploadImageToCloud(images.get(0));
+            profileImageUrl = uploadImage.uploadImageToCloud(images.get(0));
         }
 
         Item titleItem = itemRepository.findByName("새싹회원").get();
 
-        Member member = memberSignUpReqDto.toEntity(password, uuid, titleItem);
+        Member member = memberSignUpReqDto.toEntity(password, profileImageUrl, titleItem);
         memberRepository.save(member);
 
         MemberDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(member.getEmail());
         member.updateRefreshToken(tokenInfo.getRefreshToken());
 
-        return MemberDetailResDto.from(member, tokenInfo);
+        return MemberDto.MemberSignUpResDto.from(member, tokenInfo);
     }
 
     @Transactional

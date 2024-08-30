@@ -40,12 +40,26 @@ public class MemberDto {
                 .status(MemberStatus.Y)
                 .build();
         }
+
+        public Member toEntity(String profileImg, Item titleItem) {
+            return Member.builder()
+                    .nickname(nickname)
+                    .email(email)
+                    .alarmAllowance(snsAllow)
+                    .description(introduction)
+                    .profileImageUrl(profileImg == null ? null : ConvertUuidToUrl.convertUuidToUrl(profileImg))
+                    .point(0L)
+                    .loginType(LoginType.KAKAO)
+                    .profileTitle(titleItem)
+                    .status(MemberStatus.Y)
+                    .build();
+        }
     }
 
     @Builder
     @Getter
     @AllArgsConstructor
-    public static class MemberDetailResDto {
+    public static class MemberSignUpResDto {
         private String nickname;
         private String introduction;
         private String profileImage;
@@ -53,8 +67,8 @@ public class MemberDto {
         private String accessToken;
         private String refreshToken;
 
-        public static MemberDetailResDto from(Member member, TokenInfo tokenInfo) {
-            return MemberDetailResDto.builder()
+        public static MemberSignUpResDto from(Member member, TokenInfo tokenInfo) {
+            return MemberSignUpResDto.builder()
                 .nickname(member.getNickname())
                 .introduction(member.getDescription())
                 .profileImage(member.getProfileImageUrl())
