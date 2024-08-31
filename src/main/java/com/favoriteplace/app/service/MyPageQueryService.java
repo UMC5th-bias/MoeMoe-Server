@@ -52,7 +52,7 @@ public class MyPageQueryService {
 
         // 사용자 보유 아이템 조회
         List<AcquiredItem> items = acquiredItemRepository
-                .findByMemberAndItem_Type(member, type=="title"?ItemType.TITLE:ItemType.ICON);
+                .findByMemberAndItem_Type(member, type.equals("title")?ItemType.TITLE:ItemType.ICON);
 
         List<List<MyPageDto.MyItemDetailDto>> result = new ArrayList<>();
 

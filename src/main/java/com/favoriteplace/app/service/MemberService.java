@@ -3,18 +3,19 @@ package com.favoriteplace.app.service;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.item.Item;
 import com.favoriteplace.app.dto.UserInfoResponseDto;
+import com.favoriteplace.app.dto.member.AuthKakaoLoginDto;
+import com.favoriteplace.app.dto.member.KaKaoSignUpRequestDto;
 import com.favoriteplace.app.dto.member.MemberDto;
 import com.favoriteplace.app.dto.member.MemberDto.EmailDuplicateResDto;
 import com.favoriteplace.app.dto.member.MemberDto.EmailSendReqDto;
-import com.favoriteplace.app.dto.member.MemberDto.MemberDetailResDto;
 import com.favoriteplace.app.dto.member.MemberDto.MemberSignUpReqDto;
 import com.favoriteplace.app.repository.ItemRepository;
 import com.favoriteplace.app.repository.MemberRepository;
 import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.gcpImage.UploadImage;
+import com.favoriteplace.global.security.kakao.KakaoClient;
 import com.favoriteplace.global.security.provider.JwtTokenProvider;
 import com.favoriteplace.global.util.SecurityUtil;
-import com.google.rpc.context.AttributeContext.Auth;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -27,9 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
-import static com.favoriteplace.global.exception.ErrorCode.TOKEN_NOT_VALID;
-import static com.favoriteplace.global.exception.ErrorCode.USER_ALREADY_EXISTS;
-import static com.favoriteplace.global.exception.ErrorCode.USER_NOT_FOUND;
+import static com.favoriteplace.global.exception.ErrorCode.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -43,33 +42,64 @@ public class MemberService {
     private final UploadImage uploadImage;
     private final ItemRepository itemRepository;
     private final RedisTemplate redisTemplate;
+    private final KakaoClient kakaoClient;
+
+    public MemberDto.TokenInfo kakaoLogin(final String token) {
+        AuthKakaoLoginDto userInfo = kakaoClient.getUserInfo(token);
+
+        // 최초 로그인이라면 회원가입 API로 통신하도록
+        Member member = memberRepository.findByEmail(userInfo.kakaoAccount().email())
+                .orElseThrow(() -> new RestApiException(NOT_SIGNUP_WITH_KAKAO));
+
+        return jwtTokenProvider.generateToken(userInfo.kakaoAccount().email());
+    }
 
     @Transactional
-    public MemberDto.MemberDetailResDto signup(MemberSignUpReqDto memberSignUpReqDto, List<MultipartFile> images)
+    public MemberDto.MemberSignUpResDto kakaoSignUp(final String token, final KaKaoSignUpRequestDto memberSignUpReqDto) {
+        String userEmail = kakaoClient.getUserInfo(token).kakaoAccount().email();
+
+        memberRepository.findByEmail(userEmail)
+                .ifPresent(a -> {throw new RestApiException(USER_ALREADY_EXISTS);});
+
+        //TODO: 이미지 저장 로직(S3)
+        Item titleItem = itemRepository.findByName("새싹회원").get();
+
+        Member member = memberSignUpReqDto.toEntity(null, titleItem, userEmail);
+        memberRepository.save(member);
+
+        MemberDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(userEmail);
+        member.updateRefreshToken(tokenInfo.getRefreshToken());
+
+        return MemberDto.MemberSignUpResDto.from(member, tokenInfo);
+
+    }
+
+    @Transactional
+    public MemberDto.MemberSignUpResDto signup(MemberSignUpReqDto memberSignUpReqDto, List<MultipartFile> images)
         throws IOException {
         memberRepository.findByEmail(memberSignUpReqDto.getEmail())
-            .ifPresentOrElse(
+            .ifPresent(
                 existingMember -> {
                     throw new RestApiException(USER_ALREADY_EXISTS);
-                },
-                () -> {
-                    // 값이 없을 때 수행할 동작 (예외를 발생시키지 않는 경우)
                 }
             );
 
-        String uuid = null;
+        String profileImageUrl = null;
         String password = passwordEncoder.encode(memberSignUpReqDto.getPassword());
 
         if (images != null && !images.get(0).isEmpty()) {
-            uuid = uploadImage.uploadImageToCloud(images.get(0));
+            profileImageUrl = uploadImage.uploadImageToCloud(images.get(0));
         }
 
         Item titleItem = itemRepository.findByName("새싹회원").get();
 
-        Member member = memberSignUpReqDto.toEntity(password, uuid, titleItem);
+        Member member = memberSignUpReqDto.toEntity(password, profileImageUrl, titleItem);
         memberRepository.save(member);
 
-        return MemberDetailResDto.from(member);
+        MemberDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(member.getEmail());
+        member.updateRefreshToken(tokenInfo.getRefreshToken());
+
+        return MemberDto.MemberSignUpResDto.from(member, tokenInfo);
     }
 
     @Transactional
@@ -82,8 +112,7 @@ public class MemberService {
 
     @Transactional
     public void setNewPassword(String email, String password) {
-        Member member = memberRepository.findByEmail(email)
-            .orElseThrow(() -> new RestApiException(USER_NOT_FOUND));
+        Member member = findMember(email);
 
         String newPassword = passwordEncoder.encode(password);
         member.updatePassword(newPassword);
@@ -105,8 +134,7 @@ public class MemberService {
         }
 
         Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
-        Member member = memberRepository.findByEmail(authentication.getName())
-            .orElseThrow(() -> new RestApiException(USER_NOT_FOUND));
+        Member member = findMember(authentication.getName());
 
         if(member.getRefreshToken() != null && !member.getRefreshToken().isEmpty()) {
             member.deleteRefreshToken(member.getRefreshToken());
@@ -116,6 +144,11 @@ public class MemberService {
         Long expriation = jwtTokenProvider.getExpiration(accessToken);
         redisTemplate.opsForValue()
             .set(accessToken, "logout", expriation, TimeUnit.MICROSECONDS);
+    }
+
+    public Member findMember(final String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new RestApiException(USER_NOT_FOUND));
     }
 
 }

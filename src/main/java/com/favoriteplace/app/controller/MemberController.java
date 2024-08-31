@@ -1,10 +1,10 @@
 package com.favoriteplace.app.controller;
 
+import com.favoriteplace.app.dto.member.KaKaoSignUpRequestDto;
 import com.favoriteplace.app.dto.member.MemberDto;
 import com.favoriteplace.app.dto.member.MemberDto.EmailCheckReqDto;
 import com.favoriteplace.app.dto.member.MemberDto.EmailDuplicateResDto;
 import com.favoriteplace.app.dto.member.MemberDto.EmailSendResDto;
-import com.favoriteplace.app.dto.member.MemberDto.MemberDetailResDto;
 import com.favoriteplace.app.dto.member.MemberDto.MemberSignUpReqDto;
 import com.favoriteplace.app.dto.member.MemberDto.TokenInfo;
 import com.favoriteplace.app.service.MailSendService;
@@ -17,13 +17,7 @@ import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -35,9 +29,26 @@ public class MemberController {
     private final JwtTokenProvider jwtTokenProvider;
     private final SecurityUtil securityUtil;
 
+    @PostMapping("/login/kakao")
+    public ResponseEntity<TokenInfo> kakaoLogin(
+            @RequestHeader("Authorization") final String token
+    ) {
+        return ResponseEntity.ok(memberService.kakaoLogin(token));
+    }
+
+    @PostMapping("/signup/kakao")
+    public ResponseEntity<MemberDto.MemberSignUpResDto> kakaoSignUp(
+            @RequestHeader("Authorization") final String token,
+            @RequestPart(required = false) final List<MultipartFile> images,
+            @RequestPart final KaKaoSignUpRequestDto data
+    ) {
+        return ResponseEntity.ok(memberService.kakaoSignUp(token, data));
+    }
+
     @PostMapping("/signup")
-    public ResponseEntity<MemberDetailResDto> signup(@RequestPart(required = false) List<MultipartFile> images, @RequestPart
-        MemberSignUpReqDto data) throws IOException {
+    public ResponseEntity<MemberDto.MemberSignUpResDto> signup(
+            @RequestPart(required = false) List<MultipartFile> images,
+            @RequestPart MemberSignUpReqDto data) throws IOException {
         return ResponseEntity.ok(memberService.signup(data, images));
     }
 
@@ -70,5 +81,4 @@ public class MemberController {
 
         return ResponseEntity.ok("로그아웃 되었습니다.");
     }
-
 }

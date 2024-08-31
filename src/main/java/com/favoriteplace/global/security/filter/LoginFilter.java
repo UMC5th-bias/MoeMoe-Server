@@ -31,5 +31,4 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         return authenticationManager.authenticate(authRequest);
 
     }
-
 }

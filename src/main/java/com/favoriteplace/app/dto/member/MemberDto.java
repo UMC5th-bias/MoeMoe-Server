@@ -45,18 +45,22 @@ public class MemberDto {
     @Builder
     @Getter
     @AllArgsConstructor
-    public static class MemberDetailResDto {
+    public static class MemberSignUpResDto {
         private String nickname;
         private String introduction;
         private String profileImage;
         private String profileTitleItem;
+        private String accessToken;
+        private String refreshToken;
 
-        public static MemberDetailResDto from(Member member) {
-            return MemberDetailResDto.builder()
+        public static MemberSignUpResDto from(Member member, TokenInfo tokenInfo) {
+            return MemberSignUpResDto.builder()
                 .nickname(member.getNickname())
                 .introduction(member.getDescription())
                 .profileImage(member.getProfileImageUrl())
                 .profileTitleItem(member.getProfileTitle().getDefaultImage().getUrl())
+                .accessToken(tokenInfo.accessToken)
+                .refreshToken(tokenInfo.refreshToken)
                 .build();
         }
     }

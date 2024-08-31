@@ -64,14 +64,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // Add more paths and methods as needed
     );
 
-//    @Override
-//    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-//        String requestURI = request.getServletPath();
-//        String method = request.getMethod();
-//
-//        return !excludePaths.stream()
-//            .anyMatch(excludePath -> excludePath.matches(requestURI, method));
-//    }
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String requestURI = request.getServletPath();
+        String method = request.getMethod();
+
+        return !excludePaths.stream()
+            .anyMatch(excludePath -> excludePath.matches(requestURI, method));
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -79,6 +79,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // 1. Request Header 에서 JWT 토큰 추출
         String token = resolveToken((HttpServletRequest) request);
+
+        if ("websocket".equalsIgnoreCase(request.getHeader("Upgrade"))) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         String requestURI = httpServletRequest.getRequestURI();
 
         // 2. validateToken 으로 토큰 유효성 검사
