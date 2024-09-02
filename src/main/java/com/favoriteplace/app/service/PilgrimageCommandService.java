@@ -75,8 +75,7 @@ public class PilgrimageCommandService {
      * @param member 인증한 사용자
      * @return
      */
-    public CommonResponseDto.RallyResponseDto certifyToPilgrimage(Long pilgrimageId,
-                                                                 Member member) {
+    public CommonResponseDto.RallyResponseDto certifyToPilgrimage(Long pilgrimageId, Member member) {
         Pilgrimage pilgrimage = pilgrimageRepository.findById(pilgrimageId).orElseThrow(
                 () -> new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
 

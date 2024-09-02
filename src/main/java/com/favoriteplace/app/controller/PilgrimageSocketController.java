@@ -65,7 +65,7 @@ public class PilgrimageSocketController {
                 ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
         Member member = userDetails.getMember();
 
-        return pilgrimageService.determineButtonState(member, pilgrimageId);
+        return pilgrimageService.determineButtonState(member, pilgrimageId, true);
     }
 
     /**
