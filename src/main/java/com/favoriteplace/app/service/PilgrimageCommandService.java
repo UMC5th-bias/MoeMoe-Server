@@ -171,7 +171,7 @@ public class PilgrimageCommandService {
             PilgrimageSocketDto.ButtonState lastState = pilgrimageStateMap.get(pilgrimageId);
 
             // 버튼 상태 업데이트
-            PilgrimageSocketDto.ButtonState buttonState = determineButtonState(member, pilgrimageId, false);
+            PilgrimageSocketDto.ButtonState buttonState = determineButtonState(member, pilgrimageId);
 
             if (!buttonState.equals(lastState)) {
                 pilgrimageStateMap.put(pilgrimageId, buttonState);
@@ -199,31 +199,11 @@ public class PilgrimageCommandService {
      * @param pilgrimageId 성지순례 ID
      * @return
      */
-    public PilgrimageSocketDto.ButtonState determineButtonState(Member member, Long pilgrimageId, boolean firstFlag) {
+    public PilgrimageSocketDto.ButtonState determineButtonState(Member member, Long pilgrimageId) {
         PilgrimageSocketDto.ButtonState newState = new PilgrimageSocketDto.ButtonState();
         newState.setCertifyButtonEnabled(false);
         newState.setGuestbookButtonEnabled(false);
         newState.setMultiGuestbookButtonEnabled(false);
-
-        // 이미 캐시에 저장된 버튼이 있다면 바로 호출
-        if (firstFlag) {
-            synchronized (this) {
-                lastButtonStateCache.putIfAbsent(member.getId(), new ConcurrentHashMap<>());
-                Map<Long, PilgrimageSocketDto.ButtonState> pilgrimageStateMap = lastButtonStateCache.get(member.getId());
-
-                if (pilgrimageStateMap == null) {
-                    pilgrimageStateMap = new ConcurrentHashMap<>();
-                    lastButtonStateCache.put(member.getId(), pilgrimageStateMap);
-                }
-
-                PilgrimageSocketDto.ButtonState lastState = pilgrimageStateMap.get(pilgrimageId);
-
-                if (lastState != null) {
-                    pilgrimageStateMap.put(pilgrimageId, newState);
-                    return newState;
-                }
-            }
-        }
 
         // 캐시에 저장된 버튼이 없다면 새로 상태 저장
         Pilgrimage pilgrimage = pilgrimageRepository.findById(pilgrimageId)
@@ -249,6 +229,31 @@ public class PilgrimageCommandService {
             lastButtonStateCache.get(member.getId()).put(pilgrimageId, newState);
         }
         return newState;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public PilgrimageSocketDto.ButtonState initButton (Member member, Long pilgrimageId) {
+        PilgrimageSocketDto.ButtonState newState = new PilgrimageSocketDto.ButtonState();
+        newState.setCertifyButtonEnabled(false);
+        newState.setGuestbookButtonEnabled(false);
+        newState.setMultiGuestbookButtonEnabled(false);
+
+        // 이미 캐시에 저장된 버튼이 있다면 바로 호출
+        synchronized (this) {
+            lastButtonStateCache.putIfAbsent(member.getId(), new ConcurrentHashMap<>());
+            Map<Long, PilgrimageSocketDto.ButtonState> pilgrimageStateMap = lastButtonStateCache.get(member.getId());
+
+            PilgrimageSocketDto.ButtonState lastState = pilgrimageStateMap.get(pilgrimageId);
+
+            if (lastState != null) {
+                pilgrimageStateMap.put(pilgrimageId, newState);
+                return lastState;
+            }
+            return newState;
+        }
     }
 
     /**

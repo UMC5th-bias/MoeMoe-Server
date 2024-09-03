@@ -42,7 +42,7 @@ public class PilgrimageSocketController {
                 ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
         Member member = userDetails.getMember();
 
-        PilgrimageSocketDto.ButtonState buttonState = pilgrimageService.determineButtonState(member, pilgrimageId, true);
+        PilgrimageSocketDto.ButtonState buttonState = pilgrimageService.initButton(member, pilgrimageId);
         log.info("connect button state: " + buttonState);
         return buttonState;
     }
