@@ -43,7 +43,6 @@ public class PilgrimageSocketController {
         Member member = userDetails.getMember();
 
         PilgrimageSocketDto.ButtonState buttonState = pilgrimageService.initButton(member, pilgrimageId);
-        log.info("connect button state: " + buttonState);
         return buttonState;
     }
 
@@ -68,7 +67,6 @@ public class PilgrimageSocketController {
         Member member = userDetails.getMember();
 
         PilgrimageSocketDto.ButtonState buttonState = pilgrimageService.buttonStatusUpdate(pilgrimageId, userLocation, member);
-        log.info("location button state: " + buttonState);
         return buttonState;
     }
 
