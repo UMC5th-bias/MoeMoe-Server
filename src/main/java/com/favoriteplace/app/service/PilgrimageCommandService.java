@@ -157,8 +157,6 @@ public class PilgrimageCommandService {
 
         // 위치 정보 바탕으로 인증 가능 여부 Redis 저장
         isLocationVerified(member, pilgrimage, userLocation.getLatitude(), userLocation.getLongitude());
-        // 버튼 상태 업데이트
-        PilgrimageSocketDto.ButtonState buttonState = determineButtonState(member, pilgrimageId);
 
         // 이전 버튼 상태와 비교해서 달라졌다면 전송, 아니면 null
         synchronized (this) {
@@ -172,7 +170,10 @@ public class PilgrimageCommandService {
 
             PilgrimageSocketDto.ButtonState lastState = pilgrimageStateMap.get(pilgrimageId);
 
-            if (lastState == null || !buttonState.equals(lastState)) {
+            // 버튼 상태 업데이트
+            PilgrimageSocketDto.ButtonState buttonState = determineButtonState(member, pilgrimageId, false);
+
+            if (!buttonState.equals(lastState)) {
                 pilgrimageStateMap.put(pilgrimageId, buttonState);
                 return buttonState;
             }
@@ -198,7 +199,33 @@ public class PilgrimageCommandService {
      * @param pilgrimageId 성지순례 ID
      * @return
      */
-    public PilgrimageSocketDto.ButtonState determineButtonState(Member member, Long pilgrimageId) {
+    public PilgrimageSocketDto.ButtonState determineButtonState(Member member, Long pilgrimageId, boolean firstFlag) {
+        PilgrimageSocketDto.ButtonState newState = new PilgrimageSocketDto.ButtonState();
+        newState.setCertifyButtonEnabled(false);
+        newState.setGuestbookButtonEnabled(false);
+        newState.setMultiGuestbookButtonEnabled(false);
+
+        // 이미 캐시에 저장된 버튼이 있다면 바로 호출
+        if (firstFlag) {
+            synchronized (this) {
+                lastButtonStateCache.putIfAbsent(member.getId(), new ConcurrentHashMap<>());
+                Map<Long, PilgrimageSocketDto.ButtonState> pilgrimageStateMap = lastButtonStateCache.get(member.getId());
+
+                if (pilgrimageStateMap == null) {
+                    pilgrimageStateMap = new ConcurrentHashMap<>();
+                    lastButtonStateCache.put(member.getId(), pilgrimageStateMap);
+                }
+
+                PilgrimageSocketDto.ButtonState lastState = pilgrimageStateMap.get(pilgrimageId);
+
+                if (lastState != null) {
+                    pilgrimageStateMap.put(pilgrimageId, newState);
+                    return newState;
+                }
+            }
+        }
+
+        // 캐시에 저장된 버튼이 없다면 새로 상태 저장
         Pilgrimage pilgrimage = pilgrimageRepository.findById(pilgrimageId)
                 .orElseThrow(()->new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
 
@@ -206,11 +233,6 @@ public class PilgrimageCommandService {
         boolean certifiedInLast = checkIfCertifiedInLast24Hours(member, pilgrimage);
         // 사용자가 이번 인증하기에 이미 방명록을 작성했는지 확인 (모든 상호작용 완료했는지)
         boolean hasWrittenGuestbook = checkIfGuestbookWritten(member, pilgrimage);
-
-        PilgrimageSocketDto.ButtonState newState = new PilgrimageSocketDto.ButtonState();
-        newState.setCertifyButtonEnabled(false);
-        newState.setGuestbookButtonEnabled(false);
-        newState.setMultiGuestbookButtonEnabled(false);
 
         // 24시간 내 인증 기록이 있는가?
         if (!certifiedInLast) {
@@ -223,7 +245,9 @@ public class PilgrimageCommandService {
             newState.setGuestbookButtonEnabled(hasMultiWrittenGuestbook? false : true);
             newState.setMultiGuestbookButtonEnabled(hasMultiWrittenGuestbook? true : false);
         }
-        lastButtonStateCache.get(member.getId()).put(pilgrimageId, newState);
+        synchronized (this) {
+            lastButtonStateCache.get(member.getId()).put(pilgrimageId, newState);
+        }
         return newState;
     }
 
