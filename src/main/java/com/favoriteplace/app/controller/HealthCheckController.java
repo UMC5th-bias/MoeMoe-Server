@@ -1,15 +1,13 @@
 package com.favoriteplace.app.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/health")
 public class HealthCheckController {
 
-    @GetMapping("/health")
+    @GetMapping()
     public String health(){
         return "hello success!";
     }
