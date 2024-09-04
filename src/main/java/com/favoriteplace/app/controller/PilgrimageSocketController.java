@@ -24,6 +24,29 @@ public class PilgrimageSocketController {
     private final PilgrimageCommandService pilgrimageService;
 
     /**
+     * 최초 접근 시 버튼 상태 전달하는 컨트롤러
+     *
+     * 요청 컨트롤러 /app/connect/{pilgrimageId}
+     * 응답 컨트롤러 /pub/statusUpdate/{pilgrimageId}
+     *
+     * @param pilgrimageId 성지순례 ID
+     * @return
+     */
+    @MessageMapping("/connect/{pilgrimageId}")
+    @SendTo("/pub/statusUpdate/{pilgrimageId}")
+    public PilgrimageSocketDto.ButtonState sendInitialStatus(@DestinationVariable Long pilgrimageId,  Principal principal) {
+        if (principal == null)
+            throw new RestApiException(ErrorCode.USER_NOT_AUTHOR);
+
+        CustomUserDetails userDetails = (CustomUserDetails)
+                ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
+        Member member = userDetails.getMember();
+
+        PilgrimageSocketDto.ButtonState buttonState = pilgrimageService.initButton(member, pilgrimageId);
+        return buttonState;
+    }
+
+    /**
      * 위도/경도 전달 시 상태 변경 알리는 컨트롤러
      *
      * 요청 컨트롤러 /app/location/{pilgrimageId}
@@ -43,29 +66,8 @@ public class PilgrimageSocketController {
                 ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
         Member member = userDetails.getMember();
 
-        return pilgrimageService.buttonStatusUpdate(pilgrimageId, userLocation, member);
-    }
-
-    /**
-     * 최초 접근 시 버튼 상태 전달하는 컨트롤러
-     *
-     * 요청 컨트롤러 /app/connect/{pilgrimageId}
-     * 응답 컨트롤러 /pub/statusUpdate/{pilgrimageId}
-     *
-     * @param pilgrimageId 성지순례 ID
-     * @return
-     */
-    @MessageMapping("/connect/{pilgrimageId}")
-    @SendTo("/pub/statusUpdate/{pilgrimageId}")
-    public PilgrimageSocketDto.ButtonState sendInitialStatus(@DestinationVariable Long pilgrimageId,  Principal principal) {
-        if (principal == null)
-            throw new RestApiException(ErrorCode.USER_NOT_AUTHOR);
-
-        CustomUserDetails userDetails = (CustomUserDetails)
-                ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
-        Member member = userDetails.getMember();
-
-        return pilgrimageService.determineButtonState(member, pilgrimageId);
+        PilgrimageSocketDto.ButtonState buttonState = pilgrimageService.buttonStatusUpdate(pilgrimageId, userLocation, member);
+        return buttonState;
     }
 
     /**

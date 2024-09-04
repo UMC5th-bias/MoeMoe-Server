@@ -22,4 +22,9 @@ public interface LikedRallyRepository extends JpaRepository<LikedRally, Long> {
             "GROUP BY l.rally " +
             "ORDER BY COUNT(l) DESC")
     List<Rally> findMonthlyTrendingRally(@Param("startDate") LocalDateTime startDate);
+
+    @Query("SELECT DISTINCT lr.rally.id "+
+            "FROM LikedRally lr " +
+            "WHERE lr.member.id = :memberId")
+    List<Long> findDistinctRallyIdsByMember(@Param("memberId") Long memberId);
 }

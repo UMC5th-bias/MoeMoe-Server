@@ -73,6 +73,8 @@ public class Member extends BaseTimeEntity {
 
     private String refreshToken;
 
+    private String fcmToken;
+
     public void updatePassword(String password) { this.password = password; }
 
     public void updateRefreshToken(String refreshToken) {
@@ -98,4 +100,5 @@ public class Member extends BaseTimeEntity {
     public void updateTitle(Item title) {
         this.profileTitle = title;
     }
+    public void refreshFcmToken(String fcmToken){this.fcmToken = fcmToken;}
 }

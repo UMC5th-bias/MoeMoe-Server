@@ -1,9 +1,9 @@
 package com.favoriteplace.global.security.config;
 
-import com.favoriteplace.global.security.Filter.ExceptionHandlerFilter;
-import com.favoriteplace.global.security.Filter.JwtAuthenticationEntryPoint;
-import com.favoriteplace.global.security.Filter.JwtAuthenticationFilter;
-import com.favoriteplace.global.security.Filter.LoginFilter;
+import com.favoriteplace.global.security.filter.ExceptionHandlerFilter;
+import com.favoriteplace.global.security.filter.JwtAuthenticationEntryPoint;
+import com.favoriteplace.global.security.filter.JwtAuthenticationFilter;
+import com.favoriteplace.global.security.filter.LoginFilter;
 import com.favoriteplace.global.security.handler.CustomAuthenticationFailHandler;
 import com.favoriteplace.global.security.handler.CustomAuthenticationSuccessHandler;
 import com.favoriteplace.global.security.handler.JwtAccessDeniedHandler;
@@ -12,8 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,7 +20,6 @@ import org.springframework.security.config.annotation.web.configurers.CsrfConfig
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;

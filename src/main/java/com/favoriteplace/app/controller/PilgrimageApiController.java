@@ -1,10 +1,7 @@
 package com.favoriteplace.app.controller;
 
 import com.favoriteplace.app.domain.Member;
-import com.favoriteplace.app.domain.travel.Rally;
 import com.favoriteplace.app.dto.CommonResponseDto;
-import com.favoriteplace.app.dto.community.GuestBookRequestDto;
-import com.favoriteplace.app.dto.community.PostResponseDto;
 import com.favoriteplace.app.dto.travel.PilgrimageDto;
 import com.favoriteplace.app.dto.travel.RallyDto;
 import com.favoriteplace.app.service.PilgrimageCommandService;
@@ -15,12 +12,9 @@ import com.favoriteplace.global.util.SecurityUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -105,6 +99,22 @@ public class PilgrimageApiController {
     public CommonResponseDto.PostResponseDto likeToRally(@PathVariable("rally_id")Long rallyId){
         Member member = securityUtil.getUser();
         return pilgrimageCommandService.likeToRally(rallyId, member);
+    }
+
+    // 랠리 FCM 구독
+    @PostMapping("/{rally_id}/subscribe")
+    public ResponseEntity<?> subscribeRally(@PathVariable("rally_id") Long rallyId){
+        Member member = securityUtil.getUser();
+        pilgrimageCommandService.subscribeRally(rallyId, member);
+        return ResponseEntity.ok().build();
+    }
+
+    // 랠리 FCM 구독 취소
+    @DeleteMapping("/{rally_id}/unsubscribe")
+    public ResponseEntity<?> unsubscribeRally(@PathVariable("rally_id") Long rallyId){
+        Member member = securityUtil.getUser();
+        pilgrimageCommandService.unsubscribeRally(rallyId, member);
+        return ResponseEntity.noContent().build();
     }
 
     // 성지순례 장소 방문 인증하기
