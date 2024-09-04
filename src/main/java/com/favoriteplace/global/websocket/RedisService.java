@@ -23,8 +23,8 @@ public class RedisService {
     public void saveCertificationTime(Long userId, Long pilgrimageId) {
         String key = CERTIFICATION_KEY_PREFIX + userId + ":" + pilgrimageId;
         String now = DateTimeFormatter.ISO_INSTANT.format(Instant.now());
-        redisTemplate.opsForValue().set(key, now);
-        redisTemplate.expire(key, CERTIFICATION_EXPIRATION);
+
+        redisTemplate.opsForValue().set(key, now, CERTIFICATION_EXPIRATION);
     }
 
     // 인증 시점에서 1분이 지났는지 확인
