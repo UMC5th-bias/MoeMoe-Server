@@ -1,5 +1,6 @@
 package com.favoriteplace.app.dto;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -84,5 +85,14 @@ public class MyPageDto {
     @AllArgsConstructor
     public static class MyModifyBlockDto{
         Boolean isBlocked;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class MyFcmTokenDto{
+        @NotEmpty
+        String fcmToken;
     }
 }

@@ -1,4 +1,4 @@
-package com.favoriteplace.global.security.Filter;
+package com.favoriteplace.global.security.filter;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

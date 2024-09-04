@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -51,11 +52,20 @@ public class GuestBookCommentController {
     ){
         Member member = securityUtil.getUser();
 //        Member member = memberRepository.findById(1L).orElseThrow(() -> new RestApiException(ErrorCode.USER_NOT_FOUND));
-        commentCommandService.createGuestBookComment(member, guestbookId, guestBookCommentDto);
+        Long commentId = commentCommandService.createGuestBookComment(member, guestbookId, guestBookCommentDto);
         return new ResponseEntity<>(
-                PostResponseDto.SuccessResponseDto.builder().message("댓글이 성공적으로 등록했습니다.").build(),
+                PostResponseDto.SuccessResponseDto.builder().commentId(commentId).message("댓글이 성공적으로 등록했습니다.").build(),
                 HttpStatus.OK
         );
+    }
+
+    @PostMapping("/{guestbook_id}/comments/{comment_id}/notification")
+    public ResponseEntity<?> sendGuestBookNotification(
+            @PathVariable("guestbook_id") Long guestbookId,
+            @PathVariable("comment_id") Long commentId
+    ){
+        commentCommandService.sendGuestBookNotification(guestbookId, commentId);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/comments/{comment_id}")

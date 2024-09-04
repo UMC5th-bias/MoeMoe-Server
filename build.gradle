@@ -62,6 +62,10 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-gcp-starter-storage:1.2.8.RELEASE'
 	implementation 'net.coobird:thumbnailator:0.4.14'
 
+	// FCM
+	implementation 'com.google.firebase:firebase-admin:6.8.1'
+	implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.2.2'
+
 	// STOMP
 	implementation 'org.webjars:webjars-locator-core'
 	implementation 'org.webjars:sockjs-client:1.5.1'
@@ -69,6 +73,7 @@ dependencies {
 
 	// jackson 날짜/시간 직렬화
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
 }
 
 tasks.named('bootBuildImage') {

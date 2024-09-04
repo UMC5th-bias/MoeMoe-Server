@@ -7,12 +7,12 @@ import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.enums.PointType;
 import com.favoriteplace.app.domain.enums.RallyVersion;
 import com.favoriteplace.app.domain.item.AcquiredItem;
-import com.favoriteplace.app.domain.item.PointHistory;
 import com.favoriteplace.app.domain.travel.*;
 import com.favoriteplace.app.dto.CommonResponseDto;
 import com.favoriteplace.app.dto.travel.PilgrimageDto;
 import com.favoriteplace.app.dto.travel.PilgrimageSocketDto;
 import com.favoriteplace.app.repository.*;
+import com.favoriteplace.app.service.fcm.FCMNotificationService;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.websocket.RedisService;
@@ -22,14 +22,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static com.favoriteplace.app.service.fcm.FCMNotificationService.makeAnimationTopicName;
 
 @Service
 @Slf4j
@@ -45,6 +44,8 @@ public class PilgrimageCommandService {
     private final PointHistoryRepository pointHistoryRepository;
     private final CompleteRallyRepository completeRallyRepository;
     private final AcquiredItemRepository acquiredItemRepository;
+    private final FCMNotificationService fcmNotificationService;
+    private final EntityManager em;
     private final RedisService redisService;
     private Map<Long, Map<Long, PilgrimageSocketDto.ButtonState>> lastButtonStateCache = new ConcurrentHashMap<>();
 
@@ -138,6 +139,26 @@ public class PilgrimageCommandService {
         pointHistoryRepository.save(PointHistoryConverter.toPointHistory(member, 15L, PointType.ACQUIRE));
         member.updatePoint(15L);
         log.info("clear");
+    }
+
+    /**
+     * 랠리 구독 (FCM 토픽에 해당 사용자의 토큰 추가)
+     */
+    public void subscribeRally(Long rallyId, Member member) {
+        if(member.getFcmToken() == null){
+            throw new RestApiException(ErrorCode.FCM_TOKEN_NOT_FOUND);
+        }
+        fcmNotificationService.subscribeTopic(makeAnimationTopicName(rallyId), member.getFcmToken());
+    }
+
+    /**
+     * 랠리 구독 취소 (FCM 토픽에 해당 사용자의 토큰 제거)
+     */
+    public void unsubscribeRally(Long rallyId, Member member) {
+        if (member.getFcmToken() == null) {
+            throw new RestApiException(ErrorCode.FCM_TOKEN_NOT_FOUND);
+        }
+        fcmNotificationService.unsubscribeTopic(makeAnimationTopicName(rallyId), member.getFcmToken());
     }
 
     public boolean isUserAtPilgrimage(Pilgrimage pilgrimage, Double latitude, Double longitude) {

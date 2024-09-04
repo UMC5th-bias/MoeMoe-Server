@@ -1,6 +1,7 @@
 package com.favoriteplace.app.service.community;
 
 import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.domain.Notification;
 import com.favoriteplace.app.domain.community.Comment;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.Post;
@@ -8,7 +9,9 @@ import com.favoriteplace.app.domain.enums.CommentType;
 import com.favoriteplace.app.dto.community.CommentRequestDto;
 import com.favoriteplace.app.repository.CommentRepository;
 import com.favoriteplace.app.repository.GuestBookRepository;
+import com.favoriteplace.app.repository.NotificationRepository;
 import com.favoriteplace.app.repository.PostRepository;
+import com.favoriteplace.app.service.fcm.FCMNotificationService;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
@@ -17,33 +20,94 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+import static com.favoriteplace.app.converter.FcmConverter.*;
+import static com.favoriteplace.app.converter.NotificationConverter.*;
+
 @Service
 @RequiredArgsConstructor
 public class CommentCommandService {
     private final PostRepository postRepository;
     private final GuestBookRepository guestBookRepository;
     private final CommentRepository commentRepository;
+    private final NotificationRepository notificationRepository;
+    private final FCMNotificationService fcmNotificationService;
 
     /**
      * 자유게시글 새로운 댓글 작성
      */
     @Transactional
-    public void createPostComment(Member member, long postId, CommentRequestDto.CreateComment dto) {
+    public Long createPostComment(Member member, long postId, CommentRequestDto.CreateComment dto) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new RestApiException(ErrorCode.POST_NOT_FOUND));
         Comment newComment = setCommentRelation(member, dto);
         post.addComment(newComment);
         commentRepository.save(newComment);
+        return newComment.getId();
     }
 
     /**
      * 성지순례 인증글에 댓글 추가
      */
     @Transactional
-    public void createGuestBookComment(Member member, Long guestbookId, CommentRequestDto.CreateComment dto) {
+    public Long createGuestBookComment(Member member, Long guestbookId, CommentRequestDto.CreateComment dto) {
         GuestBook guestBook = guestBookRepository.findById(guestbookId).orElseThrow(() -> new RestApiException(ErrorCode.GUESTBOOK_NOT_FOUND));
         Comment newComment = setCommentRelation(member, dto);
         guestBook.addComment(newComment);
         commentRepository.save(newComment);
+        return newComment.getId();
+    }
+
+    /**
+     * 자유 게시판 관련 알림 전송
+     */
+    @Transactional
+    public void sendPostNotification(Long postId, Long commentId){
+        Post post = postRepository.findById(postId).orElseThrow(() -> new RestApiException(ErrorCode.POST_NOT_FOUND));
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new RestApiException(ErrorCode.COMMENT_NOT_FOUND));
+
+        // 게시글 작성자에게 전송
+        fcmNotificationService.sendNotificationByToken(toPostWriter(post, comment));
+        Notification postNotification = toPostNewComment(post, comment);
+        notificationRepository.save(postNotification);
+
+        // 댓글에 언급된 사람에게 전송
+        if(comment.getParentComment() != null){ // 부모 댓글에게 전송
+            Notification commentNotification;
+            if(comment.getReferenceComment() == null){
+                fcmNotificationService.sendNotificationByToken(toParentCommentWriter(post, comment));
+                commentNotification = toPostParentNewSubComment(post, comment);
+            }else{ // reference 댓글에게 전송
+                fcmNotificationService.sendNotificationByToken(toReferCommentWriter(post, comment));
+                commentNotification = toPostReferNewSubComment(post, comment);
+            }
+            notificationRepository.save(commentNotification);
+        }
+    }
+
+    /**
+     * 성지 순례 인증글 관련 알림 전송
+     */
+    @Transactional
+    public void sendGuestBookNotification(Long guestBookId, Long commentId){
+        GuestBook guestBook = guestBookRepository.findById(guestBookId).orElseThrow(() -> new RestApiException(ErrorCode.GUESTBOOK_NOT_FOUND));
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new RestApiException(ErrorCode.COMMENT_NOT_FOUND));
+
+        // 게시글 작성자에게 전송
+        fcmNotificationService.sendNotificationByToken(toGuestBookWriter(guestBook, comment));
+        Notification postNotification = toGuestBookNewComment(guestBook, comment);
+        notificationRepository.save(postNotification);
+
+        // 댓글에 언급된 사람에게 전송
+        if(comment.getParentComment() != null){
+            Notification commentNotification;
+            if(comment.getReferenceComment() == null){  // 부모 댓글에게 전송
+                fcmNotificationService.sendNotificationByToken(toParentCommentWriter(guestBook, comment));
+                commentNotification = toGuestBookParentNewSubComment(guestBook, comment);
+            }else{ // reference 댓글에게 전송
+                fcmNotificationService.sendNotificationByToken(toReferCommentWriter(guestBook, comment));
+                commentNotification = toGuestBookReferNewSubComment(guestBook, comment);
+            }
+            notificationRepository.save(commentNotification);
+        }
     }
 
     /**

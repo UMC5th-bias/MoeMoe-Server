@@ -26,6 +26,7 @@ public enum ErrorCode {
     USER_NOT_AUTHOR(HttpStatus.FORBIDDEN, 2005, "해당 게시글의 작성자가 아닙니다."),
     CANT_BLOCK_SELF(HttpStatus.FORBIDDEN, 2006, "스스로를 차단할 수 없습니다."),
     TOKEN_NOT_VALID(HttpStatus.BAD_REQUEST, 2007, "not valid token"),
+    FCM_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, 2008, "사용자의 FCM Token이 존재하지 않습니다."),
     NOT_SIGNUP_WITH_KAKAO(HttpStatus.BAD_REQUEST, 2008, "해당 계정으로 회원가입한 이력이 없습니다. 카카오 회원가입 필요."),
 
 
@@ -68,7 +69,16 @@ public enum ErrorCode {
     IMAGE_FORMAT_ERROR(HttpStatus.BAD_REQUEST, 11001, "올바른 이미지 파일이 아닙니다."),
     IMAGE_NOT_READABLE(HttpStatus.BAD_REQUEST, 11002, "이미지 파일을 읽을 수 없습니다."),
     IMAGE_CANNOT_UPLOAD(HttpStatus.BAD_REQUEST, 11003, "이미지 파일을 업로드할 수 없습니다."),
-    IMAGE_SIZE_TOO_BIG(HttpStatus.PAYLOAD_TOO_LARGE, 11004, "각각의 이미지 파일의 사이즈가 4MB를 넘어갈 수 없습니다.");
+    IMAGE_SIZE_TOO_BIG(HttpStatus.PAYLOAD_TOO_LARGE, 11004, "각각의 이미지 파일의 사이즈가 4MB를 넘어갈 수 없습니다."),
+
+    //알림 (12000번대)
+    TOKEN_ALARM_NOT_SEND(HttpStatus.BAD_REQUEST, 120001, "[token] push 알림이 전송되지 않았습니다."),
+    TOPIC_ALARM_NOT_SEND(HttpStatus.BAD_REQUEST, 120002, "[topic] push 알림이 전송되지 않았습니다."),
+    TOPIC_SUBSCRIBE_FAIL(HttpStatus.BAD_REQUEST, 12003, "[topic] 구독에 실패했습니다."),
+    TOPIC_UNSUBSCRIBE_FAIL(HttpStatus.BAD_REQUEST, 12004, "[topic] 구독 취소에 실패했습니다."),
+    NOTIFICATION_NOT_EXIST(HttpStatus.NOT_FOUND, 12005, "해당 알림이 존재하지 않습니다."),
+    NOTIFICATION_NOT_BELONG(HttpStatus.CONFLICT, 12006, "해당 사용자의 알림이 아닙니다.")
+    ;
 
     private final HttpStatus httpStatus;
     private final int code;
