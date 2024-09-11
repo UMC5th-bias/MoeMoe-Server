@@ -13,6 +13,7 @@ import com.favoriteplace.app.repository.ItemRepository;
 import com.favoriteplace.app.repository.MemberRepository;
 import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.gcpImage.UploadImage;
+import com.favoriteplace.global.s3Image.AmazonS3ImageManager;
 import com.favoriteplace.global.security.kakao.KakaoClient;
 import com.favoriteplace.global.security.provider.JwtTokenProvider;
 import com.favoriteplace.global.util.SecurityUtil;
@@ -38,8 +39,8 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
-    public final SecurityUtil securityUtil;
-    private final UploadImage uploadImage;
+    private final SecurityUtil securityUtil;
+    private final AmazonS3ImageManager amazonS3ImageManager;
     private final ItemRepository itemRepository;
     private final RedisTemplate redisTemplate;
     private final KakaoClient kakaoClient;
@@ -88,7 +89,8 @@ public class MemberService {
         String password = passwordEncoder.encode(memberSignUpReqDto.getPassword());
 
         if (images != null && !images.get(0).isEmpty()) {
-            profileImageUrl = uploadImage.uploadImageToCloud(images.get(0));
+            profileImageUrl = amazonS3ImageManager.upload(images.get(0));
+            System.out.println("profileImageUrl = " + profileImageUrl);
         }
 
         Item titleItem = itemRepository.findByName("새싹회원").get();

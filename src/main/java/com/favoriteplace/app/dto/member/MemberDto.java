@@ -33,7 +33,7 @@ public class MemberDto {
                 .password(encodedPassword)
                 .alarmAllowance(snsAllow)
                 .description(introduction)
-                .profileImageUrl(profileImg == null ? null : ConvertUuidToUrl.convertUuidToUrl(profileImg))
+                .profileImageUrl(profileImg == null ? null : profileImg)
                 .point(0L)
                 .loginType(LoginType.SELF)
                 .profileTitle(titleItem)
