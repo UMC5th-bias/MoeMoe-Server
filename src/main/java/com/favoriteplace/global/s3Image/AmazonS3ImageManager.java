@@ -18,6 +18,7 @@ import java.util.*;
 @Component
 @RequiredArgsConstructor
 public class AmazonS3ImageManager {
+
     private final AmazonS3Client amazonS3Client;
     private final S3Config s3Config;
 
