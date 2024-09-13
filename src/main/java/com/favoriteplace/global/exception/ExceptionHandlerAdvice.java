@@ -5,6 +5,7 @@ import static com.favoriteplace.global.exception.ErrorCode.INVALID_HTTP_METHOD;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +16,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
+import java.lang.reflect.Method;
+
 @Slf4j
 @RestControllerAdvice
-public class ExceptionHandlerAdvice {
+public class ExceptionHandlerAdvice implements AsyncUncaughtExceptionHandler {
 
     //모든 에러 -> 하위 에러에서 못받을 때
     @ExceptionHandler(Exception.class)
@@ -88,5 +91,10 @@ public class ExceptionHandlerAdvice {
         ErrorCode errorCode = IMAGE_SIZE_TOO_BIG;
         ErrorResponse errorResponse = ErrorResponse.of(errorCode.getHttpStatus(), errorCode.getCode(), errorCode.getMessage());
         return ResponseEntity.status(errorResponse.getHttpStatus()).body(errorResponse.getMessage());
+    }
+
+    @Override
+    public void handleUncaughtException(Throwable ex, Method method, Object... params) {
+        log.error("[ASYNC-ERROR] method: {} exception: {}", method.getName(), ex);
     }
 }
