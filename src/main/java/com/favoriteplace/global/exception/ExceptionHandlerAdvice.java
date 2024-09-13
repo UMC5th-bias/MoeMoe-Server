@@ -93,6 +93,7 @@ public class ExceptionHandlerAdvice implements AsyncUncaughtExceptionHandler {
         return ResponseEntity.status(errorResponse.getHttpStatus()).body(errorResponse.getMessage());
     }
 
+    // 비동기 메서드 예외 처리를 위해
     @Override
     public void handleUncaughtException(Throwable ex, Method method, Object... params) {
         log.error("[ASYNC-ERROR] method: {} exception: {}", method.getName(), ex);

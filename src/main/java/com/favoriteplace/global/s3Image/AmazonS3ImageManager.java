@@ -6,6 +6,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.favoriteplace.global.config.S3Config;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,6 +14,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Component
@@ -22,27 +24,35 @@ public class AmazonS3ImageManager {
     private final AmazonS3Client amazonS3Client;
     private final S3Config s3Config;
 
-    public List<String> upload(List<MultipartFile> multipartFiles) throws IOException {
-        List<String> uploadImageUrls = new ArrayList<>();
-        for (MultipartFile multipartFile : multipartFiles) {
-            String s3FileName = UUID.randomUUID().toString().substring(0, 10) + multipartFile.getOriginalFilename();
+    @Async("S3imageUploadExecutor")
+    public CompletableFuture<String> upload(MultipartFile multipartFile) throws IOException {
+        CompletableFuture<String> future = new CompletableFuture<>();
 
-            File uploadFile = convert(multipartFile)
-                    .orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File 전환 실패"));
-
-            String uploadImageUrl = upload(uploadFile, s3FileName);
-            uploadImageUrls.add(uploadImageUrl);
-        }
-        return uploadImageUrls; // 업로드된 파일들의 S3 URL 주소 리스트 반환
-    }
-
-    public String upload(MultipartFile multipartFile) throws IOException {
         String s3FileName = UUID.randomUUID().toString().substring(0, 10) + multipartFile.getOriginalFilename();
 
         File uploadFile = convert(multipartFile)
                 .orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File 전환 실패"));
 
-        return upload(uploadFile, s3FileName);
+        future.complete(upload(uploadFile, s3FileName));
+
+        return future;
+    }
+
+    @Async("S3imageUploadExecutor")
+    public List<CompletableFuture<String>>upload(List<MultipartFile> multipartFile) throws IOException {
+        List<CompletableFuture<String>> futures =  new ArrayList<CompletableFuture<String>>();
+        CompletableFuture<String> future = new CompletableFuture<>();
+
+        String s3FileName = UUID.randomUUID().toString().substring(0, 10) + multipartFile.getOriginalFilename();
+
+        for (MultipartFile file : multipartFile) {
+            File uploadFile = convert(file)
+                    .orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File 전환 실패"));
+            future.complete((upload(uploadFile, s3FileName)));
+        }
+        futures.add(future);
+
+        return futures;
     }
 
     private String upload(File uploadFile, String s3FileName) {

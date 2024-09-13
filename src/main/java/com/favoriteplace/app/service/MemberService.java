@@ -17,6 +17,9 @@ import com.favoriteplace.global.s3Image.AmazonS3ImageManager;
 import com.favoriteplace.global.security.kakao.KakaoClient;
 import com.favoriteplace.global.security.provider.JwtTokenProvider;
 import com.favoriteplace.global.util.SecurityUtil;
+
+import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -78,6 +81,8 @@ public class MemberService {
     @Transactional
     public MemberDto.MemberSignUpResDto signup(MemberSignUpReqDto memberSignUpReqDto, List<MultipartFile> images)
         throws IOException {
+        List<CompletableFuture<String>> futures = new ArrayList<>();
+
         memberRepository.findByEmail(memberSignUpReqDto.getEmail())
             .ifPresent(
                 existingMember -> {
@@ -89,8 +94,7 @@ public class MemberService {
         String password = passwordEncoder.encode(memberSignUpReqDto.getPassword());
 
         if (images != null && !images.get(0).isEmpty()) {
-            profileImageUrl = amazonS3ImageManager.upload(images.get(0));
-            System.out.println("profileImageUrl = " + profileImageUrl);
+            profileImageUrl = amazonS3ImageManager.upload(images.get(0)).join();
         }
 
         Item titleItem = itemRepository.findByName("새싹회원").get();
