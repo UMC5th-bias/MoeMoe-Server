@@ -60,6 +60,7 @@ dependencies {
 	//image
 	implementation 'com.google.cloud:google-cloud-storage:2.20.1'
 	implementation 'org.springframework.cloud:spring-cloud-gcp-starter-storage:1.2.8.RELEASE'
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 	implementation 'net.coobird:thumbnailator:0.4.14'
 
 	// FCM
