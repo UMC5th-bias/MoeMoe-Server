@@ -38,23 +38,6 @@ public class AmazonS3ImageManager {
         return future;
     }
 
-    @Async("S3imageUploadExecutor")
-    public List<CompletableFuture<String>>upload(List<MultipartFile> multipartFiles) throws IOException {
-        List<CompletableFuture<String>> futures =  new ArrayList<CompletableFuture<String>>();
-        CompletableFuture<String> future = new CompletableFuture<>();
-
-        for (MultipartFile file : multipartFiles) {
-            String s3FileName = UUID.randomUUID().toString().substring(0, 10) + file.getOriginalFilename();
-
-            File uploadFile = convert(file)
-                    .orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File 전환 실패"));
-            future.complete((upload(uploadFile, s3FileName)));
-        }
-        futures.add(future);
-
-        return futures;
-    }
-
     private String upload(File uploadFile, String s3FileName) {
         String fileName = s3Config.getFilePath()+ "/" + s3FileName + uploadFile.getName();
         String uploadImageUrl = putS3(uploadFile, fileName);

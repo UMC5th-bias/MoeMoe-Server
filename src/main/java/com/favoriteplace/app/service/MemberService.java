@@ -75,7 +75,6 @@ public class MemberService {
             profileImageUrl = uploadProfileImage(images.get(0));
         }
 
-
         Item titleItem = itemRepository.findByName("새싹회원").get();
 
         Member member = memberSignUpReqDto.toEntity(profileImageUrl, titleItem, userEmail);
