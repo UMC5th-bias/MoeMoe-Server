@@ -1,7 +1,6 @@
 package com.favoriteplace.app.service.community;
 
 import com.favoriteplace.app.converter.PointHistoryConverter;
-import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.HashTag;
@@ -10,22 +9,25 @@ import com.favoriteplace.app.domain.travel.Pilgrimage;
 import com.favoriteplace.app.domain.travel.VisitedPilgrimage;
 import com.favoriteplace.app.dto.community.GuestBookRequestDto;
 import com.favoriteplace.app.dto.community.PostResponseDto;
-import com.favoriteplace.app.repository.*;
+import com.favoriteplace.app.repository.GuestBookRepository;
+import com.favoriteplace.app.repository.HashtagRepository;
+import com.favoriteplace.app.repository.ImageRepository;
+import com.favoriteplace.app.repository.LikedPostRepository;
+import com.favoriteplace.app.repository.PilgrimageRepository;
+import com.favoriteplace.app.repository.PointHistoryRepository;
+import com.favoriteplace.app.repository.VisitedPilgrimageRepository;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
-import com.favoriteplace.global.gcpImage.ConvertUuidToUrl;
 import com.favoriteplace.global.gcpImage.UploadImage;
+import com.favoriteplace.global.s3Image.AmazonS3ImageManager;
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 @Slf4j
@@ -39,6 +41,7 @@ public class GuestBookCommandService {
     private final HashtagRepository hashtagRepository;
     private final VisitedPilgrimageRepository visitedPilgrimageRepository;
     private final PointHistoryRepository pointHistoryRepository;
+    private final AmazonS3ImageManager amazonS3ImageManager;
 
     /**
      * 성지순례 인증글 수정
@@ -53,15 +56,23 @@ public class GuestBookCommandService {
         checkAuthOfGuestBook(member, guestBook);
         Optional.ofNullable(data.getTitle()).ifPresent(guestBook::setTitle);
         Optional.ofNullable(data.getContent()).ifPresent(guestBook::setContent);
+
         guestBook.getHashTags().clear();  //기존에 있던 hashtag 제거
         guestBook.getImages().clear();  //기존에 있던 이미지 제거
         imageRepository.deleteByGuestBookId(guestbookId);
+
         List<String> hashtags = data.getHashtags();
         if(!hashtags.isEmpty()){
             hashtags.forEach(hashtag -> guestBook.setHashTag(HashTag.builder().tagName(hashtag).build()));
         }
-        if(images != null && !images.isEmpty()){setImageList(guestBook, images);}
-        guestBookRepository.save(guestBook);
+
+        // 새로운 이미지 등록
+        try{
+            List<String> imageUrls = amazonS3ImageManager.uploadMultiImages(images);
+            guestBook.addImages(imageUrls);
+        }catch (IOException e){
+            log.info("[guestBook image] image 없음");
+        }
     }
 
     /**
@@ -77,36 +88,31 @@ public class GuestBookCommandService {
         guestBookRepository.deleteById(guestbookId);
     }
 
-    /**
-     * 이미지가 여러개일 때, 이미지 처리하는 로직 (새로운 이미지 저장)
-     * @param guestBook
-     * @param images
-     * @throws IOException
-     */
-    private void setImageList(GuestBook guestBook, List<MultipartFile> images) throws IOException {
-        List<CompletableFuture<Void>> futures = new ArrayList<>();
-        for(MultipartFile image:images){
-            if(image != null && !image.isEmpty()){
-                CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-                    try {
-                        String uuid = uploadImage.uploadImageToCloud(image);
-                        Image newImage = Image.builder().url(ConvertUuidToUrl.convertUuidToUrl(uuid)).build();
-                        guestBook.setImage(newImage);
-                    } catch (IOException e) {
-                        throw new RestApiException(ErrorCode.IMAGE_CANNOT_UPLOAD);
-                    }
-                });
-                futures.add(future);
-            }
-//            if(!image.isEmpty()){
-//                String uuid = uploadImage.uploadImageToCloud(image);
-//                Image newImage = Image.builder().url(ConvertUuidToUrl.convertUuidToUrl(uuid)).build();
-//                guestBook.setImage(newImage);
+//    /**
+//     * 이미지가 여러개일 때, 이미지 처리하는 로직 (새로운 이미지 저장)
+//     * @param guestBook
+//     * @param images
+//     * @throws IOException
+//     */
+//    private void setImageList(GuestBook guestBook, List<MultipartFile> images) throws IOException {
+//        List<CompletableFuture<Void>> futures = new ArrayList<>();
+//        for(MultipartFile image:images){
+//            if(image != null && !image.isEmpty()){
+//                CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+//                    try {
+//                        String uuid = uploadImage.uploadImageToCloud(image);
+//                        Image newImage = Image.builder().url(ConvertUuidToUrl.convertUuidToUrl(uuid)).build();
+//                        guestBook.setImage(newImage);
+//                    } catch (IOException e) {
+//                        throw new RestApiException(ErrorCode.IMAGE_CANNOT_UPLOAD);
+//                    }
+//                });
+//                futures.add(future);
 //            }
-        }
-        // 작업 다 끝날때 까지 기다림
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-    }
+//        }
+//        // 작업 다 끝날때 까지 기다림
+//        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+//    }
 
     /**
      * 성지순례 인증글의 작성자가 맞는지 판단하는 함수
@@ -149,12 +155,21 @@ public class GuestBookCommandService {
             newGuestBook.setHashTag(newHashTag);
         });
 
-        if (images != null && !images.isEmpty()) {
-            setImageList(newGuestBook, images);
+//        if (images != null && !images.isEmpty()) {
+//            setImageList(newGuestBook, images);
+//        }
+        // 새로운 이미지 등록
+        try{
+            List<String> imageUrls = amazonS3ImageManager.uploadMultiImages(images);
+            newGuestBook.addImages(imageUrls);
+        }catch (IOException e){
+            log.info("[guestBook image] image 없음");
         }
         log.info("success image upload");
+
         successPostAndPointProcess(member, pilgrimage);
         log.info("success point update");
+
         return PostResponseDto.SuccessResponseDto.builder().message("인증글 작성에 성공했습니다.").build();
     }
 
