@@ -59,16 +59,25 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberDto.MemberSignUpResDto kakaoSignUp(final String token, final KaKaoSignUpRequestDto memberSignUpReqDto) {
+    public MemberDto.MemberSignUpResDto kakaoSignUp(
+            final String token,
+            final KaKaoSignUpRequestDto memberSignUpReqDto,
+            final List<MultipartFile> images
+    ) throws IOException {
+
         String userEmail = kakaoClient.getUserInfo(token).kakaoAccount().email();
 
         memberRepository.findByEmail(userEmail)
                 .ifPresent(a -> {throw new RestApiException(USER_ALREADY_EXISTS);});
 
-        //TODO: 이미지 저장 로직(S3)
+        String profileImageUrl = null;
+        if (images != null && !images.get(0).isEmpty()) {
+            profileImageUrl = uploadProfileImage(images.get(0));
+        }
+
         Item titleItem = itemRepository.findByName("새싹회원").get();
 
-        Member member = memberSignUpReqDto.toEntity(null, titleItem, userEmail);
+        Member member = memberSignUpReqDto.toEntity(profileImageUrl, titleItem, userEmail);
         memberRepository.save(member);
 
         MemberDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(userEmail);
@@ -79,9 +88,10 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberDto.MemberSignUpResDto signup(MemberSignUpReqDto memberSignUpReqDto, List<MultipartFile> images)
-        throws IOException {
-        List<CompletableFuture<String>> futures = new ArrayList<>();
+    public MemberDto.MemberSignUpResDto signup(
+            final MemberSignUpReqDto memberSignUpReqDto,
+            final List<MultipartFile> images
+    ) throws IOException {
 
         memberRepository.findByEmail(memberSignUpReqDto.getEmail())
             .ifPresent(
@@ -91,11 +101,11 @@ public class MemberService {
             );
 
         String profileImageUrl = null;
-        String password = passwordEncoder.encode(memberSignUpReqDto.getPassword());
-
         if (images != null && !images.get(0).isEmpty()) {
-            profileImageUrl = amazonS3ImageManager.upload(images.get(0)).join();
+            profileImageUrl = uploadProfileImage(images.get(0));
         }
+
+        String password = passwordEncoder.encode(memberSignUpReqDto.getPassword());
 
         Item titleItem = itemRepository.findByName("새싹회원").get();
 
@@ -106,6 +116,10 @@ public class MemberService {
         member.updateRefreshToken(tokenInfo.getRefreshToken());
 
         return MemberDto.MemberSignUpResDto.from(member, tokenInfo);
+    }
+
+    public String uploadProfileImage(MultipartFile profileImage) throws IOException {
+        return amazonS3ImageManager.upload(profileImage).join();
     }
 
     @Transactional

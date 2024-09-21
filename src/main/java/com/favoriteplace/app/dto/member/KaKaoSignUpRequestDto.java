@@ -17,7 +17,7 @@ public record KaKaoSignUpRequestDto(
                 .email(email)
                 .alarmAllowance(snsAllow)
                 .description(introduction)
-                .profileImageUrl(profileImg == null ? null : ConvertUuidToUrl.convertUuidToUrl(profileImg))
+                .profileImageUrl(profileImg)
                 .point(0L)
                 .loginType(LoginType.KAKAO)
                 .profileTitle(titleItem)
