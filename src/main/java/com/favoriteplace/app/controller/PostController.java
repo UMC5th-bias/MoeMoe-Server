@@ -125,8 +125,7 @@ public class PostController {
         Member member = securityUtil.getUser();
         postCommandService.modifyPost(postId, data, images, member);
         return new ResponseEntity<>(
-                PostResponseDto.SuccessResponseDto.builder().message("게시글이 수정되었습니다.").build(),
-                HttpStatus.OK
+                HttpStatus.NO_CONTENT
         );
     }
 }

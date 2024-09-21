@@ -1,5 +1,10 @@
 package com.favoriteplace.app.service;
 
+import static com.favoriteplace.global.exception.ErrorCode.NOT_SIGNUP_WITH_KAKAO;
+import static com.favoriteplace.global.exception.ErrorCode.TOKEN_NOT_VALID;
+import static com.favoriteplace.global.exception.ErrorCode.USER_ALREADY_EXISTS;
+import static com.favoriteplace.global.exception.ErrorCode.USER_NOT_FOUND;
+
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.item.Item;
 import com.favoriteplace.app.dto.UserInfoResponseDto;
@@ -12,13 +17,13 @@ import com.favoriteplace.app.dto.member.MemberDto.MemberSignUpReqDto;
 import com.favoriteplace.app.repository.ItemRepository;
 import com.favoriteplace.app.repository.MemberRepository;
 import com.favoriteplace.global.exception.RestApiException;
-import com.favoriteplace.global.gcpImage.UploadImage;
 import com.favoriteplace.global.s3Image.AmazonS3ImageManager;
 import com.favoriteplace.global.security.kakao.KakaoClient;
 import com.favoriteplace.global.security.provider.JwtTokenProvider;
 import com.favoriteplace.global.util.SecurityUtil;
-
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
@@ -28,11 +33,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.util.List;
-
-import static com.favoriteplace.global.exception.ErrorCode.*;
 
 @Service
 @Transactional(readOnly = true)

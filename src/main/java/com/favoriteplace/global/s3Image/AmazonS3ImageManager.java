@@ -55,6 +55,18 @@ public class AmazonS3ImageManager {
         return futures;
     }
 
+    public List<String> uploadMultiImages(List<MultipartFile> images) throws IOException{
+        List<CompletableFuture<String>> futures = new ArrayList<>();
+        for(MultipartFile file:images){
+            futures.add(upload(file));
+        }
+        List<String> imageUrls = new ArrayList<>();
+        futures.forEach(
+                future -> imageUrls.add(future.join())
+        );
+        return imageUrls;
+    }
+
     private String upload(File uploadFile, String s3FileName) {
         String fileName = s3Config.getFilePath()+ "/" + s3FileName + uploadFile.getName();
         String uploadImageUrl = putS3(uploadFile, fileName);
