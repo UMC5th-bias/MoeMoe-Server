@@ -1,22 +1,28 @@
 package com.favoriteplace.app.domain.community;
 
-import com.favoriteplace.app.domain.Image;
-import com.favoriteplace.app.domain.Member;
-import com.favoriteplace.app.domain.common.BaseTimeEntity;
-import com.favoriteplace.app.domain.travel.Pilgrimage;
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
+
+import com.favoriteplace.app.domain.Image;
+import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.domain.common.BaseTimeEntity;
+import com.favoriteplace.app.domain.travel.Pilgrimage;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
@@ -85,6 +91,16 @@ public class GuestBook extends BaseTimeEntity {
     public void addComment(Comment comment){
         comment.setGuestBook(this);
         this.comments.add(comment);
+    }
+
+    public void addImages(List<String> imageUrls){
+        for(String imageUrl:imageUrls){
+            Image newImage = Image.builder()
+                    .guestBook(this)
+                    .url(imageUrl)
+                    .build();
+            this.images.add(newImage);
+        }
     }
 
 }
