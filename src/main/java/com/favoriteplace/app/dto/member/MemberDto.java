@@ -5,10 +5,7 @@ import com.favoriteplace.app.domain.enums.LoginType;
 import com.favoriteplace.app.domain.enums.MemberStatus;
 import com.favoriteplace.app.domain.item.Item;
 import com.favoriteplace.global.gcpImage.ConvertUuidToUrl;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,7 +18,10 @@ public class MemberDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class MemberSignUpReqDto {
+
+        @NotBlank(message = "닉네임은 필수값입니다.")
         public String nickname;
+
         public String email;
         public String password;
         public Boolean snsAllow;
