@@ -41,14 +41,15 @@ public class MemberController {
             @RequestHeader("Authorization") final String token,
             @RequestPart(required = false) final List<MultipartFile> images,
             @RequestPart final KaKaoSignUpRequestDto data
-    ) {
-        return ResponseEntity.ok(memberService.kakaoSignUp(token, data));
+    ) throws IOException {
+        return ResponseEntity.ok(memberService.kakaoSignUp(token, data, images));
     }
 
     @PostMapping("/signup")
     public ResponseEntity<MemberDto.MemberSignUpResDto> signup(
             @RequestPart(required = false) List<MultipartFile> images,
-            @RequestPart MemberSignUpReqDto data) throws IOException {
+            @RequestPart MemberSignUpReqDto data
+    ) throws IOException {
         return ResponseEntity.ok(memberService.signup(data, images));
     }
 
