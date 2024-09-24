@@ -4,6 +4,8 @@ import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.dto.NotificationResponseDto;
 import com.favoriteplace.app.service.NotificationService;
 import com.favoriteplace.global.util.SecurityUtil;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +32,9 @@ public class NotificationController {
     }
 
     // 알림 한번에 다 읽음 처리
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204")
+    })
     @PatchMapping()
     public ResponseEntity<?> readAllNotification(){
         Member member = securityUtil.getUser();
@@ -38,6 +43,9 @@ public class NotificationController {
     }
 
     // 특정 알림 읽음 처리
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204")
+    })
     @PatchMapping("/{notificationId}")
     public ResponseEntity<?> readNotification(
             @PathVariable Long notificationId
@@ -48,6 +56,9 @@ public class NotificationController {
     }
 
     // 특정 알림 삭제
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204")
+    })
     @DeleteMapping("/{notificationId}")
     public ResponseEntity<?> deleteNotification(
             @PathVariable Long notificationId

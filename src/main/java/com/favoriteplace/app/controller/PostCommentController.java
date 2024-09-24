@@ -3,22 +3,19 @@ package com.favoriteplace.app.controller;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.dto.community.CommentRequestDto;
 import com.favoriteplace.app.dto.community.CommentResponseDto;
-import com.favoriteplace.app.dto.community.PostResponseDto;
-import com.favoriteplace.app.repository.MemberRepository;
 import com.favoriteplace.app.service.community.CommentCommandService;
 import com.favoriteplace.app.service.community.CommentQueryService;
-import com.favoriteplace.global.exception.ErrorCode;
-import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.util.SecurityUtil;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-import static com.favoriteplace.app.dto.community.PostResponseDto.*;
+import static com.favoriteplace.app.dto.community.PostResponseDto.MyCommentDto;
+import static com.favoriteplace.app.dto.community.PostResponseDto.CommentSuccessResponseDto;
 
 @RestController
 @RequestMapping("/posts/free")
@@ -28,15 +25,13 @@ public class PostCommentController {
     private final SecurityUtil securityUtil;
     private final CommentQueryService commentQueryService;
     private final CommentCommandService commentCommandService;
-    private final MemberRepository memberRepository;
 
     @GetMapping("/my-comments")
     public ResponseEntity<MyCommentDto> getMyComments(
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false, defaultValue = "10") int size
     ){
-        //Member member = securityUtil.getUser();
-        Member member = memberRepository.findById(1L).orElseThrow(() -> new RestApiException(ErrorCode.USER_NOT_FOUND));
+        Member member = securityUtil.getUser();
         return ResponseEntity.ok(commentQueryService.getMyPostComments(member, page, size));
     }
 
@@ -52,15 +47,14 @@ public class PostCommentController {
     }
 
     @PostMapping("/{post_id}/comments")
-    public ResponseEntity<SuccessResponseDto> createPostComment(
+    public ResponseEntity<CommentSuccessResponseDto> createPostComment(
             @PathVariable("post_id") Long postId,
             @RequestBody CommentRequestDto.CreateComment dto
     ){
         Member member = securityUtil.getUser();
-//        Member member = memberRepository.findById(1L).orElseThrow(() -> new RestApiException(ErrorCode.USER_NOT_FOUND));
         Long commentId = commentCommandService.createPostComment(member, postId, dto);
         return new ResponseEntity<>(
-                SuccessResponseDto.builder().commentId(commentId).message("댓글을 성공적으로 등록했습니다.").build(),
+                CommentSuccessResponseDto.builder().commentId(commentId).build(),
                 HttpStatus.OK
         );
     }
@@ -74,30 +68,32 @@ public class PostCommentController {
         return ResponseEntity.ok().build();
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204")
+    })
     @PutMapping("/comments/{comment_id}")
-    public ResponseEntity<SuccessResponseDto> modifyPostComment(
+    public ResponseEntity<?> modifyPostComment(
             @PathVariable("comment_id") long commentId,
             @RequestBody CommentRequestDto.ModifyComment dto
     ){
         Member member = securityUtil.getUser();
-//        Member member = memberRepository.findById(1L).orElseThrow(() -> new RestApiException(ErrorCode.USER_NOT_FOUND));
         commentCommandService.modifyComment(member, commentId, dto.getContent());
         return new ResponseEntity<>(
-                SuccessResponseDto.builder().message("댓글을 성공적으로 수정했습니다.").build(),
-                HttpStatus.OK
+                HttpStatus.NO_CONTENT
         );
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204")
+    })
     @DeleteMapping("/comments/{comment_id}")
-    public ResponseEntity<SuccessResponseDto> deletePostComment(
+    public ResponseEntity<CommentSuccessResponseDto> deletePostComment(
             @PathVariable("comment_id") long commentId
     ){
         Member member = securityUtil.getUser();
-//        Member member = memberRepository.findById(1L).orElseThrow(() -> new RestApiException(ErrorCode.USER_NOT_FOUND));
         commentCommandService.deleteComment(member, commentId);
         return new ResponseEntity<>(
-                SuccessResponseDto.builder().message("댓글을 성공적으로 삭제했습니다.").build(),
-                HttpStatus.OK
+                HttpStatus.NO_CONTENT
         );
     }
 

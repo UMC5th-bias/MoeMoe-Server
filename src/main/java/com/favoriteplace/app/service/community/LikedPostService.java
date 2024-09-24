@@ -28,19 +28,19 @@ public class LikedPostService {
      * @return
      */
     @Transactional
-    public String modifyPostLike(Member member, long postId) {
+    public Long modifyPostLike(Member member, long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new RestApiException(ErrorCode.POST_NOT_FOUND));
-        LikedPost likedPost = likedPostRepository.findByPostIdAndMemberId(post.getId(), member.getId());
-        if(likedPost != null){
+        Boolean likeExists = likedPostRepository.existsByPostIdAndMemberId(post.getId(), member.getId());
+        if(likeExists){
             post.decreaseLikeCount();
-            likedPostRepository.delete(likedPost);
-            return "추천을 취소했습니다.";
+            likedPostRepository.deleteByPostIdAndMemberId(post.getId(), member.getId());
+            return null;
         }else{
-            likedPost = LikedPost.builder()
-                    .member(member).post(post).build();
             post.increaseLikeCount();
-            likedPostRepository.save(likedPost);
-            return "추천되었습니다.";
+            LikedPost newLikedPost = LikedPost.builder()
+                    .member(member).post(post).build();
+            likedPostRepository.save(newLikedPost);
+            return newLikedPost.getId();
         }
     }
 
@@ -51,16 +51,18 @@ public class LikedPostService {
      * @return
      */
     @Transactional
-    public String modifyGuestBookLike(Member member, Long guestbookId) {
+    public Long modifyGuestBookLike(Member member, Long guestbookId) {
         GuestBook guestBook = guestBookRepository.findById(guestbookId).orElseThrow(() -> new RestApiException(ErrorCode.GUESTBOOK_NOT_FOUND));
         Boolean likeExists = likedPostRepository.existsByGuestBookIdAndMemberId(guestBook.getId(), member.getId());
         if(likeExists){
+            guestBook.decreaseView();
             likedPostRepository.deleteByGuestBookIdAndMemberId(guestBook.getId(), member.getId());
-            return "추천을 취소했습니다.";
+            return null;
         }else{
+            guestBook.increaseView();
             LikedPost likedPost = LikedPost.builder().member(member).guestBook(guestBook).build();
             likedPostRepository.save(likedPost);
-            return "추천을 완료했습니다.";
+            return likedPost.getId();
         }
     }
 }

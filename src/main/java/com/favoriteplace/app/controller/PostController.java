@@ -3,11 +3,12 @@ package com.favoriteplace.app.controller;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.dto.community.PostRequestDto;
 import com.favoriteplace.app.dto.community.PostResponseDto;
-import com.favoriteplace.app.service.MemberService;
 import com.favoriteplace.app.service.community.LikedPostService;
 import com.favoriteplace.app.service.community.PostCommandService;
 import com.favoriteplace.app.service.community.PostQueryService;
 import com.favoriteplace.global.util.SecurityUtil;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,6 @@ import java.util.List;
 @RequestMapping("/posts/free")
 @RequiredArgsConstructor
 public class PostController {
-    private final MemberService memberService;
     private final PostQueryService postQueryService;
     private final PostCommandService postCommandService;
     private final LikedPostService likedPostService;
@@ -92,32 +92,37 @@ public class PostController {
                 HttpStatus.OK);
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204")
+    })
     @DeleteMapping("/{post_id}")
-    public ResponseEntity<PostResponseDto.SuccessResponseDto> deletePost(
+    public ResponseEntity<?> deletePost(
             @PathVariable("post_id") long postId
     ){
         Member member = securityUtil.getUser();
         postCommandService.deletePost(postId, member);
         return new ResponseEntity<>(
-                PostResponseDto.SuccessResponseDto.builder().message("게시글이 성공적으로 삭제되었습니다.").build(),
-                HttpStatus.OK
+                HttpStatus.NO_CONTENT
         );
     }
 
-    @PutMapping("/{post_id}/like")
-    public ResponseEntity<PostResponseDto.SuccessResponseDto> modifyPostLike(
+    @PostMapping("/{post_id}/like")
+    public ResponseEntity<PostResponseDto.LikeSuccessResponseDto> modifyPostLike(
             @PathVariable("post_id") long postId
     ){
         Member member = securityUtil.getUser();
-        String message = likedPostService.modifyPostLike(member, postId);
+        Long likedId = likedPostService.modifyPostLike(member, postId);
         return new ResponseEntity<>(
-                PostResponseDto.SuccessResponseDto.builder().message(message).build(),
+                PostResponseDto.LikeSuccessResponseDto.builder().likedId(likedId).build(),
                 HttpStatus.OK
         );
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204")
+    })
     @PatchMapping("/{post_id}")
-    public ResponseEntity<PostResponseDto.SuccessResponseDto> modifyPost(
+    public ResponseEntity<?> modifyPost(
             @PathVariable("post_id") Long postId,
             @RequestPart PostRequestDto data,
             @RequestPart(required = false) List<MultipartFile> images
