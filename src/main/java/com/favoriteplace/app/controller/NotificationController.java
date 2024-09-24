@@ -36,7 +36,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "204")
     })
     @PatchMapping()
-    public ResponseEntity<?> readAllNotification(){
+    public ResponseEntity<Void> readAllNotification(){
         Member member = securityUtil.getUser();
         notificationService.readAllNotification(member);
         return ResponseEntity.noContent().build();
@@ -47,7 +47,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "204")
     })
     @PatchMapping("/{notificationId}")
-    public ResponseEntity<?> readNotification(
+    public ResponseEntity<Void> readNotification(
             @PathVariable Long notificationId
     ){
         Member member = securityUtil.getUser();
@@ -60,7 +60,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "204")
     })
     @DeleteMapping("/{notificationId}")
-    public ResponseEntity<?> deleteNotification(
+    public ResponseEntity<Void> deleteNotification(
             @PathVariable Long notificationId
     ){
         Member member = securityUtil.getUser();

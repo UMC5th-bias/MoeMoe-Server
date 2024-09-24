@@ -58,7 +58,7 @@ public class GuestBookCommentController {
     }
 
     @PostMapping("/{guestbook_id}/comments/{comment_id}/notification")
-    public ResponseEntity<?> sendGuestBookNotification(
+    public ResponseEntity<Void> sendGuestBookNotification(
             @PathVariable("guestbook_id") Long guestbookId,
             @PathVariable("comment_id") Long commentId
     ){
@@ -70,7 +70,7 @@ public class GuestBookCommentController {
             @ApiResponse(responseCode = "204")
     })
     @PutMapping("/comments/{comment_id}")
-    public ResponseEntity<?> modifyGuestBookComment(
+    public ResponseEntity<Void> modifyGuestBookComment(
             @PathVariable("comment_id") Long commentId,
             @RequestBody CommentRequestDto.ModifyComment dto
     ){
@@ -85,7 +85,7 @@ public class GuestBookCommentController {
             @ApiResponse(responseCode = "204")
     })
     @DeleteMapping("/comments/{comment_id}")
-    public ResponseEntity<?> deleteGuestBookComment(
+    public ResponseEntity<Void> deleteGuestBookComment(
             @PathVariable("comment_id") Long commentId
     ){
         Member member = securityUtil.getUser();

@@ -96,7 +96,7 @@ public class PostController {
             @ApiResponse(responseCode = "204")
     })
     @DeleteMapping("/{post_id}")
-    public ResponseEntity<?> deletePost(
+    public ResponseEntity<Void> deletePost(
             @PathVariable("post_id") long postId
     ){
         Member member = securityUtil.getUser();
@@ -122,7 +122,7 @@ public class PostController {
             @ApiResponse(responseCode = "204")
     })
     @PatchMapping("/{post_id}")
-    public ResponseEntity<?> modifyPost(
+    public ResponseEntity<Void> modifyPost(
             @PathVariable("post_id") Long postId,
             @RequestPart PostRequestDto data,
             @RequestPart(required = false) List<MultipartFile> images

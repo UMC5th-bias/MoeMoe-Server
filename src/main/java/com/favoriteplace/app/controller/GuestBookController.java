@@ -86,7 +86,7 @@ public class GuestBookController {
             @ApiResponse(responseCode = "204")
     })
     @PatchMapping("/{guestbook_id}")
-    public ResponseEntity<?> modifyGuestBook(
+    public ResponseEntity<Void> modifyGuestBook(
             @PathVariable("guestbook_id") Long guestbookId,
             @RequestPart GuestBookRequestDto.ModifyGuestBookDto data,
             @RequestPart(required = false) List<MultipartFile> images
@@ -102,7 +102,7 @@ public class GuestBookController {
             @ApiResponse(responseCode = "204")
     })
     @DeleteMapping("/{guestbook_id}")
-    public ResponseEntity<?> deleteGuestBook(
+    public ResponseEntity<Void> deleteGuestBook(
             @PathVariable("guestbook_id") Long guestbookId
     ){
         Member member = securityUtil.getUser();

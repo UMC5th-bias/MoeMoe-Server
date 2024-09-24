@@ -60,7 +60,7 @@ public class PostCommentController {
     }
 
     @PostMapping("/{post_id}/comments/{comment_id}/notification")
-    public ResponseEntity<?> sendPostNotification(
+    public ResponseEntity<Void> sendPostNotification(
             @PathVariable("post_id") long postId,
             @PathVariable("comment_id") long commentId
     ){
@@ -72,7 +72,7 @@ public class PostCommentController {
             @ApiResponse(responseCode = "204")
     })
     @PutMapping("/comments/{comment_id}")
-    public ResponseEntity<?> modifyPostComment(
+    public ResponseEntity<Void> modifyPostComment(
             @PathVariable("comment_id") long commentId,
             @RequestBody CommentRequestDto.ModifyComment dto
     ){
