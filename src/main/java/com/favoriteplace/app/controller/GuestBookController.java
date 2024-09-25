@@ -8,6 +8,8 @@ import com.favoriteplace.app.service.community.GuestBookCommandService;
 import com.favoriteplace.app.service.community.GuestBookQueryService;
 import com.favoriteplace.app.service.community.LikedPostService;
 import com.favoriteplace.global.util.SecurityUtil;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -80,8 +82,11 @@ public class GuestBookController {
         return guestBookQueryService.getDetailGuestBookInfo(guestBookId, member);
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204")
+    })
     @PatchMapping("/{guestbook_id}")
-    public ResponseEntity<PostResponseDto.SuccessResponseDto> modifyGuestBook(
+    public ResponseEntity<Void> modifyGuestBook(
             @PathVariable("guestbook_id") Long guestbookId,
             @RequestPart GuestBookRequestDto.ModifyGuestBookDto data,
             @RequestPart(required = false) List<MultipartFile> images
@@ -89,38 +94,39 @@ public class GuestBookController {
         Member member = securityUtil.getUser();
         guestBookCommandService.modifyGuestBook(member, guestbookId, data, images);
         return new ResponseEntity<>(
-                PostResponseDto.SuccessResponseDto.builder().message("성지순례 인증글을 성공적으로 수정했습니다.").build(),
-                HttpStatus.OK
+                HttpStatus.NO_CONTENT
         );
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204")
+    })
     @DeleteMapping("/{guestbook_id}")
-    public ResponseEntity<PostResponseDto.SuccessResponseDto> deleteGuestBook(
+    public ResponseEntity<Void> deleteGuestBook(
             @PathVariable("guestbook_id") Long guestbookId
     ){
         Member member = securityUtil.getUser();
         guestBookCommandService.deleteGuestBook(member, guestbookId);
         return new ResponseEntity<>(
-                PostResponseDto.SuccessResponseDto.builder().message("성지순례 인증글을 성공적으로 삭제했습니다.").build(),
-                HttpStatus.OK
+                HttpStatus.NO_CONTENT
         );
     }
 
     @PostMapping("/{guestbook_id}/like")
-    public ResponseEntity<PostResponseDto.SuccessResponseDto> modifyGuestBookLike(
+    public ResponseEntity<PostResponseDto.LikeSuccessResponseDto> modifyGuestBookLike(
             @PathVariable("guestbook_id") Long guestbookId
     ){
         Member member = securityUtil.getUser();
-        String message = likedPostService.modifyGuestBookLike(member, guestbookId);
+        Long likedId = likedPostService.modifyGuestBookLike(member, guestbookId);
         return new ResponseEntity<>(
-                PostResponseDto.SuccessResponseDto.builder().message(message).build(),
+                PostResponseDto.LikeSuccessResponseDto.builder().likedId(likedId).build(),
                 HttpStatus.OK
         );
     }
 
     // 성지순례 장소 방문 인증글 작성하기
     @PostMapping("/{pilgrimage_id}")
-    public PostResponseDto.SuccessResponseDto postToPilgrimage(
+    public PostResponseDto.GuestBookIdResponseDto postToPilgrimage(
             @PathVariable("pilgrimage_id") Long pilgrimageId,
             @RequestPart GuestBookRequestDto.ModifyGuestBookDto data,
             @RequestPart(required = false) List<MultipartFile> images

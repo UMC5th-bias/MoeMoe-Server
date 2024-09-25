@@ -70,6 +70,7 @@ public class GuestBook extends BaseTimeEntity {
     public void setTitle(String title){this.title = title;}
     public void setContent(String content){this.content = content;}
     public void increaseView(){this.view++;}
+    public void decreaseView(){this.view--;}
 
     public void setHashTag(HashTag hashTag){
         hashTag.setGuestBook(this);
