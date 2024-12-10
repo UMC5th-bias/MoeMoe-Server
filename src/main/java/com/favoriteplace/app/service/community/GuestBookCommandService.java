@@ -135,7 +135,7 @@ public class GuestBookCommandService {
      * @throws IOException
      */
     @Transactional
-    public PostResponseDto.SuccessResponseDto postGuestBook(Member member, Long pilgrimageId, GuestBookRequestDto.ModifyGuestBookDto data, List<MultipartFile> images) throws IOException {
+    public PostResponseDto.GuestBookIdResponseDto postGuestBook(Member member, Long pilgrimageId, GuestBookRequestDto.ModifyGuestBookDto data, List<MultipartFile> images) throws IOException {
         Pilgrimage pilgrimage = pilgrimageRepository
                 .findById(pilgrimageId).orElseThrow(()->new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
 
@@ -170,7 +170,7 @@ public class GuestBookCommandService {
         successPostAndPointProcess(member, pilgrimage);
         log.info("success point update");
 
-        return PostResponseDto.SuccessResponseDto.builder().message("인증글 작성에 성공했습니다.").build();
+        return PostResponseDto.GuestBookIdResponseDto.builder().guestBookId(newGuestBook.getId()).build();
     }
 
     private void checkVisited(Pilgrimage pilgrimage, Member member){
