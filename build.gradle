@@ -27,52 +27,56 @@ jar {
 
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-websocket'
-	compileOnly 'org.projectlombok:lombok'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	runtimeOnly 'com.mysql:mysql-connector-j'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
+	dependencies {
+		// Spring Boot Starters
+		implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+		implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+		implementation 'org.springframework.boot:spring-boot-starter-security'
+		implementation 'org.springframework.boot:spring-boot-starter-web'
+		implementation 'org.springframework.boot:spring-boot-starter-websocket'
+		implementation 'org.springframework.boot:spring-boot-starter-validation'
+		implementation 'org.springframework.boot:spring-boot-starter-mail'
+		implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+		developmentOnly 'org.springframework.boot:spring-boot-devtools'
+		runtimeOnly 'com.mysql:mysql-connector-j'
+		testImplementation 'org.springframework.boot:spring-boot-starter-test'
+		testImplementation 'org.springframework.security:spring-security-test'
 
-	//email
-	implementation 'org.springframework.boot:spring-boot-starter-mail'
+		// Lombok (compile-time annotations)
+		compileOnly 'org.projectlombok:lombok'
+		annotationProcessor 'org.projectlombok:lombok'
 
-//	implementation 'com.sun.mail:javax.mail:1.6.2' // 또는 최신 버전
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+		// JWT (JSON Web Tokens)
+		implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+		implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+		implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
-	//jwt
-	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
-	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+		// OpenFeign (Declarative REST Client)
+		implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.0.4'
 
-	//FeignClient
-	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.0.4'
+		// Swagger / OpenAPI
+		implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
 
-	// swagger
-	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+		// Google Cloud Storage and Image Handling
+		implementation 'com.google.cloud:google-cloud-storage:2.20.1'
+		implementation 'org.springframework.cloud:spring-cloud-gcp-starter-storage:1.2.8.RELEASE'
+		implementation 'net.coobird:thumbnailator:0.4.14'
 
-	//image
-	implementation 'com.google.cloud:google-cloud-storage:2.20.1'
-	implementation 'org.springframework.cloud:spring-cloud-gcp-starter-storage:1.2.8.RELEASE'
-	implementation 'net.coobird:thumbnailator:0.4.14'
+		// Firebase Cloud Messaging (FCM)
+		implementation 'com.google.firebase:firebase-admin:6.8.1'
+		implementation 'com.squareup.okhttp3:okhttp:4.2.2'
 
-	// FCM
-	implementation 'com.google.firebase:firebase-admin:6.8.1'
-	implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.2.2'
+		// STOMP (WebSocket Messaging)
+		implementation 'org.webjars:webjars-locator-core'
+		implementation 'org.webjars:sockjs-client:1.5.1'
+		implementation 'org.webjars:stomp-websocket:2.3.4'
 
-	// STOMP
-	implementation 'org.webjars:webjars-locator-core'
-	implementation 'org.webjars:sockjs-client:1.5.1'
-	implementation 'org.webjars:stomp-websocket:2.3.4'
+		// Jackson (Date/Time Serialization)
+		implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
-	// jackson 날짜/시간 직렬화
-	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+	}
+
 
 }
 
