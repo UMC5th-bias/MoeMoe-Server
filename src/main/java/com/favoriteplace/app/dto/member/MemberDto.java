@@ -5,9 +5,7 @@ import com.favoriteplace.app.domain.enums.LoginType;
 import com.favoriteplace.app.domain.enums.MemberStatus;
 import com.favoriteplace.app.domain.item.Item;
 import com.favoriteplace.global.gcpImage.ConvertUuidToUrl;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,7 +18,10 @@ public class MemberDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class MemberSignUpReqDto {
+
+        @NotBlank(message = "닉네임은 필수값입니다.")
         public String nickname;
+
         public String email;
         public String password;
         public Boolean snsAllow;
@@ -33,7 +34,7 @@ public class MemberDto {
                 .password(encodedPassword)
                 .alarmAllowance(snsAllow)
                 .description(introduction)
-                .profileImageUrl(profileImg == null ? null : ConvertUuidToUrl.convertUuidToUrl(profileImg))
+                .profileImageUrl(profileImg)
                 .point(0L)
                 .loginType(LoginType.SELF)
                 .profileTitle(titleItem)
@@ -73,8 +74,11 @@ public class MemberDto {
          * 2)@기호를 기준으로 이메일 주소를 이루는 로컬호스트와 도메인 파트가 존재해야 한다.
          * 3)도메인 파트는 최소하나의 점과 그 뒤에 최소한 2개의 알파벳을 가진다를 검증
          */
-        @Email
-        @NotEmpty(message = "이메일을 입력해주세요")
+        @NotEmpty(message = "이메일 입력은 필수 입니다.")
+        @Pattern(
+                regexp = "^[\\w\\.-]+@[\\w\\.-]+\\.[a-zA-Z]{2,}$",
+                message = "이메일 형식에 맞지 않습니다."
+        )
         private String email;
     }
 
@@ -95,8 +99,12 @@ public class MemberDto {
     @Getter
     @NoArgsConstructor
     public static class EmailCheckReqDto {
-        @Email
+
         @NotEmpty(message = "이메일을 입력해 주세요")
+        @Pattern(
+                regexp = "^[\\w\\.-]+@[\\w\\.-]+\\.[a-zA-Z]{2,}$",
+                message = "이메일 형식에 맞지 않습니다."
+        )
         private String email;
 
         @NotNull(message = "인증 번호를 입력해 주세요")

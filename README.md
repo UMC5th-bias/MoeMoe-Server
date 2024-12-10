@@ -13,7 +13,7 @@
 
 | | | | | 
 |---------|--------------|----------|-------------|
-| 담당 역할 | <li>Github Actions + AWS CodeDeploy CI/CD </li><li> ERD 및 엔티티 설계 </li><li>예외처리 </li><li>로그인 + 회원가입 API </li><li>상점 도메인 API</li><li>카카오 로그인(개발중)</li> | <li>API 명세서</li><li>성지순례 도메인 API</li><li>위치 기반 인증(웹 소켓 - 개발중)</li><li>마이페이지 도메인 API</li>| <li>ERD 및 엔티티 설계</li><li>홈 화면 API</li><li>커뮤니티 도메인 API</li><li>이미지 업로드 로직(GCP)</li><li>FCM 푸시 알림(개발중)</li><li>대댓글 API</li> |
+| 담당 역할 | <li>Github Actions + AWS CodeDeploy CI/CD </li><li> ERD 및 엔티티 설계 </li><li>예외처리 </li><li>로그인 + 회원가입 API </li><li>상점 도메인 API</li><li>카카오 로그인</li><li>AWS S3 이미지 업로드</li> | <li>API 명세서</li><li>성지순례 도메인 API</li><li>위치 기반 인증(STOMP)</li><li>마이페이지 도메인 API</li>| <li>ERD 및 엔티티 설계</li><li>홈 화면 API</li><li>커뮤니티 도메인 API</li><li>FCM 푸시 알림</li><li>대댓글 API</li> |
 
 </div>
 <br/><br/>
@@ -34,4 +34,5 @@
 - `develop`: 프로덕트 배포 전 기능을 개발하는 브랜치
 - `feature`: 단위 기능을 개발하는 브랜치로 단위 기능 개발이 완료되면 develop 브랜치에 merge ex) feat/#이슈번호
 
-## 💖 8월 말 ~ 9월 초 릴리즈 예정
+
+## 💖 2024년 하반기 릴리즈 예정!

@@ -103,7 +103,7 @@ public class PilgrimageApiController {
 
     // 랠리 FCM 구독
     @PostMapping("/{rally_id}/subscribe")
-    public ResponseEntity<?> subscribeRally(@PathVariable("rally_id") Long rallyId){
+    public ResponseEntity<Void> subscribeRally(@PathVariable("rally_id") Long rallyId){
         Member member = securityUtil.getUser();
         pilgrimageCommandService.subscribeRally(rallyId, member);
         return ResponseEntity.ok().build();
@@ -111,7 +111,7 @@ public class PilgrimageApiController {
 
     // 랠리 FCM 구독 취소
     @DeleteMapping("/{rally_id}/unsubscribe")
-    public ResponseEntity<?> unsubscribeRally(@PathVariable("rally_id") Long rallyId){
+    public ResponseEntity<Void> unsubscribeRally(@PathVariable("rally_id") Long rallyId){
         Member member = securityUtil.getUser();
         pilgrimageCommandService.unsubscribeRally(rallyId, member);
         return ResponseEntity.noContent().build();

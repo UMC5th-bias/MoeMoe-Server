@@ -14,9 +14,16 @@ public class PostResponseDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class SuccessResponseDto{
+    public static class CommentSuccessResponseDto {
         private Long commentId;
-        private String message;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class LikeSuccessResponseDto{
+        private Long likedId;
     }
 
     @Getter
@@ -25,6 +32,14 @@ public class PostResponseDto {
     @AllArgsConstructor
     public static class PostIdResponseDto{
         private Long postId;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class GuestBookIdResponseDto{
+        private Long guestBookId;
     }
 
     @Builder

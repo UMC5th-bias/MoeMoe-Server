@@ -8,6 +8,8 @@ import com.favoriteplace.app.dto.community.CommentResponseDto;
 import com.favoriteplace.app.service.MyPageCommandService;
 import com.favoriteplace.app.service.MyPageQueryService;
 import com.favoriteplace.global.util.SecurityUtil;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -89,6 +91,9 @@ public class MyPageController {
     }
 
     //FCM token 등록 & 변경
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204")
+    })
     @PatchMapping("/fcmToken")
     public ResponseEntity<?> modifyFcmToken(
             @Valid @RequestBody MyFcmTokenDto request
