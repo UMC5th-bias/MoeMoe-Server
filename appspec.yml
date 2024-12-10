@@ -1,8 +1,7 @@
 version: 0.0
 os: linux
-
 files:
-  - source:  /
+  - source: /
     destination: /home/ubuntu/app
     overwrite: yes
 
@@ -13,21 +12,21 @@ permissions:
     group: ubuntu
 
 hooks:
-#  ApplicationStart:
-#    - location: scripts/run_new_was.sh
-#      timeout: 180
-#      runas: ubuntu
-#    - location: scripts/health_check.sh
-#      timeout: 180
-#      runas: ubuntu
-#    - location: scripts/switch.sh
-#      timeout: 180
-#      runas: ubuntu
-  AfterInstall:
-    - location: scripts/stop.sh
-      timeout: 60
-      runas: ubuntu
   ApplicationStart:
-    - location: scripts/start.sh
-      timeout: 60
+    - location: scripts/run_new_was.sh
+      timeout: 180
       runas: ubuntu
+    - location: scripts/health_check.sh
+      timeout: 180
+      runas: ubuntu
+    - location: scripts/switch.sh
+      timeout: 180
+      runas: ubuntu
+#  AfterInstall:
+#    - location: scripts/stop.sh
+#      timeout: 60
+#      runas: ubuntu
+#  ApplicationStart:
+#    - location: scripts/start.sh
+#      timeout: 60
+#      runas: ubuntu
