@@ -64,8 +64,9 @@ fi
 
 # 타켓 포트에 jar파일을 이용해 새로운 서버 실행
 nohup java -jar \
-        -Dserver.port=${TARGET_PORT} ${JAR_FILE} > /home/ubuntu/nohup.out 2>&1 & \
-        -Dspring.config.location=/home/ubuntu/app/application.yml
+        -Dserver.port=${TARGET_PORT} \
+        -Dspring.config.location=/home/ubuntu/app/application.yml \
+        /home/ubuntu/app/build/libs/* > /home/ubuntu/nohup.out 2>&1 &
 
 echo "> Now new WAS runs at ${TARGET_PORT}."
 exit 0
