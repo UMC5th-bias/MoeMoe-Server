@@ -7,10 +7,14 @@ import com.favoriteplace.app.service.community.LikedPostService;
 import com.favoriteplace.app.service.community.PostCommandService;
 import com.favoriteplace.app.service.community.PostQueryService;
 import com.favoriteplace.global.util.SecurityUtil;
+
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 import jakarta.servlet.http.HttpServletRequest;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -72,11 +76,10 @@ public class PostController {
             @RequestParam() String searchType,
             @RequestParam() String keyword
     ){
-        List<PostResponseDto.MyPost> posts = postQueryService.getTotalPostByKeyword(page, size, searchType, keyword);
         return PostResponseDto.MyPostResponseDto.builder()
                 .page((long) page)
                 .size((long) size)
-                .post(posts)
+                .post(postQueryService.getTotalPostByKeyword(page, size, searchType, keyword))
                 .build();
     }
 

@@ -10,6 +10,7 @@ import com.favoriteplace.app.dto.item.ItemDto.ItemListResDto;
 import com.favoriteplace.app.dto.item.ItemDto.NewItemListResDto;
 import com.favoriteplace.app.dto.member.MemberDto;
 import com.favoriteplace.app.dto.member.MemberDto.MemberInfo;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,45 +18,48 @@ public class ShopConverter {
 
     public static ItemDto.ItemList itemList(Item item) {
         return ItemDto.ItemList.builder()
-            .id(item.getId().intValue())
-            .name(item.getName())
-            .imageUrl(item.getDefaultImage().getUrl())
-            .point(item.getPoint().intValue())
-            .build();
+                .id(item.getId().intValue())
+                .name(item.getName())
+                .imageUrl(item.getDefaultImage().getUrl())
+                .point(item.getPoint().intValue())
+                .build();
     }
 
     public static ItemDto.ItemListDivideByCategory itemListDivideByCategory(List<Item> items) {
         List<ItemList> itemLists = items.stream().map(ShopConverter::itemList)
-            .collect(Collectors.toList());
+                .collect(Collectors.toList());
 
         return ItemDto.ItemListDivideByCategory.builder()
-            .category(items.get(0).getCategory().getName())
-            .itemList(itemLists)
-            .build();
+                .category(items.get(0).getCategory().getName())
+                .itemList(itemLists)
+                .build();
     }
 
     public static ItemDto.ItemListDivideBySaleStatus itemListDivideByStatus(List<Item> items) {
         List<ItemList> itemLists = items.stream().map(ShopConverter::itemList)
-            .collect(Collectors.toList());
+                .collect(Collectors.toList());
 
         return ItemDto.ItemListDivideBySaleStatus.builder()
-            .status(items.get(0).getStatus().toString())
-            .itemList(itemLists)
-            .build();
+                .status(items.get(0).getStatus().toString())
+                .itemList(itemLists)
+                .build();
     }
 
-    public static ItemDto.ItemListResDto totalItemList(Member member, List<ItemListDivideByCategory> titles, List<ItemListDivideByCategory> icons) {
+    public static ItemDto.ItemListResDto totalItemList(
+            Member member, List<ItemListDivideByCategory> titles, List<ItemListDivideByCategory> icons
+    ) {
         MemberDto.MemberInfo memberDto = null;
-        if(member != null) {
+        if (member != null) {
             memberDto = MemberInfo.from(member);
         }
         return ItemListResDto.from(memberDto, titles, icons);
     }
 
-    public static ItemDto.NewItemListResDto totalNewItemList(List<ItemListDivideBySaleStatus> titles, List<ItemListDivideBySaleStatus> icons) {
+    public static ItemDto.NewItemListResDto totalNewItemList(
+            List<ItemListDivideBySaleStatus> titles, List<ItemListDivideBySaleStatus> icons
+    ) {
         return NewItemListResDto.from(titles, icons);
     }
-
 
 
 }

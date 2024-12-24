@@ -12,7 +12,7 @@ import com.favoriteplace.global.util.DateTimeFormatUtils;
 import java.util.List;
 
 public class GuestBookConverter {
-    public static GuestBookResponseDto.MyGuestBookInfo toGuestBook(GuestBook guestBook){
+    public static GuestBookResponseDto.MyGuestBookInfo toGuestBook(GuestBook guestBook) {
         return GuestBookResponseDto.MyGuestBookInfo.builder()
                 .id(guestBook.getId())
                 .title(guestBook.getTitle())
@@ -24,7 +24,9 @@ public class GuestBookConverter {
                 .build();
     }
 
-    public static GuestBookResponseDto.GuestBookInfo toGuestBookInfo(GuestBook guestBook, Boolean isLike, Boolean isWrite){
+    public static GuestBookResponseDto.GuestBookInfo toGuestBookInfo(
+            GuestBook guestBook, Boolean isLike, Boolean isWrite
+    ) {
         return GuestBookResponseDto.GuestBookInfo.builder()
                 .id(guestBook.getId())
                 .title(guestBook.getTitle())
@@ -40,7 +42,9 @@ public class GuestBookConverter {
                 .build();
     }
 
-    public static GuestBookResponseDto.PilgrimageInfo toPilgrimageInfo(Pilgrimage pilgrimage, Long completeNumber){
+    public static GuestBookResponseDto.PilgrimageInfo toPilgrimageInfo(
+            Pilgrimage pilgrimage, Long completeNumber
+    ) {
         return GuestBookResponseDto.PilgrimageInfo.builder()
                 .name(pilgrimage.getRallyName())
                 .pilgrimageNumber(pilgrimage.getRally().getPilgrimageNumber())
@@ -55,7 +59,7 @@ public class GuestBookConverter {
                 .build();
     }
 
-    public static GuestBookResponseDto.TotalGuestBookInfo toTotalGuestBookInfo(GuestBook guestBook){
+    public static GuestBookResponseDto.TotalGuestBookInfo toTotalGuestBookInfo(GuestBook guestBook) {
         return GuestBookResponseDto.TotalGuestBookInfo.builder()
                 .id(guestBook.getId())
                 .title(guestBook.getTitle())
@@ -69,8 +73,12 @@ public class GuestBookConverter {
                 .build();
     }
 
-    public static GuestBookResponseDto.DetailGuestBookDto toDetailGuestBookInfo(GuestBook guestBook, boolean isLike,
-                                boolean isWrite, GuestBookResponseDto.PilgrimageInfo pilgrimageInfo){
+    public static GuestBookResponseDto.DetailGuestBookDto toDetailGuestBookInfo(
+            GuestBook guestBook,
+            boolean isLike,
+            boolean isWrite,
+            GuestBookResponseDto.PilgrimageInfo pilgrimageInfo
+    ) {
         return GuestBookResponseDto.DetailGuestBookDto.builder()
                 .userInfo(UserInfoResponseDto.of(guestBook.getMember()))
                 .pilgrimage(pilgrimageInfo)
@@ -79,7 +87,7 @@ public class GuestBookConverter {
 
     }
 
-    private static long getNotDeletedComment(List<Comment> comments){
+    private static long getNotDeletedComment(List<Comment> comments) {
         return comments.stream()
                 .filter(comment -> !comment.getIsDeleted())
                 .count();

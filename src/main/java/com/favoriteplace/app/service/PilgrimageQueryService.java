@@ -1,28 +1,38 @@
 package com.favoriteplace.app.service;
 
-import com.favoriteplace.app.converter.GuestBookConverter;
 import com.favoriteplace.app.converter.PilgrimageConverter;
 import com.favoriteplace.app.converter.RallyConverter;
 import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.HashTag;
-import com.favoriteplace.app.domain.travel.*;
-import com.favoriteplace.app.dto.community.GuestBookResponseDto;
+import com.favoriteplace.app.domain.travel.Address;
+import com.favoriteplace.app.domain.travel.LikedRally;
+import com.favoriteplace.app.domain.travel.Pilgrimage;
+import com.favoriteplace.app.domain.travel.Rally;
+import com.favoriteplace.app.domain.travel.VisitedPilgrimage;
 import com.favoriteplace.app.dto.travel.PilgrimageDto;
 import com.favoriteplace.app.dto.travel.RallyDto;
-import com.favoriteplace.app.repository.*;
+import com.favoriteplace.app.repository.AddressRepository;
+import com.favoriteplace.app.repository.GuestBookRepository;
+import com.favoriteplace.app.repository.HashtagRepository;
+import com.favoriteplace.app.repository.ImageRepository;
+import com.favoriteplace.app.repository.LikedRallyRepository;
+import com.favoriteplace.app.repository.PilgrimageRepository;
+import com.favoriteplace.app.repository.RallyRepository;
+import com.favoriteplace.app.repository.VisitedPilgrimageRepository;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 

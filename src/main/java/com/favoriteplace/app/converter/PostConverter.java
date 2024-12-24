@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class PostConverter {
-    public static PostResponseDto.MyPost toMyPost(Post post){
+    public static PostResponseDto.MyPost toMyPost(Post post) {
         return PostResponseDto.MyPost.builder()
                 .id(post.getId())
                 .title(post.getTitle())
@@ -25,14 +25,14 @@ public class PostConverter {
     }
 
     public static PostResponseDto.PostDetailResponseDto toPostDetailResponse(
-            Post post, boolean isLike, boolean isWriter){
+            Post post, boolean isLike, boolean isWriter) {
         return PostResponseDto.PostDetailResponseDto.builder()
                 .userInfo(UserInfoResponseDto.of(post.getMember()))
                 .postInfo(toPostInfo(post, isLike, isWriter))
                 .build();
     }
 
-    public static PostResponseDto.PostInfo toPostInfo(Post post, Boolean isLike, Boolean isWrite){
+    public static PostResponseDto.PostInfo toPostInfo(Post post, Boolean isLike, Boolean isWrite) {
         List<String> images = Optional.ofNullable(post.getImages())
                 .map(image -> image.stream().map(Image::getUrl).collect(Collectors.toList()))
                 .orElse(Collections.emptyList());
@@ -50,7 +50,7 @@ public class PostConverter {
                 .build();
     }
 
-    private static long getNotDeletedComment(List<Comment> comments){
+    private static long getNotDeletedComment(List<Comment> comments) {
         return comments.stream()
                 .filter(comment -> !comment.getIsDeleted())
                 .count();

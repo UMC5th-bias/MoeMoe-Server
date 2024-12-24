@@ -7,18 +7,32 @@ import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.enums.PointType;
 import com.favoriteplace.app.domain.enums.RallyVersion;
 import com.favoriteplace.app.domain.item.AcquiredItem;
-import com.favoriteplace.app.domain.travel.*;
+import com.favoriteplace.app.domain.travel.CompleteRally;
+import com.favoriteplace.app.domain.travel.LikedRally;
+import com.favoriteplace.app.domain.travel.Pilgrimage;
+import com.favoriteplace.app.domain.travel.Rally;
+import com.favoriteplace.app.domain.travel.VisitedPilgrimage;
 import com.favoriteplace.app.dto.CommonResponseDto;
 import com.favoriteplace.app.dto.travel.PilgrimageDto;
 import com.favoriteplace.app.dto.travel.PilgrimageSocketDto;
-import com.favoriteplace.app.repository.*;
+import com.favoriteplace.app.repository.AcquiredItemRepository;
+import com.favoriteplace.app.repository.CompleteRallyRepository;
+import com.favoriteplace.app.repository.GuestBookRepository;
+import com.favoriteplace.app.repository.LikedRallyRepository;
+import com.favoriteplace.app.repository.PilgrimageRepository;
+import com.favoriteplace.app.repository.PointHistoryRepository;
+import com.favoriteplace.app.repository.RallyRepository;
+import com.favoriteplace.app.repository.VisitedPilgrimageRepository;
 import com.favoriteplace.app.service.fcm.FCMNotificationService;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.websocket.RedisService;
+
 import jakarta.persistence.EntityManager;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

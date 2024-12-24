@@ -7,7 +7,7 @@ import com.favoriteplace.app.domain.item.PointHistory;
 import java.time.LocalDateTime;
 
 public class PointHistoryConverter {
-    public static PointHistory toPointHistory(Member member, Long point, PointType type){
+    public static PointHistory toPointHistory(Member member, Long point, PointType type) {
         member.updatePoint(point);
         return PointHistory.builder()
                 .member(member)

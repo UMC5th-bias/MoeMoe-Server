@@ -5,17 +5,17 @@ import com.favoriteplace.app.domain.travel.Pilgrimage;
 import com.favoriteplace.app.domain.travel.Rally;
 import com.favoriteplace.app.domain.travel.VisitedPilgrimage;
 import com.favoriteplace.app.dto.HomeResponseDto;
-import com.favoriteplace.app.repository.MemberRepository;
 import com.favoriteplace.app.repository.PilgrimageRepository;
 import com.favoriteplace.app.repository.RallyRepository;
 import com.favoriteplace.app.repository.VisitedPilgrimageRepository;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
-import com.favoriteplace.global.util.SecurityUtil;
-import jakarta.servlet.http.HttpServletRequest;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Random;
 
