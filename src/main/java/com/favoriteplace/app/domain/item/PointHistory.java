@@ -1,8 +1,8 @@
 package com.favoriteplace.app.domain.item;
 
-
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.enums.PointType;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -14,6 +14,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
