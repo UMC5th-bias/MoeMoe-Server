@@ -28,8 +28,8 @@ public class TotalPostService {
     public List<HomeResponseDto.TrendingPost> getTrendingPosts() {
         List<Object> combinedPosts = getNTrendingPosts(5, "day");
         List<HomeResponseDto.TrendingPost> trendingPosts = new ArrayList<>();
-        for(int i=0; i< combinedPosts.size() && i<5; i++){
-            trendingPosts.add(convertToTodayTrendingPost(combinedPosts.get(i), i+1));
+        for (int i = 0; i < combinedPosts.size() && i < 5; i++) {
+            trendingPosts.add(convertToTodayTrendingPost(combinedPosts.get(i), i + 1));
         }
         return trendingPosts;
     }
@@ -42,7 +42,7 @@ public class TotalPostService {
     }
 
     //postNumber : 보여줄 게시글 갯수, period : "day" or "month"
-    public List<Object> getNTrendingPosts(int postNumber, String period){
+    public List<Object> getNTrendingPosts(int postNumber, String period) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startDateTime;
 
@@ -72,30 +72,26 @@ public class TotalPostService {
     }
 
 
-    private HomeResponseDto.TrendingPost convertToTodayTrendingPost(Object object, int rank){
-        if(object instanceof GuestBook guestBook){
+    private HomeResponseDto.TrendingPost convertToTodayTrendingPost(Object object, int rank) {
+        if (object instanceof GuestBook guestBook) {
             return TrendingPostConverter.toGuestBookTrending(guestBook, rank);
-        }
-        else if(object instanceof Post post){
+        } else if (object instanceof Post post) {
             return TrendingPostConverter.toGuestBookTrending(post, rank);
-        }
-        else{
+        } else {
             throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
 
     private TrendingPostResponseDto.TrendingMonthPostResponseDto convertToMonthTrendingPost(Object o) {
-        if(o instanceof GuestBook guestBook){
+        if (o instanceof GuestBook guestBook) {
             return TrendingPostResponseDto.TrendingMonthPostResponseDto.builder()
                     .id(guestBook.getId()).title(guestBook.getTitle())
                     .type("성지순례 인증").build();
-        }
-        else if(o instanceof Post post){
+        } else if (o instanceof Post post) {
             return TrendingPostResponseDto.TrendingMonthPostResponseDto.builder()
                     .id(post.getId()).title(post.getTitle())
                     .type("자유게시판").build();
-        }
-        else{
+        } else {
             throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }

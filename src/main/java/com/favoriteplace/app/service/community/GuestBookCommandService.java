@@ -127,18 +127,6 @@ public class GuestBookCommandService {
 //    }
 
     /**
-     * 성지순례 인증글의 작성자가 맞는지 판단하는 함수
-     *
-     * @param member
-     * @param guestBook
-     */
-    private void checkAuthOfGuestBook(Member member, GuestBook guestBook) {
-        if (!member.getId().equals(guestBook.getMember().getId())) {
-            throw new RestApiException(ErrorCode.USER_NOT_AUTHOR);
-        }
-    }
-
-    /**
      * 성지순례 방문 인증글 작성
      *
      * @param member       인증한 사용자
@@ -192,6 +180,42 @@ public class GuestBookCommandService {
         return PostResponseDto.GuestBookIdResponseDto.builder().guestBookId(newGuestBook.getId()).build();
     }
 
+    public void successPostAndPointProcess(Member member, Pilgrimage pilgrimage) {
+        VisitedPilgrimage newVisited =
+                VisitedPilgrimage.builder().pilgrimage(pilgrimage).member(member).build();
+        visitedPilgrimageRepository.save(newVisited);
+        pointHistoryRepository.save(PointHistoryConverter.toPointHistory(member, 20L, PointType.ACQUIRE));
+        member.updatePoint(20L);
+    }
+
+    /**
+     * 성지 순례 인증글 조회수 증가
+     *
+     * @param guestBookId
+     */
+    @Transactional
+    public void increaseGuestBookView(Long guestBookId) {
+        Optional<GuestBook> optionalGuestBook = guestBookRepository.findById(guestBookId);
+        if (optionalGuestBook.isEmpty()) {
+            throw new RestApiException(ErrorCode.GUESTBOOK_NOT_FOUND);
+        }
+        GuestBook guestBook = optionalGuestBook.get();
+        guestBook.increaseView();
+        guestBookRepository.save(guestBook);
+    }
+
+    /**
+     * 성지순례 인증글의 작성자가 맞는지 판단하는 함수
+     *
+     * @param member
+     * @param guestBook
+     */
+    private void checkAuthOfGuestBook(Member member, GuestBook guestBook) {
+        if (!member.getId().equals(guestBook.getMember().getId())) {
+            throw new RestApiException(ErrorCode.USER_NOT_AUTHOR);
+        }
+    }
+
     private void checkVisited(Pilgrimage pilgrimage, Member member) {
         List<VisitedPilgrimage> visitedPilgrimageList =
                 visitedPilgrimageRepository.findByPilgrimageAndMemberOrderByCreatedAtDesc(pilgrimage, member);
@@ -219,29 +243,5 @@ public class GuestBookCommandService {
                 .view(0L)
                 .build();
         return guestBookRepository.save(guestBook);
-    }
-
-    public void successPostAndPointProcess(Member member, Pilgrimage pilgrimage) {
-        VisitedPilgrimage newVisited =
-                VisitedPilgrimage.builder().pilgrimage(pilgrimage).member(member).build();
-        visitedPilgrimageRepository.save(newVisited);
-        pointHistoryRepository.save(PointHistoryConverter.toPointHistory(member, 20L, PointType.ACQUIRE));
-        member.updatePoint(20L);
-    }
-
-    /**
-     * 성지 순례 인증글 조회수 증가
-     *
-     * @param guestBookId
-     */
-    @Transactional
-    public void increaseGuestBookView(Long guestBookId) {
-        Optional<GuestBook> optionalGuestBook = guestBookRepository.findById(guestBookId);
-        if (optionalGuestBook.isEmpty()) {
-            throw new RestApiException(ErrorCode.GUESTBOOK_NOT_FOUND);
-        }
-        GuestBook guestBook = optionalGuestBook.get();
-        guestBook.increaseView();
-        guestBookRepository.save(guestBook);
     }
 }

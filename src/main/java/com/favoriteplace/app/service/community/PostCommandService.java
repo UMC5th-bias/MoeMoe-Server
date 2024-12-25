@@ -106,18 +106,6 @@ public class PostCommandService {
     }
 
     /**
-     * post의 작성자가 맞는지 확인하는 로직
-     *
-     * @param member
-     * @param post
-     */
-    private void checkAuthOfGuestBook(Member member, Post post) {
-        if (!member.getId().equals(post.getMember().getId())) {
-            throw new RestApiException(ErrorCode.USER_NOT_AUTHOR);
-        }
-    }
-
-    /**
      * 게시글의 조회수를 증가하는 함수
      *
      * @param postId
@@ -131,5 +119,17 @@ public class PostCommandService {
         Post post = postOptional.get();
         post.increaseView();
         postRepository.save(post);
+    }
+
+    /**
+     * post의 작성자가 맞는지 확인하는 로직
+     *
+     * @param member
+     * @param post
+     */
+    private void checkAuthOfGuestBook(Member member, Post post) {
+        if (!member.getId().equals(post.getMember().getId())) {
+            throw new RestApiException(ErrorCode.USER_NOT_AUTHOR);
+        }
     }
 }

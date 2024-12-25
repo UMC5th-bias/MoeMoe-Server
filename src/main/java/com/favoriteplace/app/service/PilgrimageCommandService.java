@@ -118,42 +118,6 @@ public class PilgrimageCommandService {
         return CommonConverter.toRallyResponseDto(true, false,"성지순례 인증하기 15P를 얻으셨습니다!");
     }
 
-    private boolean checkCompleteRally(Member member, Pilgrimage pilgrimage, Long completeCount) {
-        if (completeCount == pilgrimage.getRally().getPilgrimageNumber()) {
-            List<CompleteRally> completeRally = completeRallyRepository.findByMemberAndRally(member, pilgrimage.getRally());
-            log.info("size="+completeRally.size());
-            // 이전에 이미 랠리를 완료한 상태인지 확인
-            if (completeRally.isEmpty()) {
-                // 최초 완료에 한해 칭호 획득
-                if (completeRally == null)
-                    acquiredItemRepository.save(AcquiredItem.builder().item(pilgrimage.getRally().getItem()).member(member).build());
-                // 포인트 획득
-                pointHistoryRepository.save(PointHistoryConverter.toPointHistory(member, 100L, PointType.ACQUIRE));
-                // 완료 랠리 추가
-                completeRallyRepository.save(CompleteRally.builder().rally(pilgrimage.getRally()).member(member).version(RallyVersion.v1).build());
-                // 랠리 완료자 목록에 추가
-                pilgrimage.getRally().addAchieveNumber();
-                rallyRepository.save(pilgrimage.getRally());
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean checkCoordinate(PilgrimageDto.PilgrimageCertifyRequestDto form, Pilgrimage pilgrimage) {
-        return pilgrimage.getLatitude() + MAX_DISTANCE_WITHIN_100M >= form.getLatitude() && pilgrimage.getLatitude() - MAX_DISTANCE_WITHIN_100M <= form.getLatitude()
-                && pilgrimage.getLongitude() + MAX_DISTANCE_WITHIN_100M >= form.getLongitude() && pilgrimage.getLongitude() - MAX_DISTANCE_WITHIN_100M <= form.getLongitude();
-    }
-
-    private void successVisitedAndPointProcess(Member member, Pilgrimage pilgrimage) {
-        VisitedPilgrimage newVisited = VisitedPilgrimage.builder().pilgrimage(pilgrimage).member(member).build();
-        log.info("visited="+newVisited.getId());
-        visitedPilgrimageRepository.save(newVisited);
-        pointHistoryRepository.save(PointHistoryConverter.toPointHistory(member, 15L, PointType.ACQUIRE));
-        member.updatePoint(15L);
-        log.info("clear");
-    }
-
     /**
      * 랠리 구독 (FCM 토픽에 해당 사용자의 토큰 추가)
      */
@@ -360,5 +324,41 @@ public class PilgrimageCommandService {
             return false;
         }
         return true;
+    }
+
+    private boolean checkCoordinate(PilgrimageDto.PilgrimageCertifyRequestDto form, Pilgrimage pilgrimage) {
+        return pilgrimage.getLatitude() + MAX_DISTANCE_WITHIN_100M >= form.getLatitude() && pilgrimage.getLatitude() - MAX_DISTANCE_WITHIN_100M <= form.getLatitude()
+                && pilgrimage.getLongitude() + MAX_DISTANCE_WITHIN_100M >= form.getLongitude() && pilgrimage.getLongitude() - MAX_DISTANCE_WITHIN_100M <= form.getLongitude();
+    }
+
+    private void successVisitedAndPointProcess(Member member, Pilgrimage pilgrimage) {
+        VisitedPilgrimage newVisited = VisitedPilgrimage.builder().pilgrimage(pilgrimage).member(member).build();
+        log.info("visited="+newVisited.getId());
+        visitedPilgrimageRepository.save(newVisited);
+        pointHistoryRepository.save(PointHistoryConverter.toPointHistory(member, 15L, PointType.ACQUIRE));
+        member.updatePoint(15L);
+        log.info("clear");
+    }
+
+    private boolean checkCompleteRally(Member member, Pilgrimage pilgrimage, Long completeCount) {
+        if (completeCount == pilgrimage.getRally().getPilgrimageNumber()) {
+            List<CompleteRally> completeRally = completeRallyRepository.findByMemberAndRally(member, pilgrimage.getRally());
+            log.info("size="+completeRally.size());
+            // 이전에 이미 랠리를 완료한 상태인지 확인
+            if (completeRally.isEmpty()) {
+                // 최초 완료에 한해 칭호 획득
+                if (completeRally == null)
+                    acquiredItemRepository.save(AcquiredItem.builder().item(pilgrimage.getRally().getItem()).member(member).build());
+                // 포인트 획득
+                pointHistoryRepository.save(PointHistoryConverter.toPointHistory(member, 100L, PointType.ACQUIRE));
+                // 완료 랠리 추가
+                completeRallyRepository.save(CompleteRally.builder().rally(pilgrimage.getRally()).member(member).version(RallyVersion.v1).build());
+                // 랠리 완료자 목록에 추가
+                pilgrimage.getRally().addAchieveNumber();
+                rallyRepository.save(pilgrimage.getRally());
+                return true;
+            }
+        }
+        return false;
     }
 }
