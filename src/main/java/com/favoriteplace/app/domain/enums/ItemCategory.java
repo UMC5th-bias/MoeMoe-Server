@@ -8,7 +8,8 @@ import lombok.RequiredArgsConstructor;
 public enum ItemCategory {
     NEW(0, "New!"),
     UMC(1, "UMC"),
-    NORMAL(2, "Normal");
+    NORMAL(2, "Normal"),
+    ;
 
     private final Integer num;
     private final String name;
