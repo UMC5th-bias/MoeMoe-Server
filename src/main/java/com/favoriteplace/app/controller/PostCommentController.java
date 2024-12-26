@@ -1,7 +1,8 @@
 package com.favoriteplace.app.controller;
 
 import com.favoriteplace.app.domain.Member;
-import com.favoriteplace.app.dto.community.CommentRequestDto;
+import com.favoriteplace.app.dto.community.CommentCreateRequestDto;
+import com.favoriteplace.app.dto.community.CommentModifyRequestDto;
 import com.favoriteplace.app.dto.community.CommentResponseDto;
 import com.favoriteplace.app.service.community.CommentCommandService;
 import com.favoriteplace.app.service.community.CommentQueryService;
@@ -30,7 +31,7 @@ public class PostCommentController {
     public ResponseEntity<MyCommentDto> getMyComments(
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false, defaultValue = "10") int size
-    ){
+    ) {
         Member member = securityUtil.getUser();
         return ResponseEntity.ok(commentQueryService.getMyPostComments(member, page, size));
     }
@@ -41,7 +42,7 @@ public class PostCommentController {
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false, defaultValue = "5") int size,
             HttpServletRequest request
-    ){
+    ) {
         Member member = securityUtil.getUserFromHeader(request);
         return ResponseEntity.ok(commentQueryService.getPostComments(member, page, size, postId));
     }
@@ -49,8 +50,8 @@ public class PostCommentController {
     @PostMapping("/{post_id}/comments")
     public ResponseEntity<CommentSuccessResponseDto> createPostComment(
             @PathVariable("post_id") Long postId,
-            @RequestBody CommentRequestDto.CreateComment dto
-    ){
+            @RequestBody CommentCreateRequestDto dto
+    ) {
         Member member = securityUtil.getUser();
         Long commentId = commentCommandService.createPostComment(member, postId, dto);
         return new ResponseEntity<>(
@@ -63,7 +64,7 @@ public class PostCommentController {
     public ResponseEntity<Void> sendPostNotification(
             @PathVariable("post_id") long postId,
             @PathVariable("comment_id") long commentId
-    ){
+    ) {
         commentCommandService.sendPostNotification(postId, commentId);
         return ResponseEntity.ok().build();
     }
@@ -74,10 +75,10 @@ public class PostCommentController {
     @PutMapping("/comments/{comment_id}")
     public ResponseEntity<Void> modifyPostComment(
             @PathVariable("comment_id") long commentId,
-            @RequestBody CommentRequestDto.ModifyComment dto
-    ){
+            @RequestBody CommentModifyRequestDto dto
+    ) {
         Member member = securityUtil.getUser();
-        commentCommandService.modifyComment(member, commentId, dto.getContent());
+        commentCommandService.modifyComment(member, commentId, dto.content());
         return new ResponseEntity<>(
                 HttpStatus.NO_CONTENT
         );
@@ -89,13 +90,11 @@ public class PostCommentController {
     @DeleteMapping("/comments/{comment_id}")
     public ResponseEntity<CommentSuccessResponseDto> deletePostComment(
             @PathVariable("comment_id") long commentId
-    ){
+    ) {
         Member member = securityUtil.getUser();
         commentCommandService.deleteComment(member, commentId);
         return new ResponseEntity<>(
                 HttpStatus.NO_CONTENT
         );
     }
-
-
 }

@@ -1,7 +1,8 @@
 package com.favoriteplace.app.controller;
 
 import com.favoriteplace.app.domain.Member;
-import com.favoriteplace.app.dto.community.CommentRequestDto;
+import com.favoriteplace.app.dto.community.CommentCreateRequestDto;
+import com.favoriteplace.app.dto.community.CommentModifyRequestDto;
 import com.favoriteplace.app.dto.community.CommentResponseDto;
 import com.favoriteplace.app.dto.community.GuestBookResponseDto;
 import com.favoriteplace.app.dto.community.PostResponseDto;
@@ -47,7 +48,7 @@ public class GuestBookCommentController {
     @PostMapping("/{guestbook_id}/comments")
     public ResponseEntity<PostResponseDto.CommentSuccessResponseDto> createGuestBookComment(
             @PathVariable("guestbook_id") Long guestbookId,
-            @RequestBody CommentRequestDto.CreateComment guestBookCommentDto
+            @RequestBody CommentCreateRequestDto guestBookCommentDto
     ){
         Member member = securityUtil.getUser();
         Long commentId = commentCommandService.createGuestBookComment(member, guestbookId, guestBookCommentDto);
@@ -72,10 +73,10 @@ public class GuestBookCommentController {
     @PutMapping("/comments/{comment_id}")
     public ResponseEntity<Void> modifyGuestBookComment(
             @PathVariable("comment_id") Long commentId,
-            @RequestBody CommentRequestDto.ModifyComment dto
+            @RequestBody CommentModifyRequestDto dto
     ){
         Member member = securityUtil.getUser();
-        commentCommandService.modifyComment(member, commentId, dto.getContent());
+        commentCommandService.modifyComment(member, commentId, dto.content());
         return new ResponseEntity<>(
                 HttpStatus.NO_CONTENT
         );
