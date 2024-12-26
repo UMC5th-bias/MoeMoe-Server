@@ -2,11 +2,9 @@ package com.favoriteplace.app.converter;
 
 import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.community.GuestBook;
-import com.favoriteplace.app.domain.community.HashTag;
 import com.favoriteplace.app.domain.travel.Address;
 import com.favoriteplace.app.domain.travel.Pilgrimage;
 import com.favoriteplace.app.domain.travel.Rally;
-import com.favoriteplace.app.dto.community.GuestBookResponseDto;
 import com.favoriteplace.app.dto.travel.PilgrimageDto;
 
 import java.util.ArrayList;

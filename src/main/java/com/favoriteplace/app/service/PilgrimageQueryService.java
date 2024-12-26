@@ -1,6 +1,5 @@
 package com.favoriteplace.app.service;
 
-import com.favoriteplace.app.converter.GuestBookConverter;
 import com.favoriteplace.app.converter.PilgrimageConverter;
 import com.favoriteplace.app.converter.RallyConverter;
 import com.favoriteplace.app.domain.Image;
@@ -8,7 +7,6 @@ import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.HashTag;
 import com.favoriteplace.app.domain.travel.*;
-import com.favoriteplace.app.dto.community.GuestBookResponseDto;
 import com.favoriteplace.app.dto.travel.PilgrimageDto;
 import com.favoriteplace.app.dto.travel.RallyDto;
 import com.favoriteplace.app.repository.*;
@@ -22,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 

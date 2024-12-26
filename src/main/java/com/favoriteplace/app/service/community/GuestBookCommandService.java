@@ -7,7 +7,7 @@ import com.favoriteplace.app.domain.community.HashTag;
 import com.favoriteplace.app.domain.enums.PointType;
 import com.favoriteplace.app.domain.travel.Pilgrimage;
 import com.favoriteplace.app.domain.travel.VisitedPilgrimage;
-import com.favoriteplace.app.dto.community.GuestBookRequestDto;
+import com.favoriteplace.app.dto.community.guestbook.GuestBookModifyRequestDto;
 import com.favoriteplace.app.dto.community.PostResponseDto;
 import com.favoriteplace.app.repository.GuestBookRepository;
 import com.favoriteplace.app.repository.HashtagRepository;
@@ -45,44 +45,49 @@ public class GuestBookCommandService {
 
     /**
      * 성지순례 인증글 수정
+     *
      * @param member
      * @param guestbookId
      * @param data
      * @param images
      */
     @Transactional
-    public void modifyGuestBook(Member member, Long guestbookId, GuestBookRequestDto.ModifyGuestBookDto data, List<MultipartFile> images) throws IOException {
-        GuestBook guestBook = guestBookRepository.findById(guestbookId).orElseThrow(() -> new RestApiException(ErrorCode.GUESTBOOK_NOT_FOUND));
+    public void modifyGuestBook(Member member, Long guestbookId, GuestBookModifyRequestDto data,
+                                List<MultipartFile> images) throws IOException {
+        GuestBook guestBook = guestBookRepository.findById(guestbookId)
+                .orElseThrow(() -> new RestApiException(ErrorCode.GUESTBOOK_NOT_FOUND));
         checkAuthOfGuestBook(member, guestBook);
-        Optional.ofNullable(data.getTitle()).ifPresent(guestBook::setTitle);
-        Optional.ofNullable(data.getContent()).ifPresent(guestBook::setContent);
+        Optional.ofNullable(data.title()).ifPresent(guestBook::setTitle);
+        Optional.ofNullable(data.content()).ifPresent(guestBook::setContent);
 
         guestBook.getHashTags().clear();  //기존에 있던 hashtag 제거
         guestBook.getImages().clear();  //기존에 있던 이미지 제거
         imageRepository.deleteByGuestBookId(guestbookId);
 
-        List<String> hashtags = data.getHashtags();
-        if(!hashtags.isEmpty()){
+        List<String> hashtags = data.hashtags();
+        if (!hashtags.isEmpty()) {
             hashtags.forEach(hashtag -> guestBook.setHashTag(HashTag.builder().tagName(hashtag).build()));
         }
 
         // 새로운 이미지 등록
-        try{
+        try {
             List<String> imageUrls = amazonS3ImageManager.uploadMultiImages(images);
             guestBook.addImages(imageUrls);
-        }catch (IOException e){
+        } catch (IOException e) {
             log.info("[guestBook image] image 없음");
         }
     }
 
     /**
      * 성지순례 인증글 삭제 (추천 목록도 삭제 필요)
+     *
      * @param member
      * @param guestbookId
      */
     @Transactional
     public void deleteGuestBook(Member member, Long guestbookId) {
-        GuestBook guestBook = guestBookRepository.findById(guestbookId).orElseThrow(() -> new RestApiException(ErrorCode.GUESTBOOK_NOT_FOUND));
+        GuestBook guestBook = guestBookRepository.findById(guestbookId)
+                .orElseThrow(() -> new RestApiException(ErrorCode.GUESTBOOK_NOT_FOUND));
         checkAuthOfGuestBook(member, guestBook);
         likedPostRepository.deleteByGuestBookIdAndMemberId(guestBook.getId(), member.getId());
         guestBookRepository.deleteById(guestbookId);
@@ -116,40 +121,44 @@ public class GuestBookCommandService {
 
     /**
      * 성지순례 인증글의 작성자가 맞는지 판단하는 함수
+     *
      * @param member
      * @param guestBook
      */
-    private void checkAuthOfGuestBook(Member member, GuestBook guestBook){
-        if(!member.getId().equals(guestBook.getMember().getId())){
+    private void checkAuthOfGuestBook(Member member, GuestBook guestBook) {
+        if (!member.getId().equals(guestBook.getMember().getId())) {
             throw new RestApiException(ErrorCode.USER_NOT_AUTHOR);
         }
     }
 
     /**
      * 성지순례 방문 인증글 작성
-     * @param member 인증한 사용자
+     *
+     * @param member       인증한 사용자
      * @param pilgrimageId 성지순례 아이디
-     * @param data json 폼
-     * @param images 이미지
+     * @param data         json 폼
+     * @param images       이미지
      * @return
      * @throws IOException
      */
     @Transactional
-    public PostResponseDto.GuestBookIdResponseDto postGuestBook(Member member, Long pilgrimageId, GuestBookRequestDto.ModifyGuestBookDto data, List<MultipartFile> images) throws IOException {
+    public PostResponseDto.GuestBookIdResponseDto postGuestBook(Member member, Long pilgrimageId,
+                                                                GuestBookModifyRequestDto data,
+                                                                List<MultipartFile> images) throws IOException {
         Pilgrimage pilgrimage = pilgrimageRepository
-                .findById(pilgrimageId).orElseThrow(()->new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
+                .findById(pilgrimageId).orElseThrow(() -> new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
 
         if (images == null || images.isEmpty()) {
             throw new RestApiException(ErrorCode.GUESTBOOK_MUST_INCLUDE_IMAGES);
         }
-        if (!images.stream().anyMatch(file -> !file.isEmpty()))  {
+        if (!images.stream().anyMatch(file -> !file.isEmpty())) {
             throw new RestApiException(ErrorCode.GUESTBOOK_MUST_INCLUDE_IMAGES);
         }
 
         checkVisited(pilgrimage, member);
         GuestBook newGuestBook = saveGuestBook(member, data, pilgrimage);
 
-        data.getHashtags().stream().forEach(hashTag -> {
+        data.hashtags().stream().forEach(hashTag -> {
             HashTag newHashTag = HashTag.builder().tagName(hashTag).guestBook(newGuestBook).build();
             hashtagRepository.save(newHashTag);
             newGuestBook.setHashTag(newHashTag);
@@ -159,10 +168,10 @@ public class GuestBookCommandService {
 //            setImageList(newGuestBook, images);
 //        }
         // 새로운 이미지 등록
-        try{
+        try {
             List<String> imageUrls = amazonS3ImageManager.uploadMultiImages(images);
             newGuestBook.addImages(imageUrls);
-        }catch (IOException e){
+        } catch (IOException e) {
             log.info("[guestBook image] image 없음");
         }
         log.info("success image upload");
@@ -173,22 +182,24 @@ public class GuestBookCommandService {
         return PostResponseDto.GuestBookIdResponseDto.builder().guestBookId(newGuestBook.getId()).build();
     }
 
-    private void checkVisited(Pilgrimage pilgrimage, Member member){
-        List<VisitedPilgrimage> visitedPilgrimageList = visitedPilgrimageRepository.findByPilgrimageAndMemberOrderByCreatedAtDesc(pilgrimage, member);
+    private void checkVisited(Pilgrimage pilgrimage, Member member) {
+        List<VisitedPilgrimage> visitedPilgrimageList = visitedPilgrimageRepository.findByPilgrimageAndMemberOrderByCreatedAtDesc(
+                pilgrimage, member);
 
         boolean hasVisited = visitedPilgrimageList.stream()
                 .anyMatch(visitedPilgrimage -> pilgrimage.getId().equals(visitedPilgrimage.getPilgrimage().getId()));
 
-        if (!hasVisited)
+        if (!hasVisited) {
             throw new RestApiException(ErrorCode.PILGRIMAGE_NOT_CERTIFIED);
+        }
     }
 
-    private GuestBook saveGuestBook(Member member, GuestBookRequestDto.ModifyGuestBookDto data, Pilgrimage pilgrimage){
+    private GuestBook saveGuestBook(Member member, GuestBookModifyRequestDto data, Pilgrimage pilgrimage) {
         GuestBook guestBook = GuestBook.builder()
                 .member(member)
                 .pilgrimage(pilgrimage)
-                .title(data.getTitle())
-                .content(data.getContent())
+                .title(data.title())
+                .content(data.content())
                 .likeCount(0L)
                 .view(0L)
                 .build();
@@ -204,12 +215,15 @@ public class GuestBookCommandService {
 
     /**
      * 성지 순례 인증글 조회수 증가
+     *
      * @param guestBookId
      */
     @Transactional
     public void increaseGuestBookView(Long guestBookId) {
         Optional<GuestBook> optionalGuestBook = guestBookRepository.findById(guestBookId);
-        if(optionalGuestBook.isEmpty()){throw new RestApiException(ErrorCode.GUESTBOOK_NOT_FOUND);}
+        if (optionalGuestBook.isEmpty()) {
+            throw new RestApiException(ErrorCode.GUESTBOOK_NOT_FOUND);
+        }
         GuestBook guestBook = optionalGuestBook.get();
         guestBook.increaseView();
         guestBookRepository.save(guestBook);

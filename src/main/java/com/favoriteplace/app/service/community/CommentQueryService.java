@@ -4,7 +4,7 @@ import com.favoriteplace.app.converter.CommentConverter;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.Comment;
 import com.favoriteplace.app.dto.community.comment.CommentParentResponseDto;
-import com.favoriteplace.app.dto.community.GuestBookResponseDto;
+import com.favoriteplace.app.dto.community.guestbook.GuestBookResponseDto;
 import com.favoriteplace.app.dto.community.PostResponseDto;
 import com.favoriteplace.app.dto.community.comment.CommentRootResponseDto;
 import com.favoriteplace.app.repository.CommentImplRepository;

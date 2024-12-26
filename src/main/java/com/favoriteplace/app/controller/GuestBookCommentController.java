@@ -3,7 +3,7 @@ package com.favoriteplace.app.controller;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.dto.community.comment.CommentCreateRequestDto;
 import com.favoriteplace.app.dto.community.comment.CommentModifyRequestDto;
-import com.favoriteplace.app.dto.community.GuestBookResponseDto;
+import com.favoriteplace.app.dto.community.guestbook.GuestBookResponseDto;
 import com.favoriteplace.app.dto.community.PostResponseDto;
 import com.favoriteplace.app.dto.community.comment.CommentRootResponseDto;
 import com.favoriteplace.app.service.community.CommentCommandService;

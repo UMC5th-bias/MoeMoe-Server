@@ -1,4 +1,4 @@
-package com.favoriteplace.app.dto.community;
+package com.favoriteplace.app.dto.community.guestbook;
 
 import com.favoriteplace.app.dto.UserInfoResponseDto;
 import lombok.AllArgsConstructor;
