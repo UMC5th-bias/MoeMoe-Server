@@ -38,9 +38,9 @@ public class PostCommandService {
     @Transactional
     public Long createPost(PostRequestDto data, List<MultipartFile> images, Member member) throws IOException {
         Post newPost = Post.builder()
-                .member(member).title(data.getTitle())
+                .member(member).title(data.title())
                 .images(new ArrayList<>())
-                .content(data.getContent()).likeCount(0L).view(0L)
+                .content(data.content()).likeCount(0L).view(0L)
                 .build();
 
         try{
@@ -76,8 +76,8 @@ public class PostCommandService {
     public void modifyPost(long postId, PostRequestDto data, List<MultipartFile> images, Member member) throws IOException {
         Post post = postRepository.findById(postId).orElseThrow(() -> new RestApiException(ErrorCode.POST_NOT_FOUND));
         checkAuthOfGuestBook(member, post);
-        Optional.ofNullable(data.getTitle()).ifPresent(post::setTitle);
-        Optional.ofNullable(data.getContent()).ifPresent(post::setContent);
+        Optional.ofNullable(data.title()).ifPresent(post::setTitle);
+        Optional.ofNullable(data.content()).ifPresent(post::setContent);
 
         //기존의 이미지 삭제 필요
         post.getImages().clear();

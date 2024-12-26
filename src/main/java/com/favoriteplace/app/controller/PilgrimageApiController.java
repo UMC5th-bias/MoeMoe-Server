@@ -2,7 +2,7 @@ package com.favoriteplace.app.controller;
 
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.dto.CommonResponseDto;
-import com.favoriteplace.app.dto.travel.PilgrimageDto;
+import com.favoriteplace.app.dto.travel.PilgrimageResponseDto;
 import com.favoriteplace.app.dto.travel.RallyDto;
 import com.favoriteplace.app.service.PilgrimageCommandService;
 import com.favoriteplace.app.service.PilgrimageQueryService;
@@ -31,7 +31,7 @@ public class PilgrimageApiController {
     // 내 성지순례 + 인증글 모아보기(메인)
     // 회원 + 비회원
     @GetMapping("")
-    public PilgrimageDto.MyPilgrimageDto getMyPilgrimageDto(HttpServletRequest request) {
+    public PilgrimageResponseDto.MyPilgrimageDto getMyPilgrimageDto(HttpServletRequest request) {
         Member member = securityUtil.getUserFromHeader(request);
         return pilgrimageQueryService.getMyPilgrimageDto(member);
     }
@@ -53,13 +53,13 @@ public class PilgrimageApiController {
 
     // 성지순례 지역 카테고리
     @GetMapping("/region")
-    public List<PilgrimageDto.PilgrimageCategoryRegionDto> getCategoryRegion(){
+    public List<PilgrimageResponseDto.PilgrimageCategoryRegionDto> getCategoryRegion(){
         return pilgrimageQueryService.getCategoryRegion();
     }
 
     // 성지순례 지역 상세 카테고리
     @GetMapping("/region/{regionId}")
-    public List<PilgrimageDto.PilgrimageCategoryRegionDetailDto> getCategoryRegionDetail(@PathVariable("regionId")Long regionId){
+    public List<PilgrimageResponseDto.PilgrimageCategoryRegionDetailDto> getCategoryRegionDetail(@PathVariable("regionId")Long regionId){
         return pilgrimageQueryService.getCategoryRegionDetail(regionId);
     }
 
@@ -86,7 +86,7 @@ public class PilgrimageApiController {
     // 성지순례 랠리 장소 상세
     // 회원
     @GetMapping("/detail/{pilgrimageId}")
-    public PilgrimageDto.PilgrimageDetailDto getPilgrimageDetail(HttpServletRequest request, @PathVariable("pilgrimageId")Long pilgrimageId){
+    public PilgrimageResponseDto.PilgrimageDetailDto getPilgrimageDetail(HttpServletRequest request, @PathVariable("pilgrimageId")Long pilgrimageId){
         // Jwt AuthenticationFilter에 엔드포인트 추가
         Member member = securityUtil.getUserFromHeader(request);
         return pilgrimageQueryService.getPilgrimageDetail(pilgrimageId, member);

@@ -3,7 +3,6 @@ package com.favoriteplace.app.converter;
 import com.favoriteplace.app.domain.travel.Address;
 import com.favoriteplace.app.domain.travel.Pilgrimage;
 import com.favoriteplace.app.domain.travel.Rally;
-import com.favoriteplace.app.dto.travel.PilgrimageDto;
 import com.favoriteplace.app.dto.travel.RallyDto;
 
 import java.util.List;

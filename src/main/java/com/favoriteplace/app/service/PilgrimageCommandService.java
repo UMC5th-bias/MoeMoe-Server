@@ -9,7 +9,7 @@ import com.favoriteplace.app.domain.enums.RallyVersion;
 import com.favoriteplace.app.domain.item.AcquiredItem;
 import com.favoriteplace.app.domain.travel.*;
 import com.favoriteplace.app.dto.CommonResponseDto;
-import com.favoriteplace.app.dto.travel.PilgrimageDto;
+import com.favoriteplace.app.dto.travel.PilgrimageCertifyRequestDto;
 import com.favoriteplace.app.dto.travel.PilgrimageSocketDto;
 import com.favoriteplace.app.repository.*;
 import com.favoriteplace.app.service.fcm.FCMNotificationService;
@@ -57,7 +57,7 @@ public class PilgrimageCommandService {
      */
     public CommonResponseDto.PostResponseDto likeToRally(Long rallyId, Member member) {
         Rally rally = rallyRepository.findById(rallyId).orElseThrow(
-                ()->new RestApiException(ErrorCode.RALLY_NOT_FOUND));
+                () -> new RestApiException(ErrorCode.RALLY_NOT_FOUND));
         LikedRally likedRally = likedRallyRepository.findByRallyAndMember(rally, member);
 
         if (likedRally == null) {
@@ -88,35 +88,45 @@ public class PilgrimageCommandService {
 
         if (visitedPilgrimages.isEmpty()
                 || (!visitedPilgrimages.isEmpty()
-                && visitedPilgrimages.get(0).getPilgrimage().getCreatedAt().atZone(serverZoneId).plusHours(24L).isBefore(nowInServerTimeZone))) {
+                && visitedPilgrimages.get(0).getPilgrimage().getCreatedAt().atZone(serverZoneId).plusHours(24L)
+                .isBefore(nowInServerTimeZone))) {
 
             // 성공 시 포인트 지급 -> 15p & visitedPilgrimage 추가
             successVisitedAndPointProcess(member, pilgrimage);
 
-            Long completeCount = visitedPilgrimageRepository.findByDistinctCount(member.getId(), pilgrimage.getRally().getId());
-            log.info("completeCount="+completeCount);
+            Long completeCount = visitedPilgrimageRepository.findByDistinctCount(member.getId(),
+                    pilgrimage.getRally().getId());
+            log.info("completeCount=" + completeCount);
 
             // 랠리를 완료했는지 확인
-            if (checkCompleteRally(member, pilgrimage, completeCount))
-                return CommonConverter.toRallyResponseDto(true, true,"<"+pilgrimage.getRally().getItem().getName()+"> 칭호를 얻었습니다!");
-        } else
+            if (checkCompleteRally(member, pilgrimage, completeCount)) {
+                return CommonConverter.toRallyResponseDto(true, true,
+                        "<" + pilgrimage.getRally().getItem().getName() + "> 칭호를 얻었습니다!");
+            }
+        } else {
             throw new RestApiException(ErrorCode.PILGRIMAGE_ALREADY_CERTIFIED);
-        return CommonConverter.toRallyResponseDto(true, false,"성지순례 인증하기 15P를 얻으셨습니다!");
+        }
+        return CommonConverter.toRallyResponseDto(true, false, "성지순례 인증하기 15P를 얻으셨습니다!");
     }
 
     private boolean checkCompleteRally(Member member, Pilgrimage pilgrimage, Long completeCount) {
         if (completeCount == pilgrimage.getRally().getPilgrimageNumber()) {
-            List<CompleteRally> completeRally = completeRallyRepository.findByMemberAndRally(member, pilgrimage.getRally());
-            log.info("size="+completeRally.size());
+            List<CompleteRally> completeRally = completeRallyRepository.findByMemberAndRally(member,
+                    pilgrimage.getRally());
+            log.info("size=" + completeRally.size());
             // 이전에 이미 랠리를 완료한 상태인지 확인
             if (completeRally.isEmpty()) {
                 // 최초 완료에 한해 칭호 획득
-                if (completeRally == null)
-                    acquiredItemRepository.save(AcquiredItem.builder().item(pilgrimage.getRally().getItem()).member(member).build());
+                if (completeRally == null) {
+                    acquiredItemRepository.save(
+                            AcquiredItem.builder().item(pilgrimage.getRally().getItem()).member(member).build());
+                }
                 // 포인트 획득
                 pointHistoryRepository.save(PointHistoryConverter.toPointHistory(member, 100L, PointType.ACQUIRE));
                 // 완료 랠리 추가
-                completeRallyRepository.save(CompleteRally.builder().rally(pilgrimage.getRally()).member(member).version(RallyVersion.v1).build());
+                completeRallyRepository.save(
+                        CompleteRally.builder().rally(pilgrimage.getRally()).member(member).version(RallyVersion.v1)
+                                .build());
                 // 랠리 완료자 목록에 추가
                 pilgrimage.getRally().addAchieveNumber();
                 rallyRepository.save(pilgrimage.getRally());
@@ -126,14 +136,16 @@ public class PilgrimageCommandService {
         return false;
     }
 
-    private boolean checkCoordinate(PilgrimageDto.PilgrimageCertifyRequestDto form, Pilgrimage pilgrimage) {
-        return pilgrimage.getLatitude() + MAX_DISTANCE_WITHIN_100M >= form.getLatitude() && pilgrimage.getLatitude() - MAX_DISTANCE_WITHIN_100M <= form.getLatitude()
-                && pilgrimage.getLongitude() + MAX_DISTANCE_WITHIN_100M >= form.getLongitude() && pilgrimage.getLongitude() - MAX_DISTANCE_WITHIN_100M <= form.getLongitude();
+    private boolean checkCoordinate(PilgrimageCertifyRequestDto form, Pilgrimage pilgrimage) {
+        return pilgrimage.getLatitude() + MAX_DISTANCE_WITHIN_100M >= form.latitude()
+                && pilgrimage.getLatitude() - MAX_DISTANCE_WITHIN_100M <= form.latitude()
+                && pilgrimage.getLongitude() + MAX_DISTANCE_WITHIN_100M >= form.longitude()
+                && pilgrimage.getLongitude() - MAX_DISTANCE_WITHIN_100M <= form.longitude();
     }
 
     private void successVisitedAndPointProcess(Member member, Pilgrimage pilgrimage) {
         VisitedPilgrimage newVisited = VisitedPilgrimage.builder().pilgrimage(pilgrimage).member(member).build();
-        log.info("visited="+newVisited.getId());
+        log.info("visited=" + newVisited.getId());
         visitedPilgrimageRepository.save(newVisited);
         pointHistoryRepository.save(PointHistoryConverter.toPointHistory(member, 15L, PointType.ACQUIRE));
         member.updatePoint(15L);
@@ -144,7 +156,7 @@ public class PilgrimageCommandService {
      * 랠리 구독 (FCM 토픽에 해당 사용자의 토큰 추가)
      */
     public void subscribeRally(Long rallyId, Member member) {
-        if(member.getFcmToken() == null){
+        if (member.getFcmToken() == null) {
             throw new RestApiException(ErrorCode.FCM_TOKEN_NOT_FOUND);
         }
         fcmNotificationService.subscribeTopic(makeAnimationTopicName(rallyId), member.getFcmToken());
@@ -161,23 +173,27 @@ public class PilgrimageCommandService {
     }
 
     public boolean isUserAtPilgrimage(Pilgrimage pilgrimage, Double latitude, Double longitude) {
-        return (pilgrimage.getLatitude() + MAX_DISTANCE_WITHIN_100M >= latitude && pilgrimage.getLatitude() - MAX_DISTANCE_WITHIN_100M <= latitude) &&
-                (pilgrimage.getLongitude() + MAX_DISTANCE_WITHIN_100M >= longitude && pilgrimage.getLongitude() - MAX_DISTANCE_WITHIN_100M <= longitude);
+        return (pilgrimage.getLatitude() + MAX_DISTANCE_WITHIN_100M >= latitude
+                && pilgrimage.getLatitude() - MAX_DISTANCE_WITHIN_100M <= latitude) &&
+                (pilgrimage.getLongitude() + MAX_DISTANCE_WITHIN_100M >= longitude
+                        && pilgrimage.getLongitude() - MAX_DISTANCE_WITHIN_100M <= longitude);
     }
 
     /**
      * WebSocket location 이벤트
+     *
      * @param pilgrimageId
      * @param userLocation
      * @param member
      * @return
      */
-    public PilgrimageSocketDto.ButtonState buttonStatusUpdate(Long pilgrimageId, PilgrimageDto.PilgrimageCertifyRequestDto userLocation, Member member) {
+    public PilgrimageSocketDto.ButtonState buttonStatusUpdate(Long pilgrimageId,
+                                                              PilgrimageCertifyRequestDto userLocation, Member member) {
         Pilgrimage pilgrimage = pilgrimageRepository.findById(pilgrimageId)
                 .orElseThrow(() -> new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
 
         // 위치 정보 바탕으로 인증 가능 여부 Redis 저장
-        isLocationVerified(member, pilgrimage, userLocation.getLatitude(), userLocation.getLongitude());
+        isLocationVerified(member, pilgrimage, userLocation.latitude(), userLocation.longitude());
 
         // 이전 버튼 상태와 비교해서 달라졌다면 전송, 아니면 null
         synchronized (this) {
@@ -204,9 +220,10 @@ public class PilgrimageCommandService {
 
     /**
      * 사용자가 성지순례 위치 100M 이내에 존재하는지 확인, 맞다면 redis 저장
+     *
      * @param pilgrimage 성지순례
-     * @param latitude 사용자의 위도
-     * @param longitude 사용자의 경도
+     * @param latitude   사용자의 위도
+     * @param longitude  사용자의 경도
      */
     public void isLocationVerified(Member member, Pilgrimage pilgrimage, Double latitude, Double longitude) {
         if (isUserAtPilgrimage(pilgrimage, latitude, longitude)) {
@@ -216,7 +233,8 @@ public class PilgrimageCommandService {
 
     /**
      * 웹소켓 버튼 상태 지정
-     * @param member 사용자
+     *
+     * @param member       사용자
      * @param pilgrimageId 성지순례 ID
      * @return
      */
@@ -228,7 +246,7 @@ public class PilgrimageCommandService {
 
         // 캐시에 저장된 버튼이 없다면 새로 상태 저장
         Pilgrimage pilgrimage = pilgrimageRepository.findById(pilgrimageId)
-                .orElseThrow(()->new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
 
         // 사용자가 지난 24시간 내에 인증 버튼 눌렀는지 확인
         boolean certifiedInLast = checkIfCertifiedInLast24Hours(member, pilgrimage);
@@ -243,8 +261,8 @@ public class PilgrimageCommandService {
         // 이번 인증 기록에 대한 방명록이 있는가?
         else if (certifiedInLast && !hasWrittenGuestbook) {
             boolean hasMultiWrittenGuestbook = checkIfMultiGuestbookWritten(member, pilgrimage);
-            newState.setGuestbookButtonEnabled(hasMultiWrittenGuestbook? false : true);
-            newState.setMultiGuestbookButtonEnabled(hasMultiWrittenGuestbook? true : false);
+            newState.setGuestbookButtonEnabled(hasMultiWrittenGuestbook ? false : true);
+            newState.setMultiGuestbookButtonEnabled(hasMultiWrittenGuestbook ? true : false);
         }
         synchronized (this) {
             lastButtonStateCache.get(member.getId()).put(pilgrimageId, newState);
@@ -253,10 +271,9 @@ public class PilgrimageCommandService {
     }
 
     /**
-     *
      * @return
      */
-    public PilgrimageSocketDto.ButtonState initButton (Member member, Long pilgrimageId) {
+    public PilgrimageSocketDto.ButtonState initButton(Member member, Long pilgrimageId) {
         PilgrimageSocketDto.ButtonState newState = new PilgrimageSocketDto.ButtonState();
         newState.setCertifyButtonEnabled(false);
         newState.setGuestbookButtonEnabled(false);
@@ -279,6 +296,7 @@ public class PilgrimageCommandService {
 
     /**
      * 24시간 이내 인증 기록이 있는지 확인
+     *
      * @param member
      * @param pilgrimage
      * @return
@@ -301,13 +319,15 @@ public class PilgrimageCommandService {
 
     /**
      * 방명록 작성 여부 확인
+     *
      * @param member
      * @param pilgrimage
      * @return
      */
     private boolean checkIfGuestbookWritten(Member member, Pilgrimage pilgrimage) {
         // 방명록 목록 조회
-        List<GuestBook> guestBookList = guestBookRepository.findByMemberAndPilgrimageOrderByCreatedAtDesc(member, pilgrimage);
+        List<GuestBook> guestBookList = guestBookRepository.findByMemberAndPilgrimageOrderByCreatedAtDesc(member,
+                pilgrimage);
         if (guestBookList == null || guestBookList.isEmpty()) {
             return false;
         }
@@ -336,12 +356,14 @@ public class PilgrimageCommandService {
 
     /**
      * 방명록 다회 작성 여부 확인
+     *
      * @param member
      * @param pilgrimage
      * @return
      */
     private boolean checkIfMultiGuestbookWritten(Member member, Pilgrimage pilgrimage) {
-        List<GuestBook> guestBookList = guestBookRepository.findByMemberAndPilgrimageOrderByCreatedAtDesc(member, pilgrimage);
+        List<GuestBook> guestBookList = guestBookRepository.findByMemberAndPilgrimageOrderByCreatedAtDesc(member,
+                pilgrimage);
         if (guestBookList == null || guestBookList.isEmpty()) {
             return false;
         }

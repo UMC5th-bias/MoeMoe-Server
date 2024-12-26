@@ -8,7 +8,7 @@ import java.util.List;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
 
-public class PilgrimageDto {
+public class PilgrimageResponseDto {
     @Builder
     @Getter
     @Setter
@@ -92,13 +92,5 @@ public class PilgrimageDto {
         String image;
         Double latitude;
         Double longitude;
-    }
-
-    @Getter
-    @NoArgsConstructor(access = PROTECTED)
-    @AllArgsConstructor(access = PRIVATE)
-    public static class PilgrimageCertifyRequestDto{
-        Double longitude;
-        Double latitude;
     }
 }
