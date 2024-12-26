@@ -3,7 +3,7 @@ package com.favoriteplace.app.controller;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.dto.CommonResponseDto;
 import com.favoriteplace.app.dto.travel.PilgrimageResponseDto;
-import com.favoriteplace.app.dto.travel.RallyDto;
+import com.favoriteplace.app.dto.travel.RallyResponseDto;
 import com.favoriteplace.app.service.PilgrimageCommandService;
 import com.favoriteplace.app.service.PilgrimageQueryService;
 import com.favoriteplace.global.exception.ErrorCode;
@@ -38,7 +38,7 @@ public class PilgrimageApiController {
 
     // 이달의 추천 랠리 (메인)
     @GetMapping("/trending")
-    public RallyDto.RallyTrendingDto getRallyTrending(HttpServletRequest request) {
+    public RallyResponseDto.RallyTrendingDto getRallyTrending(HttpServletRequest request) {
         Member member = securityUtil.getUserFromHeader(request);
         return pilgrimageQueryService.getRallyTrending(member);
     }
@@ -46,7 +46,7 @@ public class PilgrimageApiController {
     // 성지순례 애니메이션 카테고리
     // 회원 + 비회원
     @GetMapping("/anime")
-    public List<RallyDto.PilgrimageCategoryAnimeDto> getCategoryAnime(HttpServletRequest request){
+    public List<RallyResponseDto.PilgrimageCategoryAnimeDto> getCategoryAnime(HttpServletRequest request){
         Member member = securityUtil.getUserFromHeader(request);
         return pilgrimageQueryService.getCategoryAnime(member);
     }
@@ -67,8 +67,8 @@ public class PilgrimageApiController {
     // 랠리 찜 개발 후 테스트 필요
     // 회원 + 비회원
     @GetMapping("/{rallyId}")
-    public RallyDto.RallyDetailResponseDto getRallyDetail(HttpServletRequest request,
-                                                          @PathVariable("rallyId")Long rallyId){
+    public RallyResponseDto.RallyDetailResponseDto getRallyDetail(HttpServletRequest request,
+                                                                  @PathVariable("rallyId")Long rallyId){
         Member member = securityUtil.getUserFromHeader(request);
         return pilgrimageQueryService.getRallyDetail(rallyId, member);
     }
@@ -77,7 +77,7 @@ public class PilgrimageApiController {
     // 랠리 인증하기 개발 후 테스트 필요
     // 회원 + 비회원
     @GetMapping("/{rallyId}/list")
-    public RallyDto.RallyAddressListDto getRallyAddressList(
+    public RallyResponseDto.RallyAddressListDto getRallyAddressList(
             HttpServletRequest request, @PathVariable("rallyId")Long rallyId){
         Member member = securityUtil.getUserFromHeader(request);
         return pilgrimageQueryService.getRallyAddressList(rallyId, member);
@@ -128,7 +128,7 @@ public class PilgrimageApiController {
 
     // 성지순례 애니 별 검색
     @GetMapping("/category")
-    public List<RallyDto.SearchAnimeDto> searchAnime(HttpServletRequest request, @RequestParam String value){
+    public List<RallyResponseDto.SearchAnimeDto> searchAnime(HttpServletRequest request, @RequestParam String value){
         Member member = securityUtil.getUserFromHeader(request);
         if (value.equals("")){
             throw new RestApiException(ErrorCode.RALLY_NOT_FOUND);
@@ -138,7 +138,7 @@ public class PilgrimageApiController {
 
     // 성지순례 지역 별 검색
     @GetMapping("/category/region")
-    public List<RallyDto.SearchRegionDto> searchRegion(HttpServletRequest request, @RequestParam String value){
+    public List<RallyResponseDto.SearchRegionDto> searchRegion(HttpServletRequest request, @RequestParam String value){
         Member member = securityUtil.getUserFromHeader(request);
         if (value.equals("")){
             throw new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND);
