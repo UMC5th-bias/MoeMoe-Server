@@ -63,7 +63,7 @@ public class Item extends BaseTimeEntity{
     private LocalDateTime saleDeadline;
 
     @Column(nullable = false)
-    private Long point;
+    private long point;
 
     @Column(nullable = false)
     private String description;

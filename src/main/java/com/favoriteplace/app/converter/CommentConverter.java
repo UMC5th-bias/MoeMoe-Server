@@ -17,7 +17,7 @@ public class CommentConverter {
     public static CommentResponseDto.ParentComment toComment(
             Comment comment, Member member, List<Comment> subComments
     ) {
-        if (comment.getIsDeleted()) {
+        if (comment.isDeleted()) {
             return CommentResponseDto.ParentComment.builder()
                     .userInfo(hideUserInfo(comment))
                     .id(null)
@@ -45,7 +45,7 @@ public class CommentConverter {
             return Collections.emptyList();
         }
         return subComments.stream().map(comment -> {
-            if (comment.getIsDeleted()) {
+            if (comment.isDeleted()) {
                 return CommentResponseDto.SubComment.builder()
                         .userInfo(hideUserInfo(comment))
                         .id(null)
@@ -140,7 +140,7 @@ public class CommentConverter {
 
     private static long getNotDeletedComment(List<Comment> comments) {
         return comments.stream()
-                .filter(comment -> !comment.getIsDeleted())
+                .filter(comment -> !comment.isDeleted())
                 .count();
     }
 }

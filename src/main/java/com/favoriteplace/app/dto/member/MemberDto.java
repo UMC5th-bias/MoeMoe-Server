@@ -126,7 +126,7 @@ public class MemberDto {
     public static class MemberInfo {
         private Integer id;
         private String nickname;
-        private Integer point;
+        private int point;
         private String profileImageUrl;
         private String profileTitleUrl;
         private String profileIconUrl;
@@ -136,7 +136,7 @@ public class MemberDto {
             return MemberInfo.builder()
                 .id(member == null ? null : member.getId().intValue())
                 .nickname(member == null ? null : member.getNickname())
-                .point(member == null ? null : member.getPoint().intValue())
+                .point(member == null ? null : Long.valueOf(member.getPoint()).intValue())
                 .profileImageUrl(member.getProfileImageUrl() == null ? null : member.getProfileImageUrl())
                 .profileIconUrl(member.getProfileIcon() == null ? null : member.getProfileIcon().getDefaultImage().getUrl())
                 .profileTitleUrl(member.getProfileTitle() == null ? null : member.getProfileTitle().getDefaultImage().getUrl())

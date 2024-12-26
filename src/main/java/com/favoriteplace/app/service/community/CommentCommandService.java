@@ -173,7 +173,7 @@ public class CommentCommandService {
      */
     private Comment hardDeleteReferenceComment(Comment comment) {
         Comment referenceComment = comment.getReferenceComment();
-        if (referenceComment != null && referenceComment.getIsDeleted()
+        if (referenceComment != null && referenceComment.isDeleted()
                 && !commentRepository.existsByReferenceComment(referenceComment)
         ) {
             commentRepository.delete(referenceComment);
@@ -190,7 +190,7 @@ public class CommentCommandService {
      */
     private void hardDeleteParentComment(Comment comment) {
         Comment parentComment = comment.getParentComment();
-        if (parentComment.getIsDeleted() && !commentRepository.existsByParentComment(parentComment)) {
+        if (parentComment.isDeleted() && !commentRepository.existsByParentComment(parentComment)) {
             commentRepository.delete(parentComment);
         }
     }
@@ -208,7 +208,7 @@ public class CommentCommandService {
      * soft delete로 이미 삭제된 댓글인지 확인하는 함수 (삭제된 댓글이면 에러 출력)
      */
     private void checkIsDeleteOfComment(Comment comment) {
-        if (comment.getIsDeleted()) {
+        if (comment.isDeleted()) {
             throw new RestApiException(ErrorCode.COMMENT_ALREADY_DELETED);
         }
     }
@@ -246,6 +246,5 @@ public class CommentCommandService {
 
         return newComment;
     }
-
 
 }

@@ -39,7 +39,7 @@ public class PointHistory {
     private Member member;
 
     @Column(nullable = false)
-    private Long point;
+    private long point;
 
     @Column(nullable = false)
     private LocalDateTime dealtAt;

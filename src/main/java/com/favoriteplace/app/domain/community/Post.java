@@ -47,10 +47,10 @@ public class Post extends BaseTimeEntity {
     private String content;
 
     @Column(nullable = false)
-    private Long likeCount;
+    private long likeCount;
 
     @Column(nullable = false)
-    private Long view;
+    private long view;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     @Builder.Default

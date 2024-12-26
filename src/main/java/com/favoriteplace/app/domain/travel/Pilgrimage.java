@@ -61,9 +61,9 @@ public class Pilgrimage extends BaseTimeEntity {
     private String detailAddressJp;
 
     @Column(nullable = false)
-    private Double latitude;
+    private double latitude;
 
     @Column(nullable = false)
-    private Double longitude;
+    private double longitude;
 
 }

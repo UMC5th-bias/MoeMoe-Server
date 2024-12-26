@@ -21,7 +21,7 @@ public class ShopConverter {
                 .id(item.getId().intValue())
                 .name(item.getName())
                 .imageUrl(item.getDefaultImage().getUrl())
-                .point(item.getPoint().intValue())
+                .point(Long.valueOf(item.getPoint()).intValue())
                 .build();
     }
 

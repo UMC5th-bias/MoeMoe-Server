@@ -53,10 +53,10 @@ public class GuestBook extends BaseTimeEntity {
     private String content;
 
     @Column(nullable = false)
-    private Long likeCount;
+    private long likeCount;
 
     @Column(nullable = false)
-    private Long view;
+    private long view;
 
     @OneToMany(mappedBy = "guestBook", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default

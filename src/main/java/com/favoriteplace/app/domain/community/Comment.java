@@ -70,7 +70,7 @@ public class Comment extends BaseTimeEntity {
 
     @Column(nullable = false)
     @Builder.Default
-    private Boolean isDeleted = false;
+    private boolean isDeleted = false;
 
     public void setGuestBook(GuestBook guestBook) {this.guestBook = guestBook;}
     public void setPost(Post post){this.post = post;}

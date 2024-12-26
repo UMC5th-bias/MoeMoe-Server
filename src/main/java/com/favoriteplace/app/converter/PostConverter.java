@@ -52,7 +52,7 @@ public class PostConverter {
 
     private static long getNotDeletedComment(List<Comment> comments) {
         return comments.stream()
-                .filter(comment -> !comment.getIsDeleted())
+                .filter(comment -> !comment.isDeleted())
                 .count();
     }
 }

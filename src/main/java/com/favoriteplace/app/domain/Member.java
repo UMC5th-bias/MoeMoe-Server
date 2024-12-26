@@ -63,10 +63,10 @@ public class Member extends BaseTimeEntity {
     private MemberStatus status;
 
     @Column(nullable = false)
-    private Boolean alarmAllowance;  //true: 허용, false: 허용x
+    private boolean alarmAllowance;  //true: 허용, false: 허용x
 
     @Column(nullable = false)
-    private Long point;
+    private long point;
 
     @Enumerated(STRING)
     @Column(nullable = false)

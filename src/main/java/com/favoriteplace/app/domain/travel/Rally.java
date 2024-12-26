@@ -50,10 +50,10 @@ public class Rally extends BaseTimeEntity {
     private String description;
 
     @Column(nullable = false)
-    private Long achieveNumber;  //달성한 사람 수
+    private long achieveNumber;  //달성한 사람 수
 
     @Column(nullable = false)
-    private Long pilgrimageNumber; //해당 랠리의 성지 순례 갯수
+    private long pilgrimageNumber; //해당 랠리의 성지 순례 갯수
 
     @OneToMany(mappedBy = "rally")
     private List<Pilgrimage> pilgrimages;
