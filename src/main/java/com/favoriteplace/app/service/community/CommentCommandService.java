@@ -6,7 +6,7 @@ import com.favoriteplace.app.domain.community.Comment;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.Post;
 import com.favoriteplace.app.domain.enums.CommentType;
-import com.favoriteplace.app.dto.community.CommentCreateRequestDto;
+import com.favoriteplace.app.dto.community.comment.CommentCreateRequestDto;
 import com.favoriteplace.app.repository.CommentRepository;
 import com.favoriteplace.app.repository.GuestBookRepository;
 import com.favoriteplace.app.repository.NotificationRepository;

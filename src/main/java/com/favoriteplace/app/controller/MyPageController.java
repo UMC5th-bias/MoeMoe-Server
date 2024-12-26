@@ -4,7 +4,6 @@ import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.dto.CommonResponseDto;
 import com.favoriteplace.app.dto.MyPageDto;
 import com.favoriteplace.app.dto.MyPageDto.MyFcmTokenDto;
-import com.favoriteplace.app.dto.community.CommentResponseDto;
 import com.favoriteplace.app.service.MyPageCommandService;
 import com.favoriteplace.app.service.MyPageQueryService;
 import com.favoriteplace.global.util.SecurityUtil;

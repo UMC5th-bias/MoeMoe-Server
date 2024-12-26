@@ -1,9 +1,9 @@
 package com.favoriteplace.app.controller;
 
 import com.favoriteplace.app.domain.Member;
-import com.favoriteplace.app.dto.community.CommentCreateRequestDto;
-import com.favoriteplace.app.dto.community.CommentModifyRequestDto;
-import com.favoriteplace.app.dto.community.CommentResponseDto;
+import com.favoriteplace.app.dto.community.comment.CommentCreateRequestDto;
+import com.favoriteplace.app.dto.community.comment.CommentModifyRequestDto;
+import com.favoriteplace.app.dto.community.comment.CommentRootResponseDto;
 import com.favoriteplace.app.service.community.CommentCommandService;
 import com.favoriteplace.app.service.community.CommentQueryService;
 import com.favoriteplace.global.util.SecurityUtil;
@@ -37,7 +37,7 @@ public class PostCommentController {
     }
 
     @GetMapping("/{post_id}/comments")
-    public ResponseEntity<CommentResponseDto.CommentDto> getPostComments(
+    public ResponseEntity<CommentRootResponseDto> getPostComments(
             @PathVariable("post_id") Long postId,
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false, defaultValue = "5") int size,

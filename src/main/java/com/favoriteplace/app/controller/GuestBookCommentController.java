@@ -1,11 +1,11 @@
 package com.favoriteplace.app.controller;
 
 import com.favoriteplace.app.domain.Member;
-import com.favoriteplace.app.dto.community.CommentCreateRequestDto;
-import com.favoriteplace.app.dto.community.CommentModifyRequestDto;
-import com.favoriteplace.app.dto.community.CommentResponseDto;
+import com.favoriteplace.app.dto.community.comment.CommentCreateRequestDto;
+import com.favoriteplace.app.dto.community.comment.CommentModifyRequestDto;
 import com.favoriteplace.app.dto.community.GuestBookResponseDto;
 import com.favoriteplace.app.dto.community.PostResponseDto;
+import com.favoriteplace.app.dto.community.comment.CommentRootResponseDto;
 import com.favoriteplace.app.service.community.CommentCommandService;
 import com.favoriteplace.app.service.community.CommentQueryService;
 import com.favoriteplace.global.util.SecurityUtil;
@@ -35,7 +35,7 @@ public class GuestBookCommentController {
     }
 
     @GetMapping("/{guestbook_id}/comments")
-    public ResponseEntity<CommentResponseDto.CommentDto> getGuestBookComments(
+    public ResponseEntity<CommentRootResponseDto> getGuestBookComments(
             @PathVariable("guestbook_id") Long guestbookId,
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false, defaultValue = "5") int size,
