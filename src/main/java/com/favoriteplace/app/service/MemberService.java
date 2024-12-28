@@ -21,12 +21,13 @@ import com.favoriteplace.global.s3Image.AmazonS3ImageManager;
 import com.favoriteplace.global.security.kakao.KakaoClient;
 import com.favoriteplace.global.security.provider.JwtTokenProvider;
 import com.favoriteplace.global.util.SecurityUtil;
+
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -68,7 +69,9 @@ public class MemberService {
         String userEmail = kakaoClient.getUserInfo(token).kakaoAccount().email();
 
         memberRepository.findByEmail(userEmail)
-                .ifPresent(a -> {throw new RestApiException(USER_ALREADY_EXISTS);});
+                .ifPresent(a -> {
+                    throw new RestApiException(USER_ALREADY_EXISTS);
+                });
 
         String profileImageUrl = null;
         if (images != null && !images.get(0).isEmpty()) {
@@ -94,11 +97,11 @@ public class MemberService {
     ) throws IOException {
 
         memberRepository.findByEmail(memberSignUpReqDto.getEmail())
-            .ifPresent(
-                existingMember -> {
-                    throw new RestApiException(USER_ALREADY_EXISTS);
-                }
-            );
+                .ifPresent(
+                        existingMember -> {
+                            throw new RestApiException(USER_ALREADY_EXISTS);
+                        }
+                );
 
         String profileImageUrl = null;
         if (images != null && !images.get(0).isEmpty()) {
@@ -140,7 +143,7 @@ public class MemberService {
 
     @Transactional
     public UserInfoResponseDto getUserInfo(Member member) {
-        if(member != null){
+        if (member != null) {
             return UserInfoResponseDto.of(member);
         }
         return null;
@@ -156,14 +159,14 @@ public class MemberService {
         Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
         Member member = findMember(authentication.getName());
 
-        if(member.getRefreshToken() != null && !member.getRefreshToken().isEmpty()) {
+        if (member.getRefreshToken() != null && !member.getRefreshToken().isEmpty()) {
             member.deleteRefreshToken(member.getRefreshToken());
         }
 
         /* 해당 asscess token 유효시간을 계산해서 blacklist로 저장 */
         Long expriation = jwtTokenProvider.getExpiration(accessToken);
         redisTemplate.opsForValue()
-            .set(accessToken, "logout", expriation, TimeUnit.MICROSECONDS);
+                .set(accessToken, "logout", expriation, TimeUnit.MICROSECONDS);
     }
 
     public Member findMember(final String email) {

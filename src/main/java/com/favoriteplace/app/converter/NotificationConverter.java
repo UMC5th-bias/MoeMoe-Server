@@ -1,6 +1,5 @@
 package com.favoriteplace.app.converter;
 
-import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.Notification;
 import com.favoriteplace.app.domain.community.Comment;
 import com.favoriteplace.app.domain.community.GuestBook;
@@ -12,7 +11,7 @@ import com.favoriteplace.global.util.DateTimeFormatUtils;
 import org.springframework.data.domain.Page;
 
 public class NotificationConverter {
-    public static NotificationResponseDto toNotificationResponseDto(Page<Notification> notifications){
+    public static NotificationResponseDto toNotificationResponseDto(Page<Notification> notifications) {
         return NotificationResponseDto.builder()
                 .page(notifications.getNumber())
                 .size(notifications.getSize())
@@ -34,7 +33,7 @@ public class NotificationConverter {
                 .build();
     }
 
-    public static Notification toPostNewComment(Post post, Comment comment){
+    public static Notification toPostNewComment(Post post, Comment comment) {
         return Notification.builder()
                 .type(TokenMessage.POST_NEW_COMMENT.getType())
                 .title(TokenMessage.POST_NEW_COMMENT.getTitle())
@@ -44,7 +43,7 @@ public class NotificationConverter {
                 .build();
     }
 
-    public static Notification toPostParentNewSubComment(Post post, Comment comment){
+    public static Notification toPostParentNewSubComment(Post post, Comment comment) {
         return Notification.builder()
                 .type(TokenMessage.POST_COMMENT_NEW_SUBCOMMENT.getType())
                 .title(TokenMessage.POST_COMMENT_NEW_SUBCOMMENT.getTitle())
@@ -54,7 +53,7 @@ public class NotificationConverter {
                 .build();
     }
 
-    public static Notification toPostReferNewSubComment(Post post, Comment comment){
+    public static Notification toPostReferNewSubComment(Post post, Comment comment) {
         return Notification.builder()
                 .type(TokenMessage.POST_COMMENT_NEW_SUBCOMMENT.getType())
                 .title(TokenMessage.POST_COMMENT_NEW_SUBCOMMENT.getTitle())
@@ -64,7 +63,7 @@ public class NotificationConverter {
                 .build();
     }
 
-    public static Notification toGuestBookNewComment(GuestBook guestBook, Comment comment){
+    public static Notification toGuestBookNewComment(GuestBook guestBook, Comment comment) {
         return Notification.builder()
                 .type(TokenMessage.GUESTBOOK_NEW_COMMENT.getType())
                 .title(TokenMessage.GUESTBOOK_NEW_COMMENT.getTitle())
@@ -74,7 +73,7 @@ public class NotificationConverter {
                 .build();
     }
 
-    public static Notification toGuestBookParentNewSubComment(GuestBook guestBook, Comment comment){
+    public static Notification toGuestBookParentNewSubComment(GuestBook guestBook, Comment comment) {
         return Notification.builder()
                 .type(TokenMessage.GUESTBOOK_COMMENT_NEW_SUBCOMMENT.getType())
                 .title(TokenMessage.GUESTBOOK_COMMENT_NEW_SUBCOMMENT.getTitle())
@@ -84,7 +83,7 @@ public class NotificationConverter {
                 .build();
     }
 
-    public static Notification toGuestBookReferNewSubComment(GuestBook guestBook, Comment comment){
+    public static Notification toGuestBookReferNewSubComment(GuestBook guestBook, Comment comment) {
         return Notification.builder()
                 .type(TokenMessage.GUESTBOOK_COMMENT_NEW_SUBCOMMENT.getType())
                 .title(TokenMessage.GUESTBOOK_COMMENT_NEW_SUBCOMMENT.getTitle())

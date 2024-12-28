@@ -1,17 +1,17 @@
 package com.favoriteplace.app.controller;
 
-import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.dto.item.ItemDto;
 import com.favoriteplace.app.service.ShopService;
 import com.favoriteplace.global.util.SecurityUtil;
+
 import jakarta.servlet.http.HttpServletRequest;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,12 +38,14 @@ public class ShopController {
     }
 
     @GetMapping("/detail/{item_id}")
-    public ResponseEntity<ItemDto.ItemDetailResDto> getItemDetail(HttpServletRequest request, @PathVariable("item_id")Long itemId) {
+    public ResponseEntity<ItemDto.ItemDetailResDto> getItemDetail(
+            HttpServletRequest request, @PathVariable("item_id") Long itemId
+    ) {
         return ResponseEntity.ok(shopService.getItemDetail(request, itemId));
     }
 
     @PostMapping("/purchase/{item_id}")
-    public ResponseEntity<ItemDto.ItemPurchaseRes> buyItem(@PathVariable("item_id")Long itemId) {
+    public ResponseEntity<ItemDto.ItemPurchaseRes> buyItem(@PathVariable("item_id") Long itemId) {
         return ResponseEntity.ok(shopService.buyItem(itemId));
     }
 }

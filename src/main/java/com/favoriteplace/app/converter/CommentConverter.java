@@ -14,8 +14,10 @@ import java.util.List;
 
 public class CommentConverter {
 
-    public static CommentResponseDto.ParentComment toComment(Comment comment, Member member, List<Comment> subComments){
-        if(comment.getIsDeleted()){
+    public static CommentResponseDto.ParentComment toComment(
+            Comment comment, Member member, List<Comment> subComments
+    ) {
+        if (comment.isDeleted()) {
             return CommentResponseDto.ParentComment.builder()
                     .userInfo(hideUserInfo(comment))
                     .id(null)
@@ -24,8 +26,7 @@ public class CommentConverter {
                     .isWrite(null)
                     .subComments(toSubComments(subComments, member))
                     .build();
-        }
-        else{
+        } else {
             return CommentResponseDto.ParentComment.builder()
                     .userInfo(showUserInfo(comment))
                     .id(comment.getId())
@@ -37,10 +38,14 @@ public class CommentConverter {
         }
     }
 
-    public static List<CommentResponseDto.SubComment> toSubComments(List<Comment> subComments, Member member){
-        if (subComments.isEmpty()){return Collections.emptyList();}
+    public static List<CommentResponseDto.SubComment> toSubComments(
+            List<Comment> subComments, Member member
+    ) {
+        if (subComments.isEmpty()) {
+            return Collections.emptyList();
+        }
         return subComments.stream().map(comment -> {
-            if(comment.getIsDeleted()){
+            if (comment.isDeleted()) {
                 return CommentResponseDto.SubComment.builder()
                         .userInfo(hideUserInfo(comment))
                         .id(null)
@@ -49,15 +54,17 @@ public class CommentConverter {
                         .isWrite(null)
                         .referenceNickname(null)
                         .build();
-            }
-            else{
+            } else {
                 return CommentResponseDto.SubComment.builder()
                         .userInfo(showUserInfo(comment))
                         .id(comment.getId())
                         .content(comment.getContent())
                         .passedTime(DateTimeFormatUtils.getPassDateTime(comment.getCreatedAt()))
                         .isWrite(isCommentWriter(member, comment))
-                        .referenceNickname(comment.getReferenceComment()==null ? null : comment.getReferenceComment().getMember().getNickname())
+                        .referenceNickname(
+                                comment.getReferenceComment() == null
+                                        ? null : comment.getReferenceComment().getMember().getNickname()
+                        )
                         .build();
             }
         }).toList();
@@ -81,7 +88,7 @@ public class CommentConverter {
                 .build();
     }
 
-    public static PostResponseDto.MyComment toMyPostComment(Comment comment){
+    public static PostResponseDto.MyComment toMyPostComment(Comment comment) {
         return PostResponseDto.MyComment.builder()
                 .id(comment.getId())
                 .content(comment.getContent())
@@ -93,8 +100,10 @@ public class CommentConverter {
     /**
      * 사용자(앱을 사용하는 유저)가 댓글 작성자가 맞는지 확인하는 함수
      */
-    public static Boolean isCommentWriter(Member member, Comment comment){
-        if(member == null){return false;}
+    public static Boolean isCommentWriter(Member member, Comment comment) {
+        if (member == null) {
+            return false;
+        }
         return member.getId().equals(comment.getMember().getId());
     }
 
@@ -102,7 +111,7 @@ public class CommentConverter {
     /**
      * 삭제된 댓글이면 유저 정보 감춤
      */
-    public static UserInfoResponseDto hideUserInfo(Comment comment){
+    public static UserInfoResponseDto hideUserInfo(Comment comment) {
         return UserInfoResponseDto.builder()
                 .id(null)
                 .nickname("[알 수 없음]")
@@ -112,20 +121,26 @@ public class CommentConverter {
                 .build();
     }
 
-    public static UserInfoResponseDto showUserInfo(Comment comment){
+    public static UserInfoResponseDto showUserInfo(Comment comment) {
         Member member = comment.getMember();
         return UserInfoResponseDto.builder()
                 .id(member.getId())
                 .nickname(member.getNickname())
                 .profileImageUrl(member.getProfileImageUrl())
-                .profileTitleUrl(member.getProfileTitle()!= null ? member.getProfileTitle().getDefaultImage().getUrl() : null)
-                .profileIconUrl(member.getProfileIcon()!= null ? member.getProfileIcon().getDefaultImage().getUrl() : null)
+                .profileTitleUrl(
+                        member.getProfileTitle() != null
+                                ? member.getProfileTitle().getDefaultImage().getUrl() : null
+                )
+                .profileIconUrl(
+                        member.getProfileIcon() != null
+                                ? member.getProfileIcon().getDefaultImage().getUrl() : null
+                )
                 .build();
     }
 
-    private static long getNotDeletedComment(List<Comment> comments){
+    private static long getNotDeletedComment(List<Comment> comments) {
         return comments.stream()
-                .filter(comment -> !comment.getIsDeleted())
+                .filter(comment -> !comment.isDeleted())
                 .count();
     }
 }

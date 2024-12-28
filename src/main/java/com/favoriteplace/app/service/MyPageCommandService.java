@@ -15,7 +15,9 @@ import com.favoriteplace.app.repository.MemberRepository;
 import com.favoriteplace.app.service.fcm.FCMNotificationService;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,21 +32,25 @@ public class MyPageCommandService {
 
     /**
      * 다른 유저를 차단 또는 차단 해제
-     * @param member : 앱을 현재 사용하고 있는 사용자
+     *
+     * @param member          : 앱을 현재 사용하고 있는 사용자
      * @param blockedMemberId : 차단하고 싶은 또는 차단 취소하고 싶은 유저
      * @return
      */
     @Transactional
     public MyPageDto.MyModifyBlockDto modifyMemberBlock(Member member, Long blockedMemberId) {
-        Member blockedMember = memberRepository.findById(blockedMemberId).orElseThrow(() -> new RestApiException(ErrorCode.USER_NOT_FOUND));
-        if(member.equals(blockedMember)){throw new RestApiException(ErrorCode.CANT_BLOCK_SELF);}
+        Member blockedMember = memberRepository.findById(blockedMemberId)
+                .orElseThrow(() -> new RestApiException(ErrorCode.USER_NOT_FOUND));
+        if (member.equals(blockedMember)) {
+            throw new RestApiException(ErrorCode.CANT_BLOCK_SELF);
+        }
         Boolean isExist = blockRepository.existsByMemberIdAndBlockedMemberId(member.getId(), blockedMember.getId());
         boolean isBlocked;
-        if(isExist){
+        if (isExist) {
             //차단 해제
             blockRepository.deleteByMemberIdAndBlockedMemberId(member.getId(), blockedMember.getId());
             isBlocked = false;
-        }else{
+        } else {
             //차단
             Block block = Block.builder().member(member).blockedMember(blockedMember).build();
             blockRepository.save(block);
@@ -55,6 +61,7 @@ public class MyPageCommandService {
 
     /**
      * 보유하는 아이템 착용하기
+     *
      * @param itemId 착용하려는 아이템
      * @param member 착용자
      * @return
@@ -62,10 +69,10 @@ public class MyPageCommandService {
     @Transactional
     public CommonResponseDto.PostResponseDto wearItem(Long itemId, Member member) {
         Item item = itemRepository.findById(itemId)
-                .orElseThrow(()->new RestApiException(ErrorCode.ITEM_NOT_EXISTS));
+                .orElseThrow(() -> new RestApiException(ErrorCode.ITEM_NOT_EXISTS));
         acquiredItemRepository.findByMemberAndItem(member, item)
-                .orElseThrow(()->new RestApiException(ErrorCode.ITEM_NOT_ACQUIRED));
-        if (item.getType() == ItemType.ICON){
+                .orElseThrow(() -> new RestApiException(ErrorCode.ITEM_NOT_ACQUIRED));
+        if (item.getType() == ItemType.ICON) {
             member.updateIcon(item);
         } else if (item.getType() == ItemType.TITLE) {
             member.updateTitle(item);
@@ -76,6 +83,7 @@ public class MyPageCommandService {
 
     /**
      * FCM 토큰 등록 & 변경
+     *
      * @param member  사용자
      * @param request RequestBody
      */

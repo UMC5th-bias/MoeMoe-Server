@@ -29,3 +29,5 @@ nohup java -jar \
 echo "> Now new WAS runs at ${TARGET_PORT}."
 sleep 10s
 exit 0
+
+
