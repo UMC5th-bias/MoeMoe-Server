@@ -6,12 +6,21 @@ import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.enums.ItemType;
 import com.favoriteplace.app.domain.enums.SaleStatus;
 import com.favoriteplace.app.domain.item.AcquiredItem;
-import com.favoriteplace.app.domain.travel.*;
-import com.favoriteplace.app.dto.CommonResponseDto;
+import com.favoriteplace.app.domain.travel.CompleteRally;
+import com.favoriteplace.app.domain.travel.LikedRally;
+import com.favoriteplace.app.domain.travel.Rally;
 import com.favoriteplace.app.dto.MyPageDto;
-import com.favoriteplace.app.repository.*;
+import com.favoriteplace.app.repository.AcquiredItemRepository;
+import com.favoriteplace.app.repository.BlockRepository;
+import com.favoriteplace.app.repository.CommentRepository;
+import com.favoriteplace.app.repository.CompleteRallyRepository;
+import com.favoriteplace.app.repository.GuestBookRepository;
+import com.favoriteplace.app.repository.LikedRallyRepository;
+import com.favoriteplace.app.repository.PostRepository;
+import com.favoriteplace.app.repository.VisitedPilgrimageRepository;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -9,8 +9,10 @@ import com.favoriteplace.app.service.PilgrimageCommandService;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.security.CustomUserDetails;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -18,6 +20,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
+
 @Controller
 @Slf4j
 @RequiredArgsConstructor
@@ -59,7 +62,11 @@ public class PilgrimageSocketController {
      */
     @MessageMapping("/location/{pilgrimageId}")
     @SendTo("/pub/statusUpdate/{pilgrimageId}")
-    public PilgrimageSocketDto.ButtonState checkUserLocation(@DestinationVariable Long pilgrimageId, Principal principal, PilgrimageCertifyRequestDto userLocation) {
+    public PilgrimageSocketDto.ButtonState checkUserLocation(
+            @DestinationVariable Long pilgrimageId,
+            Principal principal,
+            PilgrimageCertifyRequestDto userLocation
+    ) {
         if (principal == null)
             throw new RestApiException(ErrorCode.USER_NOT_AUTHOR);
 
@@ -67,8 +74,7 @@ public class PilgrimageSocketController {
                 ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
         Member member = userDetails.getMember();
 
-        PilgrimageSocketDto.ButtonState buttonState = pilgrimageService.buttonStatusUpdate(pilgrimageId, userLocation, member);
-        return buttonState;
+        return pilgrimageService.buttonStatusUpdate(pilgrimageId, userLocation, member);
     }
 
     /**
@@ -82,7 +88,9 @@ public class PilgrimageSocketController {
      */
     @MessageMapping("/certify/{pilgrimageId}")
     @SendTo("/pub/certify/{pilgrimageId}")
-    public CommonResponseDto.RallyResponseDto certifyPilgrimage(@DestinationVariable Long pilgrimageId, Principal principal) {
+    public CommonResponseDto.RallyResponseDto certifyPilgrimage(
+            @DestinationVariable Long pilgrimageId, Principal principal
+    ) {
         if (principal == null)
             throw new RestApiException(ErrorCode.USER_NOT_AUTHOR);
 

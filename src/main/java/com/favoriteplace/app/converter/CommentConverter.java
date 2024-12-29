@@ -16,7 +16,7 @@ import java.util.List;
 public class CommentConverter {
 
     public static CommentParentResponseDto toComment(Comment comment, Member member, List<Comment> subComments) {
-        if (comment.getIsDeleted()) {
+        if (comment.isDeleted()) {
             return new CommentParentResponseDto(hideUserInfo(comment), null, "[삭제된 댓글입니다.]", null, null,
                     toSubComments(subComments, member));
         } else {
@@ -31,7 +31,7 @@ public class CommentConverter {
             return Collections.emptyList();
         }
         return subComments.stream().map(comment -> {
-            if (comment.getIsDeleted()) {
+            if (comment.isDeleted()) {
                 return new CommentSubResponseDto(hideUserInfo(comment), null, "[삭제된 댓글입니다.]", null, null, null);
             } else {
                 String nickname = comment.getReferenceComment() == null ? null
@@ -110,7 +110,7 @@ public class CommentConverter {
 
     private static long getNotDeletedComment(List<Comment> comments) {
         return comments.stream()
-                .filter(comment -> !comment.getIsDeleted())
+                .filter(comment -> !comment.isDeleted())
                 .count();
     }
 }

@@ -13,8 +13,8 @@ public class FcmConverter {
     /**
      * 게시글 작성자에게 알림 전송
      */
-    public static PostTokenCond toPostWriter(Post post, Comment newComment){
-        if(post.getMember().getFcmToken() == null){
+    public static PostTokenCond toPostWriter(Post post, Comment newComment) {
+        if (post.getMember().getFcmToken() == null) {
             throw new RestApiException(ErrorCode.FCM_TOKEN_NOT_FOUND);
         }
         return PostTokenCond.builder()
@@ -28,8 +28,8 @@ public class FcmConverter {
     /**
      * 성지순례 인증글 작성자에게 알림 전송
      */
-    public static PostTokenCond toGuestBookWriter(GuestBook guestBook, Comment newComment){
-        if(guestBook.getMember().getFcmToken() == null){
+    public static PostTokenCond toGuestBookWriter(GuestBook guestBook, Comment newComment) {
+        if (guestBook.getMember().getFcmToken() == null) {
             throw new RestApiException(ErrorCode.FCM_TOKEN_NOT_FOUND);
         }
         return PostTokenCond.builder()
@@ -40,8 +40,8 @@ public class FcmConverter {
                 .build();
     }
 
-    public static PostTokenCond toParentCommentWriter(Post post, Comment newComment){
-        if(newComment.getParentComment().getMember().getFcmToken() == null){
+    public static PostTokenCond toParentCommentWriter(Post post, Comment newComment) {
+        if (newComment.getParentComment().getMember().getFcmToken() == null) {
             throw new RestApiException(ErrorCode.FCM_TOKEN_NOT_FOUND);
         }
         return PostTokenCond.builder()
@@ -52,8 +52,8 @@ public class FcmConverter {
                 .build();
     }
 
-    public static PostTokenCond toReferCommentWriter(Post post, Comment newComment){
-        if(newComment.getReferenceComment().getMember().getFcmToken() == null){
+    public static PostTokenCond toReferCommentWriter(Post post, Comment newComment) {
+        if (newComment.getReferenceComment().getMember().getFcmToken() == null) {
             throw new RestApiException(ErrorCode.FCM_TOKEN_NOT_FOUND);
         }
         return PostTokenCond.builder()
@@ -64,8 +64,8 @@ public class FcmConverter {
                 .build();
     }
 
-    public static PostTokenCond toParentCommentWriter(GuestBook guestBook, Comment newComment){
-        if(newComment.getParentComment().getMember().getFcmToken() == null){
+    public static PostTokenCond toParentCommentWriter(GuestBook guestBook, Comment newComment) {
+        if (newComment.getParentComment().getMember().getFcmToken() == null) {
             throw new RestApiException(ErrorCode.FCM_TOKEN_NOT_FOUND);
         }
         return PostTokenCond.builder()
@@ -76,8 +76,8 @@ public class FcmConverter {
                 .build();
     }
 
-    public static PostTokenCond toReferCommentWriter(GuestBook guestBook, Comment newComment){
-        if(newComment.getReferenceComment().getMember().getFcmToken() == null){
+    public static PostTokenCond toReferCommentWriter(GuestBook guestBook, Comment newComment) {
+        if (newComment.getReferenceComment().getMember().getFcmToken() == null) {
             throw new RestApiException(ErrorCode.FCM_TOKEN_NOT_FOUND);
         }
         return PostTokenCond.builder()

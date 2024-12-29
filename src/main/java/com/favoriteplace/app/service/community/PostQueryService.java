@@ -7,7 +7,6 @@ import com.favoriteplace.app.dto.community.PostResponseDto;
 import com.favoriteplace.app.dto.community.TrendingPostResponseDto;
 import com.favoriteplace.app.repository.LikedPostRepository;
 import com.favoriteplace.app.repository.PostImplRepository;
-import com.favoriteplace.app.repository.PostRepository;
 import com.favoriteplace.app.service.community.searchStrategy.SearchPostByContent;
 import com.favoriteplace.app.service.community.searchStrategy.SearchPostByNickname;
 import com.favoriteplace.app.service.community.searchStrategy.SearchPostByTitle;
@@ -18,8 +17,11 @@ import com.favoriteplace.app.service.community.sortStrategy.SortStrategy;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.util.SecurityUtil;
+
 import jakarta.servlet.http.HttpServletRequest;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,7 +62,9 @@ public class PostQueryService {
             throw new RestApiException(ErrorCode.SORT_TYPE_NOT_ALLOWED);
         }
         List<Post> sortedPosts = sortStrategy.sort(page, size);
-        if (sortedPosts.isEmpty()) {return Collections.emptyList();}
+        if (sortedPosts.isEmpty()) {
+            return Collections.emptyList();
+        }
         return sortedPosts.stream()
                 .map(PostConverter::toMyPost)
                 .collect(Collectors.toList());
@@ -75,7 +79,9 @@ public class PostQueryService {
      * @param keyword
      * @return
      */
-    public List<PostResponseDto.MyPost> getTotalPostByKeyword(int page, int size, String searchType, String keyword) {
+    public List<PostResponseDto.MyPost> getTotalPostByKeyword(
+            int page, int size, String searchType, String keyword
+    ) {
         SearchStrategy<Post> searchStrategy;
         if ("title".equals(searchType)) {
             searchStrategy = searchPostByTitle;
@@ -86,9 +92,13 @@ public class PostQueryService {
         } else {
             throw new RestApiException(ErrorCode.SEARCH_TYPE_NOT_ALLOWED);
         }
-        if (keyword.trim().isEmpty()) {return Collections.emptyList();}
+        if (keyword.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
         List<Post> postPage = searchStrategy.search(keyword, page, size);
-        if (postPage.isEmpty()) {return Collections.emptyList();}
+        if (postPage.isEmpty()) {
+            return Collections.emptyList();
+        }
         return postPage.stream()
                 .map(PostConverter::toMyPost)
                 .toList();
@@ -103,7 +113,9 @@ public class PostQueryService {
      */
     public List<PostResponseDto.MyPost> getMyPosts(Member member, int page, int size) {
         List<Post> postPage = postImplRepository.findAllByMemberIdOrderByCreatedAtDesc(member.getId(), page, size);
-        if (postPage.isEmpty()) {return Collections.emptyList();}
+        if (postPage.isEmpty()) {
+            return Collections.emptyList();
+        }
         return postPage.stream()
                 .map(PostConverter::toMyPost)
                 .toList();
@@ -132,13 +144,16 @@ public class PostQueryService {
 
     /**
      * 자유 게시글 상제 정보 조회
+     *
      * @param postId
      * @param request
      * @return
      */
     public PostResponseDto.PostDetailResponseDto getPostDetail(Long postId, HttpServletRequest request) {
         Post post = postImplRepository.findOneById(postId);
-        if (post == null) {throw new RestApiException(ErrorCode.POST_NOT_FOUND);}
+        if (post == null) {
+            throw new RestApiException(ErrorCode.POST_NOT_FOUND);
+        }
         if (!securityUtil.isTokenExists(request)) {
             return PostConverter.toPostDetailResponse(post, false, false);
         }
@@ -148,6 +163,7 @@ public class PostQueryService {
 
     /**
      * 사용자가 해당 글의 작성자가 맞는지 확인
+     *
      * @param post
      * @param memberId
      * @return
@@ -158,6 +174,7 @@ public class PostQueryService {
 
     /**
      * 사용자가 해당 글에 좋아요를 눌렀는지 확인
+     *
      * @param postId
      * @param memberId
      * @return

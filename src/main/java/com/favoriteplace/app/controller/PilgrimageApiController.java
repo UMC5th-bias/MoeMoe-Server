@@ -9,11 +9,20 @@ import com.favoriteplace.app.service.PilgrimageQueryService;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.util.SecurityUtil;
+
 import jakarta.servlet.http.HttpServletRequest;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -96,14 +105,14 @@ public class PilgrimageApiController {
 
     // 랠리 찜하기
     @PostMapping("/{rally_id}")
-    public CommonResponseDto.PostResponseDto likeToRally(@PathVariable("rally_id")Long rallyId){
+    public CommonResponseDto.PostResponseDto likeToRally(@PathVariable("rally_id") Long rallyId) {
         Member member = securityUtil.getUser();
         return pilgrimageCommandService.likeToRally(rallyId, member);
     }
 
     // 랠리 FCM 구독
     @PostMapping("/{rally_id}/subscribe")
-    public ResponseEntity<Void> subscribeRally(@PathVariable("rally_id") Long rallyId){
+    public ResponseEntity<Void> subscribeRally(@PathVariable("rally_id") Long rallyId) {
         Member member = securityUtil.getUser();
         pilgrimageCommandService.subscribeRally(rallyId, member);
         return ResponseEntity.ok().build();
@@ -111,7 +120,7 @@ public class PilgrimageApiController {
 
     // 랠리 FCM 구독 취소
     @DeleteMapping("/{rally_id}/unsubscribe")
-    public ResponseEntity<Void> unsubscribeRally(@PathVariable("rally_id") Long rallyId){
+    public ResponseEntity<Void> unsubscribeRally(@PathVariable("rally_id") Long rallyId) {
         Member member = securityUtil.getUser();
         pilgrimageCommandService.unsubscribeRally(rallyId, member);
         return ResponseEntity.noContent().build();
@@ -140,7 +149,7 @@ public class PilgrimageApiController {
     @GetMapping("/category/region")
     public List<RallyResponseDto.SearchRegionDto> searchRegion(HttpServletRequest request, @RequestParam String value){
         Member member = securityUtil.getUserFromHeader(request);
-        if (value.equals("")){
+        if (value.equals("")) {
             throw new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND);
         }
         return pilgrimageQueryService.searchRegion(value, member);

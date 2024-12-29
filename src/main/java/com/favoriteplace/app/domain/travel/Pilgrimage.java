@@ -2,13 +2,21 @@ package com.favoriteplace.app.domain.travel;
 
 import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.common.BaseTimeEntity;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-
-import java.util.List;
 
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
@@ -53,9 +61,9 @@ public class Pilgrimage extends BaseTimeEntity {
     private String detailAddressJp;
 
     @Column(nullable = false)
-    private Double latitude;
+    private double latitude;
 
     @Column(nullable = false)
-    private Double longitude;
+    private double longitude;
 
 }

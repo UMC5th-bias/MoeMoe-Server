@@ -41,20 +41,20 @@ public class ItemDto {
         private String saleDeadline;
         private String status;
         private String name;
-        private Integer point;
+        private int point;
         private String description;
         private Boolean alreadyBought;
 
         public static ItemDetailResDto from(Item item, Member member, Boolean alreadyBought) {
             return ItemDetailResDto.builder()
-                .userPoint(member == null ? 0 : member.getPoint().intValue())
+                .userPoint(member == null ? 0 : Long.valueOf(member.getPoint()).intValue())
                 .category(item.getCategory().getName())
                 .imageUrl(item.getDefaultImage().getUrl())
                 .imageCenterUrl(item.getCenterImage() == null ? null : item.getCenterImage().getUrl())
                 .saleDeadline(item.getSaleDeadline() == null ? null : DateTimeFormatUtils.convertDateToString(item.getSaleDeadline()))
                 .status(item.getStatus().toString())
                 .name(item.getName())
-                .point(item.getPoint().intValue())
+                .point(Long.valueOf(item.getPoint()).intValue())
                 .description(item.getDescription())
                 .alreadyBought(alreadyBought)
                 .build();
@@ -102,7 +102,7 @@ public class ItemDto {
         private Integer id;
         private String name;
         private String imageUrl;
-        private Integer point;
+        private int point;
     }
 
     @Getter

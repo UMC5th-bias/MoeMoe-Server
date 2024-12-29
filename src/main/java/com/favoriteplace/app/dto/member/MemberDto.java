@@ -67,7 +67,9 @@ public class MemberDto {
     @NoArgsConstructor
     public static class EmailSendReqDto {
         /**
-         * 1)@기호를 포함해야 한다. 2)@기호를 기준으로 이메일 주소를 이루는 로컬호스트와 도메인 파트가 존재해야 한다. 3)도메인 파트는 최소하나의 점과 그 뒤에 최소한 2개의 알파벳을 가진다를 검증
+         * 1)@기호를 포함해야 한다.
+         * 2)@기호를 기준으로 이메일 주소를 이루는 로컬호스트와 도메인 파트가 존재해야 한다.
+         * 3)도메인 파트는 최소하나의 점과 그 뒤에 최소한 2개의 알파벳을 가진다를 검증
          */
         @NotEmpty(message = "이메일 입력은 필수 입니다.")
         @Pattern(
@@ -122,7 +124,7 @@ public class MemberDto {
     public static class MemberInfo {
         private Integer id;
         private String nickname;
-        private Integer point;
+        private int point;
         private String profileImageUrl;
         private String profileTitleUrl;
         private String profileIconUrl;
@@ -130,15 +132,14 @@ public class MemberDto {
         public static MemberInfo from(Member member) {
             System.out.println(member.getProfileIcon());
             return MemberInfo.builder()
-                    .id(member == null ? null : member.getId().intValue())
-                    .nickname(member == null ? null : member.getNickname())
-                    .point(member == null ? null : member.getPoint().intValue())
-                    .profileImageUrl(member.getProfileImageUrl() == null ? null : member.getProfileImageUrl())
-                    .profileIconUrl(
-                            member.getProfileIcon() == null ? null : member.getProfileIcon().getDefaultImage().getUrl())
-                    .profileTitleUrl(member.getProfileTitle() == null ? null
-                            : member.getProfileTitle().getDefaultImage().getUrl())
-                    .build();
+                .id(member == null ? null : member.getId().intValue())
+                .nickname(member == null ? null : member.getNickname())
+                .point(member == null ? null : Long.valueOf(member.getPoint()).intValue())
+                .profileImageUrl(member.getProfileImageUrl() == null ? null : member.getProfileImageUrl())
+                .profileIconUrl(member.getProfileIcon() == null ? null : member.getProfileIcon().getDefaultImage().getUrl())
+                .profileTitleUrl(member.getProfileTitle() == null ? null : member.getProfileTitle().getDefaultImage().getUrl())
+                .build();
         }
     }
+
 }

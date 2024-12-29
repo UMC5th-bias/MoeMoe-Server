@@ -9,13 +9,25 @@ import com.favoriteplace.app.dto.community.comment.CommentRootResponseDto;
 import com.favoriteplace.app.service.community.CommentCommandService;
 import com.favoriteplace.app.service.community.CommentQueryService;
 import com.favoriteplace.global.util.SecurityUtil;
+
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 import jakarta.servlet.http.HttpServletRequest;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/posts/guestbooks")
@@ -29,7 +41,7 @@ public class GuestBookCommentController {
     public ResponseEntity<GuestBookResponseDto.MyGuestBookCommentDto> getMyComments(
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false, defaultValue = "10") int size
-    ){
+    ) {
         Member member = securityUtil.getUser();
         return ResponseEntity.ok(commentQueryService.getMyGuestBookComments(member, page, size));
     }
@@ -40,7 +52,7 @@ public class GuestBookCommentController {
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false, defaultValue = "5") int size,
             HttpServletRequest request
-    ){
+    ) {
         Member member = securityUtil.getUserFromHeader(request);
         return ResponseEntity.ok(commentQueryService.getGuestBookComments(page, size, member, guestbookId));
     }
@@ -62,7 +74,7 @@ public class GuestBookCommentController {
     public ResponseEntity<Void> sendGuestBookNotification(
             @PathVariable("guestbook_id") Long guestbookId,
             @PathVariable("comment_id") Long commentId
-    ){
+    ) {
         commentCommandService.sendGuestBookNotification(guestbookId, commentId);
         return ResponseEntity.ok().build();
     }
@@ -88,13 +100,12 @@ public class GuestBookCommentController {
     @DeleteMapping("/comments/{comment_id}")
     public ResponseEntity<Void> deleteGuestBookComment(
             @PathVariable("comment_id") Long commentId
-    ){
+    ) {
         Member member = securityUtil.getUser();
         commentCommandService.deleteComment(member, commentId);
         return new ResponseEntity<>(
                 HttpStatus.NO_CONTENT
         );
     }
-
 
 }

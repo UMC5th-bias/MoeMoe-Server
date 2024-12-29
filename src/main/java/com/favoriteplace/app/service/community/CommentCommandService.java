@@ -14,7 +14,9 @@ import com.favoriteplace.app.repository.PostRepository;
 import com.favoriteplace.app.service.fcm.FCMNotificationService;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -167,7 +169,7 @@ public class CommentCommandService {
      */
     private Comment hardDeleteReferenceComment(Comment comment) {
         Comment referenceComment = comment.getReferenceComment();
-        if (referenceComment != null && referenceComment.getIsDeleted() && !commentRepository.existsByReferenceComment(
+        if (referenceComment != null && referenceComment.isDeleted() && !commentRepository.existsByReferenceComment(
                 referenceComment)) {
             commentRepository.delete(referenceComment);
             return hardDeleteReferenceComment(referenceComment);
@@ -183,7 +185,7 @@ public class CommentCommandService {
      */
     private void hardDeleteParentComment(Comment comment) {
         Comment parentComment = comment.getParentComment();
-        if (parentComment.getIsDeleted() && !commentRepository.existsByParentComment(parentComment)) {
+        if (parentComment.isDeleted() && !commentRepository.existsByParentComment(parentComment)) {
             commentRepository.delete(parentComment);
         }
     }
@@ -201,7 +203,7 @@ public class CommentCommandService {
      * soft delete로 이미 삭제된 댓글인지 확인하는 함수 (삭제된 댓글이면 에러 출력)
      */
     private void checkIsDeleteOfComment(Comment comment) {
-        if (comment.getIsDeleted()) {
+        if (comment.isDeleted()) {
             throw new RestApiException(ErrorCode.COMMENT_ALREADY_DELETED);
         }
     }

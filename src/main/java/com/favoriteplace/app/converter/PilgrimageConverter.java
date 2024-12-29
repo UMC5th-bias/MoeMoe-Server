@@ -64,7 +64,7 @@ public class PilgrimageConverter {
                 .id(guestBook.getId())
                 .title(guestBook.getTitle())
                 .createdAt(guestBook.getCreatedAt().toString())
-                .image(mainImg!=null?mainImg.getUrl():null)
+                .image(mainImg != null ? mainImg.getUrl() : null)
                 .hashTag(hashTags)
                 .build();
     }

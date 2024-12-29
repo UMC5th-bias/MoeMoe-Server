@@ -4,13 +4,23 @@ import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.dto.NotificationResponseDto;
 import com.favoriteplace.app.service.NotificationService;
 import com.favoriteplace.global.util.SecurityUtil;
+
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 import jakarta.validation.constraints.Min;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/notifications")
@@ -23,9 +33,11 @@ public class NotificationController {
     // 알림 전체 조회
     @GetMapping()
     public ResponseEntity<NotificationResponseDto> getAllNotification(
-            @Min(value = 1, message = "page는 1 이상입니다.") @RequestParam(required = false, defaultValue = "1") Integer page,
-            @Min(value = 1, message = "size는 1 이상입니다.") @RequestParam(required = false, defaultValue = "1") Integer size
-    ){
+            @Min(value = 1, message = "page는 1 이상입니다.")
+            @RequestParam(required = false, defaultValue = "1") Integer page,
+            @Min(value = 1, message = "size는 1 이상입니다.")
+            @RequestParam(required = false, defaultValue = "1") Integer size
+    ) {
         Member member = securityUtil.getUser();
         NotificationResponseDto response = notificationService.getAllNotification(member, page, size);
         return ResponseEntity.ok(response);
@@ -36,7 +48,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "204")
     })
     @PatchMapping()
-    public ResponseEntity<Void> readAllNotification(){
+    public ResponseEntity<Void> readAllNotification() {
         Member member = securityUtil.getUser();
         notificationService.readAllNotification(member);
         return ResponseEntity.noContent().build();
@@ -49,7 +61,7 @@ public class NotificationController {
     @PatchMapping("/{notificationId}")
     public ResponseEntity<Void> readNotification(
             @PathVariable Long notificationId
-    ){
+    ) {
         Member member = securityUtil.getUser();
         notificationService.readNotification(notificationId, member);
         return ResponseEntity.noContent().build();
@@ -62,7 +74,7 @@ public class NotificationController {
     @DeleteMapping("/{notificationId}")
     public ResponseEntity<Void> deleteNotification(
             @PathVariable Long notificationId
-    ){
+    ) {
         Member member = securityUtil.getUser();
         notificationService.deleteNotification(notificationId, member);
         return ResponseEntity.noContent().build();

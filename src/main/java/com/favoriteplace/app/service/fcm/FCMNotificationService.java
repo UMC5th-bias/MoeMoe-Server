@@ -41,21 +41,6 @@ public class FCMNotificationService {
     }
 
     /**
-     * token - Message 제작
-     */
-    private Message makeTokenMessage(PostTokenCond postTokenCond){
-        return Message.builder()
-                .setToken(postTokenCond.token())
-                .putData("type", postTokenCond.tokenMessage().getType())
-                .putData("title", postTokenCond.tokenMessage().getTitle())
-                .putData("message", postTokenCond.message())
-                .putData("postId", postTokenCond.postId() != null ? postTokenCond.postId().toString() : null)
-                .putData("guestBookId", postTokenCond.guestBookId() != null ? postTokenCond.guestBookId().toString() : null)
-                .putData("notificationId", postTokenCond.notificationId().toString())
-                .build();
-    }
-
-    /**
      * topic 구독
      */
     @Transactional
@@ -112,34 +97,6 @@ public class FCMNotificationService {
         }
     }
 
-    /**
-     * topic - 애니메이션 Message 제작
-     */
-    private Message makeAnimationTopicMessage(Long animationId, String name, Long notificationId){
-        Message message = Message.builder()
-                .setTopic(makeAnimationTopicName(animationId))
-                .putData("type", "animation")
-                .putData("title", String.format("애니메이션 %s의 성지순례가 추가되었습니다!", name))
-                .putData("message", "지금 확인하러 가기")
-                .putData("animationId", animationId.toString())
-                .putData("notificationId", notificationId.toString())
-                .build();
-        return message;
-    }
-
-    /**
-     * topic - 홈화면 Message 제작
-     */
-    private Message makeTotalTopicMessage(TotalTopicMessage totalTopicMessage){
-        Message message = Message.builder()
-                .setTopic("total")
-                .putData("type", totalTopicMessage.getType())
-                .putData("title", totalTopicMessage.getTitle())
-                .putData("message", totalTopicMessage.getMessage())
-                .build();
-        return message;
-    }
-
     public static String makeAnimationTopicName(Long animationId){
         return "animation" + animationId.toString();
     }
@@ -169,6 +126,49 @@ public class FCMNotificationService {
             }
         }
         member.refreshFcmToken(newFcm);
+    }
+
+    /**
+     * token - Message 제작
+     */
+    private Message makeTokenMessage(PostTokenCond postTokenCond){
+        return Message.builder()
+                .setToken(postTokenCond.token())
+                .putData("type", postTokenCond.tokenMessage().getType())
+                .putData("title", postTokenCond.tokenMessage().getTitle())
+                .putData("message", postTokenCond.message())
+                .putData("postId", postTokenCond.postId() != null ? postTokenCond.postId().toString() : null)
+                .putData("guestBookId", postTokenCond.guestBookId() != null ? postTokenCond.guestBookId().toString() : null)
+                .putData("notificationId", postTokenCond.notificationId().toString())
+                .build();
+    }
+
+    /**
+     * topic - 홈화면 Message 제작
+     */
+    private Message makeTotalTopicMessage(TotalTopicMessage totalTopicMessage){
+        Message message = Message.builder()
+                .setTopic("total")
+                .putData("type", totalTopicMessage.getType())
+                .putData("title", totalTopicMessage.getTitle())
+                .putData("message", totalTopicMessage.getMessage())
+                .build();
+        return message;
+    }
+
+    /**
+     * topic - 애니메이션 Message 제작
+     */
+    private Message makeAnimationTopicMessage(Long animationId, String name, Long notificationId){
+        Message message = Message.builder()
+                .setTopic(makeAnimationTopicName(animationId))
+                .putData("type", "animation")
+                .putData("title", String.format("애니메이션 %s의 성지순례가 추가되었습니다!", name))
+                .putData("message", "지금 확인하러 가기")
+                .putData("animationId", animationId.toString())
+                .putData("notificationId", notificationId.toString())
+                .build();
+        return message;
     }
 
 }
