@@ -9,7 +9,7 @@ import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
 
 
-public class RallyDto {
+public class RallyResponseDto {
     @Builder
     @Getter
     @NoArgsConstructor
@@ -24,31 +24,34 @@ public class RallyDto {
         String itemImage;
         Boolean isLike;
     }
+
     @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class RallyAddressListDto{
+    public static class RallyAddressListDto {
         String name;
         Long pilgrimageNumber;
         Long myPilgrimageNumber;
         String image;
         List<RallyAddressDto> rally = new ArrayList<>();
     }
+
     @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class RallyAddressDto{
+    public static class RallyAddressDto {
         String address;
         List<RallyAddressPilgrimageDto> pilgrimage = new ArrayList<>();
     }
+
     @Builder
     @Getter
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class RallyAddressPilgrimageDto{
+    public static class RallyAddressPilgrimageDto {
         Long id;
         String detailAddress;
         String image;

@@ -2,7 +2,8 @@ package com.favoriteplace.app.controller;
 
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.dto.CommonResponseDto;
-import com.favoriteplace.app.dto.travel.PilgrimageDto;
+import com.favoriteplace.app.dto.travel.PilgrimageCertifyRequestDto;
+import com.favoriteplace.app.dto.travel.PilgrimageResponseDto;
 import com.favoriteplace.app.dto.travel.PilgrimageSocketDto;
 import com.favoriteplace.app.service.PilgrimageCommandService;
 import com.favoriteplace.global.exception.ErrorCode;
@@ -37,9 +38,7 @@ public class PilgrimageSocketController {
      */
     @MessageMapping("/connect/{pilgrimageId}")
     @SendTo("/pub/statusUpdate/{pilgrimageId}")
-    public PilgrimageSocketDto.ButtonState sendInitialStatus(
-            @DestinationVariable Long pilgrimageId,  Principal principal
-    ) {
+    public PilgrimageSocketDto.ButtonState sendInitialStatus(@DestinationVariable Long pilgrimageId,  Principal principal) {
         if (principal == null)
             throw new RestApiException(ErrorCode.USER_NOT_AUTHOR);
 
@@ -66,7 +65,7 @@ public class PilgrimageSocketController {
     public PilgrimageSocketDto.ButtonState checkUserLocation(
             @DestinationVariable Long pilgrimageId,
             Principal principal,
-            PilgrimageDto.PilgrimageCertifyRequestDto userLocation
+            PilgrimageCertifyRequestDto userLocation
     ) {
         if (principal == null)
             throw new RestApiException(ErrorCode.USER_NOT_AUTHOR);

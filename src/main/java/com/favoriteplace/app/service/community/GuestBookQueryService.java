@@ -4,7 +4,7 @@ import com.favoriteplace.app.converter.GuestBookConverter;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.travel.Pilgrimage;
-import com.favoriteplace.app.dto.community.GuestBookResponseDto;
+import com.favoriteplace.app.dto.community.guestbook.GuestBookResponseDto;
 import com.favoriteplace.app.dto.community.TrendingPostResponseDto;
 import com.favoriteplace.app.repository.GuestBookImplRepository;
 import com.favoriteplace.app.repository.LikedPostRepository;

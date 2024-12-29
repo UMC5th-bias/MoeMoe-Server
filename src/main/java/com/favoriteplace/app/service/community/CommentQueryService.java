@@ -3,9 +3,10 @@ package com.favoriteplace.app.service.community;
 import com.favoriteplace.app.converter.CommentConverter;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.Comment;
-import com.favoriteplace.app.dto.community.CommentResponseDto;
-import com.favoriteplace.app.dto.community.GuestBookResponseDto;
+import com.favoriteplace.app.dto.community.comment.CommentParentResponseDto;
+import com.favoriteplace.app.dto.community.guestbook.GuestBookResponseDto;
 import com.favoriteplace.app.dto.community.PostResponseDto;
+import com.favoriteplace.app.dto.community.comment.CommentRootResponseDto;
 import com.favoriteplace.app.repository.CommentImplRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,9 +24,7 @@ public class CommentQueryService {
     /**
      * 특정 자유게시글에 작성된 댓글들을 페이징해서 보여주는 함수
      */
-    public CommentResponseDto.CommentDto getPostComments(
-            Member member, int page, int size, Long postId
-    ) {
+    public CommentRootResponseDto getPostComments(Member member, int page, int size, Long postId) {
         List<Comment> commentPage = commentImplRepository.findParentCommentsByPostId(postId, page, size);
         return makeCommentDtoFromParentComment(commentPage, member, page);
     }
@@ -35,9 +34,7 @@ public class CommentQueryService {
      *
      * @return 페이징 된 댓글 리스트
      */
-    public CommentResponseDto.CommentDto getGuestBookComments(
-            int page, int size, Member member, Long guestbookId
-    ) {
+    public CommentRootResponseDto getGuestBookComments(int page, int size, Member member, Long guestbookId) {
         // 부모 댓글 가져옴
         List<Comment> commentPage = commentImplRepository.findParentCommentByGuestBookId(guestbookId, page, size);
         return makeCommentDtoFromParentComment(commentPage, member, page);
@@ -87,32 +84,22 @@ public class CommentQueryService {
     /**
      * 부모 댓글을 사용해서 자식 댓글 매핑하고, DTO 생성
      */
-    private CommentResponseDto.CommentDto makeCommentDtoFromParentComment(
-            List<Comment> commentPage, Member member, int page
-    ) {
+    private CommentRootResponseDto makeCommentDtoFromParentComment(List<Comment> commentPage, Member member, int page) {
         // 자식 댓글 가져옴
-        List<CommentResponseDto.ParentComment> comments;
+        List<CommentParentResponseDto> comments;
         if (commentPage.isEmpty()) {
             comments = Collections.emptyList();
         } else {
             comments = commentPage.stream()
-                    .map(comment -> CommentConverter.toComment(
-                            comment,
-                            member,
-                            commentImplRepository.findSubCommentByCommentId(comment.getId()))
-                    )
+                    .map(comment -> CommentConverter.toComment(comment, member,
+                            commentImplRepository.findSubCommentByCommentId(comment.getId())))
                     .toList();
         }
         // size 계산
         int pageSize = 0;
-        for (CommentResponseDto.ParentComment parentComment : comments) {
-            pageSize += (1 + parentComment.getSubComments().size());
+        for (CommentParentResponseDto parentComment : comments) {
+            pageSize += (1 + parentComment.subComments().size());
         }
-        return CommentResponseDto.CommentDto.builder()
-                .page((long) page)
-                .size((long) pageSize)
-                .parentComment(comments)
-                .build();
+        return new CommentRootResponseDto((long) page, (long) pageSize, comments);
     }
-
 }

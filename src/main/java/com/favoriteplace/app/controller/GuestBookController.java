@@ -1,8 +1,8 @@
 package com.favoriteplace.app.controller;
 
 import com.favoriteplace.app.domain.Member;
-import com.favoriteplace.app.dto.community.GuestBookRequestDto;
-import com.favoriteplace.app.dto.community.GuestBookResponseDto;
+import com.favoriteplace.app.dto.community.guestbook.GuestBookModifyRequestDto;
+import com.favoriteplace.app.dto.community.guestbook.GuestBookResponseDto;
 import com.favoriteplace.app.dto.community.PostResponseDto;
 import com.favoriteplace.app.service.community.GuestBookCommandService;
 import com.favoriteplace.app.service.community.GuestBookQueryService;
@@ -97,7 +97,7 @@ public class GuestBookController {
     @PatchMapping("/{guestbook_id}")
     public ResponseEntity<Void> modifyGuestBook(
             @PathVariable("guestbook_id") Long guestbookId,
-            @RequestPart GuestBookRequestDto.ModifyGuestBookDto data,
+            @RequestPart GuestBookModifyRequestDto data,
             @RequestPart(required = false) List<MultipartFile> images
     ) throws IOException {
         Member member = securityUtil.getUser();
@@ -137,7 +137,7 @@ public class GuestBookController {
     @PostMapping("/{pilgrimage_id}")
     public PostResponseDto.GuestBookIdResponseDto postToPilgrimage(
             @PathVariable("pilgrimage_id") Long pilgrimageId,
-            @RequestPart GuestBookRequestDto.ModifyGuestBookDto data,
+            @RequestPart GuestBookModifyRequestDto data,
             @RequestPart(required = false) List<MultipartFile> images
     ) throws IOException {
         Member member = securityUtil.getUser();

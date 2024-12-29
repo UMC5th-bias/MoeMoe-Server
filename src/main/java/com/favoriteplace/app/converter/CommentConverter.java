@@ -4,9 +4,10 @@ import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.community.Comment;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.dto.UserInfoResponseDto;
-import com.favoriteplace.app.dto.community.CommentResponseDto;
-import com.favoriteplace.app.dto.community.GuestBookResponseDto;
+import com.favoriteplace.app.dto.community.comment.CommentParentResponseDto;
+import com.favoriteplace.app.dto.community.guestbook.GuestBookResponseDto;
 import com.favoriteplace.app.dto.community.PostResponseDto;
+import com.favoriteplace.app.dto.community.comment.CommentSubResponseDto;
 import com.favoriteplace.global.util.DateTimeFormatUtils;
 
 import java.util.Collections;
@@ -14,58 +15,31 @@ import java.util.List;
 
 public class CommentConverter {
 
-    public static CommentResponseDto.ParentComment toComment(
-            Comment comment, Member member, List<Comment> subComments
-    ) {
+    public static CommentParentResponseDto toComment(Comment comment, Member member, List<Comment> subComments) {
         if (comment.isDeleted()) {
-            return CommentResponseDto.ParentComment.builder()
-                    .userInfo(hideUserInfo(comment))
-                    .id(null)
-                    .content("[삭제된 댓글입니다.]")
-                    .passedTime(null)
-                    .isWrite(null)
-                    .subComments(toSubComments(subComments, member))
-                    .build();
+            return new CommentParentResponseDto(hideUserInfo(comment), null, "[삭제된 댓글입니다.]", null, null,
+                    toSubComments(subComments, member));
         } else {
-            return CommentResponseDto.ParentComment.builder()
-                    .userInfo(showUserInfo(comment))
-                    .id(comment.getId())
-                    .content(comment.getContent())
-                    .passedTime(DateTimeFormatUtils.getPassDateTime(comment.getCreatedAt()))
-                    .isWrite(isCommentWriter(member, comment))
-                    .subComments(toSubComments(subComments, member))
-                    .build();
+            return new CommentParentResponseDto(showUserInfo(comment), comment.getId(), comment.getContent(),
+                    DateTimeFormatUtils.getPassDateTime(comment.getCreatedAt()), isCommentWriter(member, comment),
+                    toSubComments(subComments, member));
         }
     }
 
-    public static List<CommentResponseDto.SubComment> toSubComments(
-            List<Comment> subComments, Member member
-    ) {
+    public static List<CommentSubResponseDto> toSubComments(List<Comment> subComments, Member member) {
         if (subComments.isEmpty()) {
             return Collections.emptyList();
         }
         return subComments.stream().map(comment -> {
             if (comment.isDeleted()) {
-                return CommentResponseDto.SubComment.builder()
-                        .userInfo(hideUserInfo(comment))
-                        .id(null)
-                        .content("[삭제된 댓글입니다.]")
-                        .passedTime(null)
-                        .isWrite(null)
-                        .referenceNickname(null)
-                        .build();
+                return new CommentSubResponseDto(hideUserInfo(comment), null, "[삭제된 댓글입니다.]", null, null, null);
             } else {
-                return CommentResponseDto.SubComment.builder()
-                        .userInfo(showUserInfo(comment))
-                        .id(comment.getId())
-                        .content(comment.getContent())
-                        .passedTime(DateTimeFormatUtils.getPassDateTime(comment.getCreatedAt()))
-                        .isWrite(isCommentWriter(member, comment))
-                        .referenceNickname(
-                                comment.getReferenceComment() == null
-                                        ? null : comment.getReferenceComment().getMember().getNickname()
-                        )
-                        .build();
+                String nickname = comment.getReferenceComment() == null ? null
+                        : comment.getReferenceComment().getMember().getNickname();
+
+                return new CommentSubResponseDto(showUserInfo(comment), comment.getId(), comment.getContent(),
+                        DateTimeFormatUtils.getPassDateTime(comment.getCreatedAt()), isCommentWriter(member, comment),
+                        nickname);
             }
         }).toList();
     }
@@ -128,13 +102,9 @@ public class CommentConverter {
                 .nickname(member.getNickname())
                 .profileImageUrl(member.getProfileImageUrl())
                 .profileTitleUrl(
-                        member.getProfileTitle() != null
-                                ? member.getProfileTitle().getDefaultImage().getUrl() : null
-                )
+                        member.getProfileTitle() != null ? member.getProfileTitle().getDefaultImage().getUrl() : null)
                 .profileIconUrl(
-                        member.getProfileIcon() != null
-                                ? member.getProfileIcon().getDefaultImage().getUrl() : null
-                )
+                        member.getProfileIcon() != null ? member.getProfileIcon().getDefaultImage().getUrl() : null)
                 .build();
     }
 

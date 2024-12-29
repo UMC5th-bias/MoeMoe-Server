@@ -12,13 +12,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 public class MemberDto {
-
-
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     public static class MemberSignUpReqDto {
-
         @NotBlank(message = "닉네임은 필수값입니다.")
         public String nickname;
 
@@ -29,17 +26,17 @@ public class MemberDto {
 
         public Member toEntity(String encodedPassword, String profileImg, Item titleItem) {
             return Member.builder()
-                .nickname(nickname)
-                .email(email)
-                .password(encodedPassword)
-                .alarmAllowance(snsAllow)
-                .description(introduction)
-                .profileImageUrl(profileImg)
-                .point(0L)
-                .loginType(LoginType.SELF)
-                .profileTitle(titleItem)
-                .status(MemberStatus.Y)
-                .build();
+                    .nickname(nickname)
+                    .email(email)
+                    .password(encodedPassword)
+                    .alarmAllowance(snsAllow)
+                    .description(introduction)
+                    .profileImageUrl(profileImg)
+                    .point(0L)
+                    .loginType(LoginType.SELF)
+                    .profileTitle(titleItem)
+                    .status(MemberStatus.Y)
+                    .build();
         }
     }
 
@@ -56,13 +53,13 @@ public class MemberDto {
 
         public static MemberSignUpResDto from(Member member, TokenInfo tokenInfo) {
             return MemberSignUpResDto.builder()
-                .nickname(member.getNickname())
-                .introduction(member.getDescription())
-                .profileImage(member.getProfileImageUrl())
-                .profileTitleItem(member.getProfileTitle().getDefaultImage().getUrl())
-                .accessToken(tokenInfo.accessToken)
-                .refreshToken(tokenInfo.refreshToken)
-                .build();
+                    .nickname(member.getNickname())
+                    .introduction(member.getDescription())
+                    .profileImage(member.getProfileImageUrl())
+                    .profileTitleItem(member.getProfileTitle().getDefaultImage().getUrl())
+                    .accessToken(tokenInfo.accessToken)
+                    .refreshToken(tokenInfo.refreshToken)
+                    .build();
         }
     }
 
@@ -120,6 +117,7 @@ public class MemberDto {
         private String accessToken;
         private String refreshToken;
     }
+
     @Builder
     @Getter
     @AllArgsConstructor

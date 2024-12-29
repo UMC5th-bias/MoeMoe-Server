@@ -7,7 +7,7 @@ import com.favoriteplace.app.domain.community.HashTag;
 import com.favoriteplace.app.domain.enums.PointType;
 import com.favoriteplace.app.domain.travel.Pilgrimage;
 import com.favoriteplace.app.domain.travel.VisitedPilgrimage;
-import com.favoriteplace.app.dto.community.GuestBookRequestDto;
+import com.favoriteplace.app.dto.community.guestbook.GuestBookModifyRequestDto;
 import com.favoriteplace.app.dto.community.PostResponseDto;
 import com.favoriteplace.app.repository.GuestBookRepository;
 import com.favoriteplace.app.repository.HashtagRepository;
@@ -55,23 +55,19 @@ public class GuestBookCommandService {
      * @param images
      */
     @Transactional
-    public void modifyGuestBook(
-            Member member,
-            Long guestbookId,
-            GuestBookRequestDto.ModifyGuestBookDto data,
-            List<MultipartFile> images
-    ) throws IOException {
+    public void modifyGuestBook(Member member, Long guestbookId, GuestBookModifyRequestDto data,
+                                List<MultipartFile> images) throws IOException {
         GuestBook guestBook = guestBookRepository.findById(guestbookId)
                 .orElseThrow(() -> new RestApiException(ErrorCode.GUESTBOOK_NOT_FOUND));
         checkAuthOfGuestBook(member, guestBook);
-        Optional.ofNullable(data.getTitle()).ifPresent(guestBook::setTitle);
-        Optional.ofNullable(data.getContent()).ifPresent(guestBook::setContent);
+        Optional.ofNullable(data.title()).ifPresent(guestBook::setTitle);
+        Optional.ofNullable(data.content()).ifPresent(guestBook::setContent);
 
         guestBook.getHashTags().clear();  //기존에 있던 hashtag 제거
         guestBook.getImages().clear();  //기존에 있던 이미지 제거
         imageRepository.deleteByGuestBookId(guestbookId);
 
-        List<String> hashtags = data.getHashtags();
+        List<String> hashtags = data.hashtags();
         if (!hashtags.isEmpty()) {
             hashtags.forEach(hashtag -> guestBook.setHashTag(HashTag.builder().tagName(hashtag).build()));
         }
@@ -127,6 +123,18 @@ public class GuestBookCommandService {
 //    }
 
     /**
+     * 성지순례 인증글의 작성자가 맞는지 판단하는 함수
+     *
+     * @param member
+     * @param guestBook
+     */
+    private void checkAuthOfGuestBook(Member member, GuestBook guestBook) {
+        if (!member.getId().equals(guestBook.getMember().getId())) {
+            throw new RestApiException(ErrorCode.USER_NOT_AUTHOR);
+        }
+    }
+
+    /**
      * 성지순례 방문 인증글 작성
      *
      * @param member       인증한 사용자
@@ -137,12 +145,9 @@ public class GuestBookCommandService {
      * @throws IOException
      */
     @Transactional
-    public PostResponseDto.GuestBookIdResponseDto postGuestBook(
-            Member member,
-            Long pilgrimageId,
-            GuestBookRequestDto.ModifyGuestBookDto data,
-            List<MultipartFile> images
-    ) throws IOException {
+    public PostResponseDto.GuestBookIdResponseDto postGuestBook(Member member, Long pilgrimageId,
+                                                                GuestBookModifyRequestDto data,
+                                                                List<MultipartFile> images) throws IOException {
         Pilgrimage pilgrimage = pilgrimageRepository
                 .findById(pilgrimageId).orElseThrow(() -> new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
 
@@ -156,7 +161,7 @@ public class GuestBookCommandService {
         checkVisited(pilgrimage, member);
         GuestBook newGuestBook = saveGuestBook(member, data, pilgrimage);
 
-        data.getHashtags().stream().forEach(hashTag -> {
+        data.hashtags().stream().forEach(hashTag -> {
             HashTag newHashTag = HashTag.builder().tagName(hashTag).guestBook(newGuestBook).build();
             hashtagRepository.save(newHashTag);
             newGuestBook.setHashTag(newHashTag);
@@ -180,9 +185,32 @@ public class GuestBookCommandService {
         return PostResponseDto.GuestBookIdResponseDto.builder().guestBookId(newGuestBook.getId()).build();
     }
 
+    private void checkVisited(Pilgrimage pilgrimage, Member member) {
+        List<VisitedPilgrimage> visitedPilgrimageList = visitedPilgrimageRepository.findByPilgrimageAndMemberOrderByCreatedAtDesc(
+                pilgrimage, member);
+
+        boolean hasVisited = visitedPilgrimageList.stream()
+                .anyMatch(visitedPilgrimage -> pilgrimage.getId().equals(visitedPilgrimage.getPilgrimage().getId()));
+
+        if (!hasVisited) {
+            throw new RestApiException(ErrorCode.PILGRIMAGE_NOT_CERTIFIED);
+        }
+    }
+
+    private GuestBook saveGuestBook(Member member, GuestBookModifyRequestDto data, Pilgrimage pilgrimage) {
+        GuestBook guestBook = GuestBook.builder()
+                .member(member)
+                .pilgrimage(pilgrimage)
+                .title(data.title())
+                .content(data.content())
+                .likeCount(0L)
+                .view(0L)
+                .build();
+        return guestBookRepository.save(guestBook);
+    }
+
     public void successPostAndPointProcess(Member member, Pilgrimage pilgrimage) {
-        VisitedPilgrimage newVisited =
-                VisitedPilgrimage.builder().pilgrimage(pilgrimage).member(member).build();
+        VisitedPilgrimage newVisited = VisitedPilgrimage.builder().pilgrimage(pilgrimage).member(member).build();
         visitedPilgrimageRepository.save(newVisited);
         pointHistoryRepository.save(PointHistoryConverter.toPointHistory(member, 20L, PointType.ACQUIRE));
         member.updatePoint(20L);
@@ -202,46 +230,5 @@ public class GuestBookCommandService {
         GuestBook guestBook = optionalGuestBook.get();
         guestBook.increaseView();
         guestBookRepository.save(guestBook);
-    }
-
-    /**
-     * 성지순례 인증글의 작성자가 맞는지 판단하는 함수
-     *
-     * @param member
-     * @param guestBook
-     */
-    private void checkAuthOfGuestBook(Member member, GuestBook guestBook) {
-        if (!member.getId().equals(guestBook.getMember().getId())) {
-            throw new RestApiException(ErrorCode.USER_NOT_AUTHOR);
-        }
-    }
-
-    private void checkVisited(Pilgrimage pilgrimage, Member member) {
-        List<VisitedPilgrimage> visitedPilgrimageList =
-                visitedPilgrimageRepository.findByPilgrimageAndMemberOrderByCreatedAtDesc(pilgrimage, member);
-
-        boolean hasVisited = visitedPilgrimageList.stream()
-                .anyMatch(
-                        visitedPilgrimage -> pilgrimage.getId().equals(visitedPilgrimage.getPilgrimage().getId())
-                );
-
-        if (!hasVisited)
-            throw new RestApiException(ErrorCode.PILGRIMAGE_NOT_CERTIFIED);
-    }
-
-    private GuestBook saveGuestBook(
-            Member member,
-            GuestBookRequestDto.ModifyGuestBookDto data,
-            Pilgrimage pilgrimage
-    ) {
-        GuestBook guestBook = GuestBook.builder()
-                .member(member)
-                .pilgrimage(pilgrimage)
-                .title(data.getTitle())
-                .content(data.getContent())
-                .likeCount(0L)
-                .view(0L)
-                .build();
-        return guestBookRepository.save(guestBook);
     }
 }

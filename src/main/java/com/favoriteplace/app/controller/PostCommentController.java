@@ -1,8 +1,9 @@
 package com.favoriteplace.app.controller;
 
 import com.favoriteplace.app.domain.Member;
-import com.favoriteplace.app.dto.community.CommentRequestDto;
-import com.favoriteplace.app.dto.community.CommentResponseDto;
+import com.favoriteplace.app.dto.community.comment.CommentCreateRequestDto;
+import com.favoriteplace.app.dto.community.comment.CommentModifyRequestDto;
+import com.favoriteplace.app.dto.community.comment.CommentRootResponseDto;
 import com.favoriteplace.app.service.community.CommentCommandService;
 import com.favoriteplace.app.service.community.CommentQueryService;
 import com.favoriteplace.global.util.SecurityUtil;
@@ -48,7 +49,7 @@ public class PostCommentController {
     }
 
     @GetMapping("/{post_id}/comments")
-    public ResponseEntity<CommentResponseDto.CommentDto> getPostComments(
+    public ResponseEntity<CommentRootResponseDto> getPostComments(
             @PathVariable("post_id") Long postId,
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false, defaultValue = "5") int size,
@@ -61,7 +62,7 @@ public class PostCommentController {
     @PostMapping("/{post_id}/comments")
     public ResponseEntity<CommentSuccessResponseDto> createPostComment(
             @PathVariable("post_id") Long postId,
-            @RequestBody CommentRequestDto.CreateComment dto
+            @RequestBody CommentCreateRequestDto dto
     ) {
         Member member = securityUtil.getUser();
         Long commentId = commentCommandService.createPostComment(member, postId, dto);
@@ -86,10 +87,10 @@ public class PostCommentController {
     @PutMapping("/comments/{comment_id}")
     public ResponseEntity<Void> modifyPostComment(
             @PathVariable("comment_id") long commentId,
-            @RequestBody CommentRequestDto.ModifyComment dto
+            @RequestBody CommentModifyRequestDto dto
     ) {
         Member member = securityUtil.getUser();
-        commentCommandService.modifyComment(member, commentId, dto.getContent());
+        commentCommandService.modifyComment(member, commentId, dto.content());
         return new ResponseEntity<>(
                 HttpStatus.NO_CONTENT
         );
@@ -108,6 +109,4 @@ public class PostCommentController {
                 HttpStatus.NO_CONTENT
         );
     }
-
-
 }
