@@ -14,7 +14,6 @@ import com.favoriteplace.app.domain.travel.Rally;
 import com.favoriteplace.app.domain.travel.VisitedPilgrimage;
 import com.favoriteplace.app.dto.CommonResponseDto;
 import com.favoriteplace.app.dto.travel.PilgrimageCertifyRequestDto;
-import com.favoriteplace.app.dto.travel.PilgrimageResponseDto;
 import com.favoriteplace.app.dto.travel.PilgrimageSocketDto;
 import com.favoriteplace.app.repository.AcquiredItemRepository;
 import com.favoriteplace.app.repository.CompleteRallyRepository;
@@ -225,16 +224,22 @@ public class PilgrimageCommandService {
         // 사용자가 이번 인증하기에 이미 방명록을 작성했는지 확인 (모든 상호작용 완료했는지)
         boolean hasWrittenGuestbook = checkIfGuestbookWritten(member, pilgrimage);
 
-        // 24시간 내 인증 기록이 있는가?
+        // 24시간 내 인증 기록이 없는는가?
         if (!certifiedInLast) {
             boolean isCertificationExpired = redisService.isCertificationExpired(member, pilgrimage);
             newState.setCertifyButtonEnabled((!isCertificationExpired) ? true : false);
         }
-        // 이번 인증 기록에 대한 방명록이 있는가?
+        // 24시간 내 인증 기록이 있고
+        // 이번 인증 기록에 대한 방명록이 없는가?
         else if (certifiedInLast && !hasWrittenGuestbook) {
             boolean hasMultiWrittenGuestbook = checkIfMultiGuestbookWritten(member, pilgrimage);
-            newState.setGuestbookButtonEnabled(hasMultiWrittenGuestbook ? false : true);
-            newState.setMultiGuestbookButtonEnabled(hasMultiWrittenGuestbook ? true : false);
+            if (hasMultiWrittenGuestbook) {
+                newState.setGuestbookButtonEnabled(false);
+                newState.setMultiGuestbookButtonEnabled(true);
+            } else {
+                newState.setGuestbookButtonEnabled(true);
+                newState.setMultiGuestbookButtonEnabled(false);
+            }
         }
         synchronized (this) {
             lastButtonStateCache.get(member.getId()).put(pilgrimageId, newState);
