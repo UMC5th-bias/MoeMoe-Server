@@ -1,22 +1,47 @@
 package com.favoriteplace.global.security.filter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.favoriteplace.global.exception.ErrorCode;
+import com.favoriteplace.global.exception.ErrorResponse;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
+import java.io.PrintWriter;
+
+import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
-/**
- * 유효한 자격증명을 제공하지 않고 접근하려 할때 401 Unauthorized 에러를 리턴하는 class
- */
+
 @Component
+@RequiredArgsConstructor
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
+
+    private final ObjectMapper objectMapper;
+
     @Override
-    public void commence(HttpServletRequest request,
-        HttpServletResponse response,
-        AuthenticationException authException) throws IOException {
-        // 유효한 자격증명을 제공하지 않고 접근하려 할때 401
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+    public void commence(
+            HttpServletRequest request, HttpServletResponse response,
+            AuthenticationException authException
+    ) throws IOException {
+        setResponse(response);
     }
+
+
+    private void setResponse(HttpServletResponse response) throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json;charset=UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter()
+                .write(objectMapper.writeValueAsString(
+                        ErrorResponse.of(ErrorCode.JWT_UNAUTHORIZED_EXCEPTION.getHttpStatus(),
+                                ErrorCode.JWT_UNAUTHORIZED_EXCEPTION.getCode(),
+                                ErrorCode.JWT_UNAUTHORIZED_EXCEPTION.getMessage())));
+    }
+
 }

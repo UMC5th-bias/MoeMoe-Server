@@ -1,20 +1,22 @@
 package com.favoriteplace.global.security.provider;
 
 import com.favoriteplace.app.dto.member.MemberDto.TokenInfo;
-import com.favoriteplace.global.security.CustomUserDetails;
+import com.favoriteplace.global.exception.ErrorCode;
+import com.favoriteplace.global.exception.RestApiException;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
+
 import java.util.Date;
-import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -38,31 +40,31 @@ public class JwtTokenProvider {
 
         // Access Token 생성
         String accessToken = Jwts.builder()
-            .setClaims(claims)
-            .setIssuedAt(now)
-            .setExpiration(new Date(now.getTime() + accessExpirePeriod))
-            .signWith(SignatureAlgorithm.HS256, key)
-            .compact();
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + accessExpirePeriod))
+                .signWith(SignatureAlgorithm.HS256, key)
+                .compact();
 
         // Refresh Token 생성
         String refreshToken = createRefreshToken(userEmail);
         return TokenInfo.builder()
-            .grantType("Bearer")
-            .accessToken(accessToken)
-            .refreshToken(refreshToken)
-            .build();
+                .grantType("Bearer")
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 
-    public String createRefreshToken(String userEmail){
+    public String createRefreshToken(String userEmail) {
         Claims claims = Jwts.claims().setSubject(userEmail);
         Date now = new Date();
 
         String refreshToken = Jwts.builder()
-            .setClaims(claims)
-            .setIssuedAt(now)
-            .setExpiration(new Date(now.getTime() + refreshExpirePeriod))
-            .signWith(SignatureAlgorithm.HS256, key)
-            .compact();
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + refreshExpirePeriod))
+                .signWith(SignatureAlgorithm.HS256, key)
+                .compact();
 
         return refreshToken;
     }
@@ -70,9 +72,9 @@ public class JwtTokenProvider {
     // JWT 토큰을 복호화하여 토큰에 들어있는 정보를 꺼내는 메서드
     public Authentication getAuthentication(String accessToken) {
         String userPrincipal = Jwts.parser().
-            setSigningKey(key)
-            .parseClaimsJws(accessToken)
-            .getBody().getSubject();
+                setSigningKey(key)
+                .parseClaimsJws(accessToken)
+                .getBody().getSubject();
         UserDetails userDetails = userDetailsService.loadUserByUsername(userPrincipal);
 
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
@@ -80,28 +82,26 @@ public class JwtTokenProvider {
 
     public Long getExpiration(String accessToken) {
         Date expiration = Jwts.parserBuilder().setSigningKey(key)
-            .build().parseClaimsJws(accessToken).getBody().getExpiration();
+                .build().parseClaimsJws(accessToken).getBody().getExpiration();
 
         long now = new Date().getTime();
 
         return (expiration.getTime() - now);
     }
 
-    // 토큰 정보를 검증하는 메서드
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
-        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            log.info("Invalid JWT Token", e);
+        } catch (SignatureException | MalformedJwtException e) {
+            throw new RestApiException(ErrorCode.JWT_INVALID_TOKEN);
         } catch (ExpiredJwtException e) {
-            log.info("Expired JWT Token", e);
+            throw new RestApiException(ErrorCode.JWT_EXPIRED_TOKEN);
         } catch (UnsupportedJwtException e) {
-            log.info("Unsupported JWT Token", e);
+            throw new RestApiException(ErrorCode.JWT_UNSUPPORTED_TOKEN);
         } catch (IllegalArgumentException e) {
-            log.info("JWT claims string is empty.", e);
+            throw new RestApiException(ErrorCode.JWT_EMPTY_CLAIMS);
         }
-        return false;
     }
 
     private Claims parseClaims(String accessToken) {

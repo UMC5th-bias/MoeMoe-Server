@@ -1,10 +1,9 @@
 package com.favoriteplace.global.security.filter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.favoriteplace.global.exception.ErrorCode;
-import com.favoriteplace.global.exception.ErrorResponse;
 import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.security.provider.JwtTokenProvider;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,6 +16,7 @@ import java.util.regex.Pattern;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,37 +31,37 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate redisTemplate;
     private final List<ExcludePath> excludePaths = Arrays.asList(
-        //인증이 필수인 경우 추가
-        new ExcludePath("/auth/logout", HttpMethod.POST),
-        new ExcludePath("/pilgrimage/**", HttpMethod.POST),
-        new ExcludePath("/pilgrimage/**", HttpMethod.DELETE),
-        new ExcludePath("/posts/free/my-posts", HttpMethod.GET),
-        new ExcludePath("/posts/free/my-comments", HttpMethod.GET),
-        new ExcludePath("/posts/free", HttpMethod.POST),
-        new ExcludePath("/posts/free/**", HttpMethod.DELETE),
-        new ExcludePath("/posts/free/**", HttpMethod.POST),
-        new ExcludePath("/posts/free/**", HttpMethod.PUT),
-        new ExcludePath("/posts/free/**", HttpMethod.PATCH),
-        new ExcludePath("/posts/guestbooks/my-comments", HttpMethod.GET),
-        new ExcludePath("/posts/guestbooks/my-posts", HttpMethod.GET),
-        new ExcludePath("/my", HttpMethod.GET),
-        new ExcludePath("/my/**", HttpMethod.GET),
-        new ExcludePath("/my/**", HttpMethod.PUT),
-        new ExcludePath("/my/**", HttpMethod.PATCH),
-        new ExcludePath("/posts/guestbooks/**", HttpMethod.PATCH),
-        new ExcludePath("/posts/guestbooks/**", HttpMethod.DELETE),
-        new ExcludePath("/posts/guestbooks/**", HttpMethod.POST),
-        new ExcludePath("/my/blocks/**", HttpMethod.POST),
-        new ExcludePath("/posts/free/comments/**", HttpMethod.PUT),
-        new ExcludePath("/posts/free/comments/**", HttpMethod.DELETE),
-        new ExcludePath("/posts/guestbooks/comments/**", HttpMethod.PUT),
-        new ExcludePath("/posts/guestbooks/comments/**", HttpMethod.DELETE),
-        new ExcludePath("/shop/purchase/**", HttpMethod.POST),
-        new ExcludePath("/notifications", HttpMethod.PATCH),
-        new ExcludePath("/notifications", HttpMethod.GET),
-        new ExcludePath("/notifications/**", HttpMethod.PATCH),
-        new ExcludePath("/notifications/**", HttpMethod.DELETE)
-        // Add more paths and methods as needed
+            //인증이 필수인 경우 추가
+            new ExcludePath("/auth/logout", HttpMethod.POST),
+            new ExcludePath("/pilgrimage/**", HttpMethod.POST),
+            new ExcludePath("/pilgrimage/**", HttpMethod.DELETE),
+            new ExcludePath("/posts/free/my-posts", HttpMethod.GET),
+            new ExcludePath("/posts/free/my-comments", HttpMethod.GET),
+            new ExcludePath("/posts/free", HttpMethod.POST),
+            new ExcludePath("/posts/free/**", HttpMethod.DELETE),
+            new ExcludePath("/posts/free/**", HttpMethod.POST),
+            new ExcludePath("/posts/free/**", HttpMethod.PUT),
+            new ExcludePath("/posts/free/**", HttpMethod.PATCH),
+            new ExcludePath("/posts/guestbooks/my-comments", HttpMethod.GET),
+            new ExcludePath("/posts/guestbooks/my-posts", HttpMethod.GET),
+            new ExcludePath("/my", HttpMethod.GET),
+            new ExcludePath("/my/**", HttpMethod.GET),
+            new ExcludePath("/my/**", HttpMethod.PUT),
+            new ExcludePath("/my/**", HttpMethod.PATCH),
+            new ExcludePath("/posts/guestbooks/**", HttpMethod.PATCH),
+            new ExcludePath("/posts/guestbooks/**", HttpMethod.DELETE),
+            new ExcludePath("/posts/guestbooks/**", HttpMethod.POST),
+            new ExcludePath("/my/blocks/**", HttpMethod.POST),
+            new ExcludePath("/posts/free/comments/**", HttpMethod.PUT),
+            new ExcludePath("/posts/free/comments/**", HttpMethod.DELETE),
+            new ExcludePath("/posts/guestbooks/comments/**", HttpMethod.PUT),
+            new ExcludePath("/posts/guestbooks/comments/**", HttpMethod.DELETE),
+            new ExcludePath("/shop/purchase/**", HttpMethod.POST),
+            new ExcludePath("/notifications", HttpMethod.PATCH),
+            new ExcludePath("/notifications", HttpMethod.GET),
+            new ExcludePath("/notifications/**", HttpMethod.PATCH),
+            new ExcludePath("/notifications/**", HttpMethod.DELETE)
+            // Add more paths and methods as needed
     );
 
     @Override
@@ -70,7 +70,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String method = request.getMethod();
 
         return !excludePaths.stream()
-            .anyMatch(excludePath -> excludePath.matches(requestURI, method));
+                .anyMatch(excludePath -> excludePath.matches(requestURI, method));
     }
 
     @Override
@@ -92,17 +92,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             /*1. Redis에 해당 accessToken logout 여부 확인 */
             String isLogout = (String) redisTemplate.opsForValue().get(token);
 
-            if(!ObjectUtils.isEmpty(isLogout)) {
-                throw new RestApiException(ErrorCode.TOKEN_NOT_VALID);
+            if (!ObjectUtils.isEmpty(isLogout)) {
+                throw new RestApiException(ErrorCode.JWT_UNAUTHORIZED_EXCEPTION);
             } else {
                 /*2. 토큰이 유효할 경우 토큰에서 Authentication 객체를 가지고 와서 SecurityContext 에 저장 */
                 Authentication authentication = jwtTokenProvider.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 log.info("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestURI);
             }
-        } else {
-            log.info("유효한 JWT 토큰이 없습니다, uri: {}", requestURI);
         }
+
         chain.doFilter(request, response);
     }
 
@@ -139,17 +138,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return this.name().equalsIgnoreCase(requestMethod);
         }
     }
-
-    public void jwtExceptionHandler(HttpServletResponse response, ErrorCode errorCode) {
-        response.setStatus(errorCode.getCode());
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        try {
-            String json = new ObjectMapper().writeValueAsString(ErrorResponse.of(errorCode.getHttpStatus(), errorCode.getCode(), errorCode.getMessage()));
-            response.getOutputStream().write(json.getBytes());
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-    }
-
 }

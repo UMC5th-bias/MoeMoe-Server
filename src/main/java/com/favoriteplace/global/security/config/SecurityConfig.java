@@ -28,12 +28,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate redisTemplate;
     private final ExceptionHandlerFilter exceptionHandlerFilter;
-
-    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final AuthenticationManagerBuilder authManagerBuilder;
     private final CustomAuthenticationSuccessHandler successHandler;
     private final CustomAuthenticationFailHandler failureHandler;
@@ -48,13 +46,15 @@ public class SecurityConfig {
         loginFilter.setAuthenticationSuccessHandler(successHandler);
 
         http.httpBasic(HttpBasicConfigurer::disable)
-            .csrf(CsrfConfigurer::disable)
-            .cors(Customizer.withDefaults())
-            .sessionManagement(configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .addFilter(loginFilter)
-            .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class)
-            .addFilterBefore(exceptionHandlerFilter, JwtAuthenticationFilter.class)
-            ;
+                .csrf(CsrfConfigurer::disable)
+                .cors(Customizer.withDefaults())
+                .sessionManagement(
+                        configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .addFilter(loginFilter)
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(exceptionHandlerFilter, JwtAuthenticationFilter.class)
+        ;
 
         return http.build();
     }

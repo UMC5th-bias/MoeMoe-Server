@@ -2,17 +2,16 @@ package com.favoriteplace.global.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.http.protocol.HTTP;
 import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
 public enum ErrorCode {
-    /**
-     * 에러코드 자유롭게 추가
-     */
-    NOT_FOUND(HttpStatus.NOT_FOUND,404, "요청한 리소스를 찾을 수 없습니다."),
+
+    NOT_FOUND(HttpStatus.NOT_FOUND, 404, "요청한 리소스를 찾을 수 없습니다."),
     INVALID_ARGUMENT_ERROR(HttpStatus.BAD_REQUEST, 400, "올바르지 않은 파라미터입니다."),
-    INVALID_FORMAT_ERROR(HttpStatus.BAD_REQUEST,400, "올바르지 않은 포맷입니다."),
+    INVALID_FORMAT_ERROR(HttpStatus.BAD_REQUEST, 400, "올바르지 않은 포맷입니다."),
     INVALID_TYPE_ERROR(HttpStatus.BAD_REQUEST, 400, "올바르지 않은 타입입니다."),
     ILLEGAL_ARGUMENT_ERROR(HttpStatus.BAD_REQUEST, 400, "필수 파라미터가 없습니다"),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 500, "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요."),
@@ -72,12 +71,19 @@ public enum ErrorCode {
     IMAGE_SIZE_TOO_BIG(HttpStatus.PAYLOAD_TOO_LARGE, 11004, "각각의 이미지 파일의 사이즈가 4MB를 넘어갈 수 없습니다."),
 
     //알림 (12000번대)
-    TOKEN_ALARM_NOT_SEND(HttpStatus.BAD_REQUEST, 120001, "[token] push 알림이 전송되지 않았습니다."),
-    TOPIC_ALARM_NOT_SEND(HttpStatus.BAD_REQUEST, 120002, "[topic] push 알림이 전송되지 않았습니다."),
+    TOKEN_ALARM_NOT_SEND(HttpStatus.BAD_REQUEST, 12001, "[token] push 알림이 전송되지 않았습니다."),
+    TOPIC_ALARM_NOT_SEND(HttpStatus.BAD_REQUEST, 12002, "[topic] push 알림이 전송되지 않았습니다."),
     TOPIC_SUBSCRIBE_FAIL(HttpStatus.BAD_REQUEST, 12003, "[topic] 구독에 실패했습니다."),
     TOPIC_UNSUBSCRIBE_FAIL(HttpStatus.BAD_REQUEST, 12004, "[topic] 구독 취소에 실패했습니다."),
     NOTIFICATION_NOT_EXIST(HttpStatus.NOT_FOUND, 12005, "해당 알림이 존재하지 않습니다."),
-    NOTIFICATION_NOT_BELONG(HttpStatus.CONFLICT, 12006, "해당 사용자의 알림이 아닙니다.")
+    NOTIFICATION_NOT_BELONG(HttpStatus.CONFLICT, 12006, "해당 사용자의 알림이 아닙니다."),
+
+    //Token (13000번대)
+    JWT_UNAUTHORIZED_EXCEPTION(HttpStatus.UNAUTHORIZED, 13001, "사용자 로그인 검증 실패"),
+    JWT_INVALID_TOKEN(HttpStatus.UNAUTHORIZED, 13002, "유효하지 않은 JWT 토큰입니다."),
+    JWT_EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, 13003, "만료된 JWT 토큰입니다."),
+    JWT_UNSUPPORTED_TOKEN(HttpStatus.UNAUTHORIZED, 13004, "지원되지 않는 JWT 토큰입니다."),
+    JWT_EMPTY_CLAIMS(HttpStatus.UNAUTHORIZED, 13005, "JWT 클레임 문자열이 비어 있습니다.")
     ;
 
     private final HttpStatus httpStatus;
