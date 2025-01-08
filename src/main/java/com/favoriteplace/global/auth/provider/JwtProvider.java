@@ -33,19 +33,24 @@ public class JwtProvider {
     private String key;
 
     private final UserDetailsService userDetailsService;
+    private static final String USER_ID = "userId";
     private static final Long accessExpirePeriod = 24 * 60 * 60 * 1000L * 30;
     private static final Long refreshExpirePeriod = 24 * 60 * 60 * 1000L * 40;
 
-    public TokenInfoDto generateToken(String userEmail) {
-        String accessToken = issueToken(userEmail, accessExpirePeriod);
-        String refreshToken = issueToken(userEmail, refreshExpirePeriod);
+    public TokenInfoDto generateToken(Long userId) {
+        String accessToken = issueToken(userId, accessExpirePeriod);
+        String refreshToken = issueToken(userId, refreshExpirePeriod);
 
         return TokenInfoDto.of(accessToken, refreshToken);
     }
 
-    public String issueToken(String userEmail, Long expirePeriod) {
-        Claims claims = Jwts.claims().setSubject(userEmail);
+    public String issueToken(Long userId, Long expirePeriod) {
         Date now = new Date();
+        final Claims claims = Jwts.claims()
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + expirePeriod));  // 만료 시간 설정
+
+        claims.put(USER_ID, userId);
 
         String token = Jwts.builder()
                 .setClaims(claims)

@@ -116,7 +116,7 @@ public class MemberService {
         Member member = memberSignUpReqDto.toEntity(password, profileImageUrl, titleItem);
         memberRepository.save(member);
 
-        TokenInfoDto tokenInfo = jwtTokenProvider.generateToken(member.getEmail());
+        TokenInfoDto tokenInfo = jwtTokenProvider.generateToken(member.getId());
         member.updateRefreshToken(tokenInfo.refreshToken());
 
         return MemberDto.MemberSignUpResDto.from(member, tokenInfo);
