@@ -5,7 +5,7 @@ import com.favoriteplace.app.repository.MemberRepository;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.auth.CustomUserDetails;
-import com.favoriteplace.global.auth.provider.JwtTokenProvider;
+import com.favoriteplace.global.auth.provider.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
@@ -27,7 +27,7 @@ import java.util.List;
 @Order(Ordered.HIGHEST_PRECEDENCE + 99)
 public class JwtChannelInterceptor implements ChannelInterceptor {
     private final MemberRepository userUtilityService;
-    private final JwtTokenProvider jwtProvider;
+    private final JwtProvider jwtProvider;
 
     /**
      * WebSocket 연결 전 JWT 검사하고

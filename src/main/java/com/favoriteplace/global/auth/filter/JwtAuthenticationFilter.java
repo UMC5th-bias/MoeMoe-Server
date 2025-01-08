@@ -2,7 +2,7 @@ package com.favoriteplace.global.auth.filter;
 
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
-import com.favoriteplace.global.auth.provider.JwtTokenProvider;
+import com.favoriteplace.global.auth.provider.JwtProvider;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -28,7 +28,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtProvider jwtTokenProvider;
     private final RedisTemplate redisTemplate;
     private final List<ExcludePath> excludePaths = Arrays.asList(
             //인증이 필수인 경우 추가

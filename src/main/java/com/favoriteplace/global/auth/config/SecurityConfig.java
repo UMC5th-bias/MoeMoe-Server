@@ -5,7 +5,7 @@ import com.favoriteplace.global.auth.filter.JwtAuthenticationFilter;
 import com.favoriteplace.global.auth.filter.LoginFilter;
 import com.favoriteplace.global.auth.handler.CustomAuthenticationFailHandler;
 import com.favoriteplace.global.auth.handler.CustomAuthenticationSuccessHandler;
-import com.favoriteplace.global.auth.provider.JwtTokenProvider;
+import com.favoriteplace.global.auth.provider.JwtProvider;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,7 +31,7 @@ public class SecurityConfig {
 
     private static final String LOGIN_URL = "/auth/login";
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtProvider jwtTokenProvider;
     private final RedisTemplate redisTemplate;
     private final ExceptionHandlerFilter exceptionHandlerFilter;
     private final AuthenticationManagerBuilder authManagerBuilder;

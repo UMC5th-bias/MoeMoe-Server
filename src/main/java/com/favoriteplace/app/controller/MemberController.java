@@ -6,10 +6,10 @@ import com.favoriteplace.app.dto.member.MemberDto.EmailCheckReqDto;
 import com.favoriteplace.app.dto.member.MemberDto.EmailDuplicateResDto;
 import com.favoriteplace.app.dto.member.MemberDto.EmailSendResDto;
 import com.favoriteplace.app.dto.member.MemberDto.MemberSignUpReqDto;
-import com.favoriteplace.app.dto.member.MemberDto.TokenInfo;
+import com.favoriteplace.app.dto.member.TokenInfoDto;
 import com.favoriteplace.app.service.MailSendService;
 import com.favoriteplace.app.service.MemberService;
-import com.favoriteplace.global.auth.provider.JwtTokenProvider;
+import com.favoriteplace.global.auth.provider.JwtProvider;
 import com.favoriteplace.global.util.SecurityUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,11 +36,11 @@ import org.springframework.web.multipart.MultipartFile;
 public class MemberController {
     private final MemberService memberService;
     private final MailSendService mailSendService;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtProvider jwtTokenProvider;
     private final SecurityUtil securityUtil;
 
     @PostMapping("/login/kakao")
-    public ResponseEntity<TokenInfo> kakaoLogin(
+    public ResponseEntity<TokenInfoDto> kakaoLogin(
             @RequestHeader("Authorization") final String token
     ) {
         return ResponseEntity.ok(memberService.kakaoLogin(token));

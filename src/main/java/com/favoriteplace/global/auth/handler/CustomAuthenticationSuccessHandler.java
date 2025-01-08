@@ -4,11 +4,11 @@ import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.favoriteplace.app.domain.Member;
-import com.favoriteplace.app.dto.member.MemberDto.TokenInfo;
+import com.favoriteplace.app.dto.member.TokenInfoDto;
 import com.favoriteplace.app.repository.MemberRepository;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
-import com.favoriteplace.global.auth.provider.JwtTokenProvider;
+import com.favoriteplace.global.auth.provider.JwtProvider;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
 
     /**
@@ -42,10 +42,10 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
         //인증 정보를 기반으로 JWT 토큰 생성
         response.setContentType(APPLICATION_JSON_VALUE);
-        TokenInfo tokenInfo = jwtTokenProvider.generateToken(member.getEmail());
+        TokenInfoDto tokenInfo = jwtTokenProvider.generateToken(member.getEmail());
 
         //refreshToken 업데이트
-        member.updateRefreshToken(tokenInfo.getRefreshToken());
+        member.updateRefreshToken(tokenInfo.refreshToken());
 
         new ObjectMapper().writeValue(response.getWriter(), tokenInfo);
     }

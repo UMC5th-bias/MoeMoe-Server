@@ -1,6 +1,6 @@
 package com.favoriteplace.global.auth.provider;
 
-import com.favoriteplace.app.dto.member.MemberDto.TokenInfo;
+import com.favoriteplace.app.dto.member.TokenInfoDto;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 
@@ -27,23 +27,20 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class JwtTokenProvider {
+public class JwtProvider {
 
     @Value("${jwt.secret}")
     private String key;
-    private final Long accessExpirePeriod = 24 * 60 * 60 * 1000L * 30;
-    private final Long refreshExpirePeriod = 24 * 60 * 60 * 1000L * 40;
-    private final UserDetailsService userDetailsService;
 
-    public TokenInfo generateToken(String userEmail) {
+    private final UserDetailsService userDetailsService;
+    private static final Long accessExpirePeriod = 24 * 60 * 60 * 1000L * 30;
+    private static final Long refreshExpirePeriod = 24 * 60 * 60 * 1000L * 40;
+
+    public TokenInfoDto generateToken(String userEmail) {
         String accessToken = issueToken(userEmail, accessExpirePeriod);
         String refreshToken = issueToken(userEmail, refreshExpirePeriod);
 
-        return TokenInfo.builder()
-                .grantType("Bearer")
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
+        return TokenInfoDto.of(accessToken, refreshToken);
     }
 
     public String issueToken(String userEmail, Long expirePeriod) {
@@ -60,7 +57,6 @@ public class JwtTokenProvider {
         return token;
     }
 
-    // JWT 토큰을 복호화하여 토큰에 들어있는 정보를 꺼내는 메서드
     public Authentication getAuthentication(String accessToken) {
         String userPrincipal = Jwts.parser().
                 setSigningKey(key)
@@ -95,11 +91,4 @@ public class JwtTokenProvider {
         }
     }
 
-    private Claims parseClaims(String accessToken) {
-        try {
-            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
-        } catch (ExpiredJwtException e) {
-            return e.getClaims();
-        }
-    }
 }

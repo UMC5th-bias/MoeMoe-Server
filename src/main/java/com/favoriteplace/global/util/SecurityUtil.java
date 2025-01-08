@@ -2,7 +2,7 @@ package com.favoriteplace.global.util;
 
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.repository.MemberRepository;
-import com.favoriteplace.global.auth.provider.JwtTokenProvider;
+import com.favoriteplace.global.auth.provider.JwtProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -17,7 +17,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 public class SecurityUtil {
 
     private final MemberRepository memberRepository;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtProvider jwtTokenProvider;
     public static final String TOKEN_HEADER_PREFIX = "Bearer ";
 
     public Member getUser(){
