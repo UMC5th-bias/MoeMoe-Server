@@ -1,4 +1,4 @@
-package com.favoriteplace.global.security.provider;
+package com.favoriteplace.global.auth.provider;
 
 import com.favoriteplace.app.dto.member.MemberDto.TokenInfo;
 import com.favoriteplace.global.exception.ErrorCode;
@@ -28,6 +28,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class JwtTokenProvider {
+
     @Value("${jwt.secret}")
     private String key;
     private final Long accessExpirePeriod = 24 * 60 * 60 * 1000L * 30;
@@ -35,17 +36,9 @@ public class JwtTokenProvider {
     private final UserDetailsService userDetailsService;
 
     public TokenInfo generateToken(String userEmail) {
-        Claims claims = Jwts.claims().setSubject(userEmail);
-        Date now = new Date();
+        String accessToken = issueToken(userEmail, accessExpirePeriod);
+        String refreshToken = issueToken(userEmail, refreshExpirePeriod);
 
-        String accessToken = Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + accessExpirePeriod))
-                .signWith(SignatureAlgorithm.HS256, key)
-                .compact();
-
-        String refreshToken = createRefreshToken(userEmail);
         return TokenInfo.builder()
                 .grantType("Bearer")
                 .accessToken(accessToken)
@@ -53,18 +46,18 @@ public class JwtTokenProvider {
                 .build();
     }
 
-    public String createRefreshToken(String userEmail) {
+    public String issueToken(String userEmail, Long expirePeriod) {
         Claims claims = Jwts.claims().setSubject(userEmail);
         Date now = new Date();
 
-        String refreshToken = Jwts.builder()
+        String token = Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + refreshExpirePeriod))
+                .setExpiration(new Date(now.getTime() + expirePeriod))
                 .signWith(SignatureAlgorithm.HS256, key)
                 .compact();
 
-        return refreshToken;
+        return token;
     }
 
     // JWT 토큰을 복호화하여 토큰에 들어있는 정보를 꺼내는 메서드

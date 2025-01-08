@@ -1,8 +1,8 @@
-package com.favoriteplace.global.security.filter;
+package com.favoriteplace.global.auth.filter;
 
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
-import com.favoriteplace.global.security.provider.JwtTokenProvider;
+import com.favoriteplace.global.auth.provider.JwtTokenProvider;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

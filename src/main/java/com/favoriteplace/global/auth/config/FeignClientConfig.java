@@ -1,4 +1,4 @@
-package com.favoriteplace.global.security.config;
+package com.favoriteplace.global.auth.config;
 
 
 import com.favoriteplace.global.exception.RestApiException;

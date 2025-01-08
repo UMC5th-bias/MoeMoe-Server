@@ -1,11 +1,11 @@
-package com.favoriteplace.global.security.config;
+package com.favoriteplace.global.auth.config;
 
-import com.favoriteplace.global.security.filter.ExceptionHandlerFilter;
-import com.favoriteplace.global.security.filter.JwtAuthenticationFilter;
-import com.favoriteplace.global.security.filter.LoginFilter;
-import com.favoriteplace.global.security.handler.CustomAuthenticationFailHandler;
-import com.favoriteplace.global.security.handler.CustomAuthenticationSuccessHandler;
-import com.favoriteplace.global.security.provider.JwtTokenProvider;
+import com.favoriteplace.global.auth.filter.ExceptionHandlerFilter;
+import com.favoriteplace.global.auth.filter.JwtAuthenticationFilter;
+import com.favoriteplace.global.auth.filter.LoginFilter;
+import com.favoriteplace.global.auth.handler.CustomAuthenticationFailHandler;
+import com.favoriteplace.global.auth.handler.CustomAuthenticationSuccessHandler;
+import com.favoriteplace.global.auth.provider.JwtTokenProvider;
 
 import lombok.RequiredArgsConstructor;
 

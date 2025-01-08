@@ -18,8 +18,8 @@ import com.favoriteplace.app.repository.ItemRepository;
 import com.favoriteplace.app.repository.MemberRepository;
 import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.s3Image.AmazonS3ImageManager;
-import com.favoriteplace.global.security.kakao.KakaoClient;
-import com.favoriteplace.global.security.provider.JwtTokenProvider;
+import com.favoriteplace.global.auth.kakao.KakaoClient;
+import com.favoriteplace.global.auth.provider.JwtTokenProvider;
 import com.favoriteplace.global.util.SecurityUtil;
 
 import java.io.IOException;

@@ -9,7 +9,7 @@ import com.favoriteplace.app.dto.member.MemberDto.MemberSignUpReqDto;
 import com.favoriteplace.app.dto.member.MemberDto.TokenInfo;
 import com.favoriteplace.app.service.MailSendService;
 import com.favoriteplace.app.service.MemberService;
-import com.favoriteplace.global.security.provider.JwtTokenProvider;
+import com.favoriteplace.global.auth.provider.JwtTokenProvider;
 import com.favoriteplace.global.util.SecurityUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
