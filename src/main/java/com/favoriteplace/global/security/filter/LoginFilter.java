@@ -15,7 +15,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
-        // 사용자가 제공한 인증 정보 추출
+        // 사용자가 제공한aj 인증 정보 추출
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 

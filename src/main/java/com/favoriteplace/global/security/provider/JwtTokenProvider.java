@@ -38,7 +38,6 @@ public class JwtTokenProvider {
         Claims claims = Jwts.claims().setSubject(userEmail);
         Date now = new Date();
 
-        // Access Token 생성
         String accessToken = Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
@@ -46,7 +45,6 @@ public class JwtTokenProvider {
                 .signWith(SignatureAlgorithm.HS256, key)
                 .compact();
 
-        // Refresh Token 생성
         String refreshToken = createRefreshToken(userEmail);
         return TokenInfo.builder()
                 .grantType("Bearer")

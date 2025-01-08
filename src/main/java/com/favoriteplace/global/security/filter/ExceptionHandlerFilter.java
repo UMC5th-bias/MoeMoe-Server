@@ -5,9 +5,6 @@ import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.ErrorResponse;
 import com.favoriteplace.global.exception.RestApiException;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,7 +14,6 @@ import java.io.IOException;
 
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -34,6 +30,7 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
         try {
             filterChain.doFilter(request, response);
         } catch (RestApiException e) {
+            log.error(e.getMessage());
             setErrorResponse(response, e.getErrorCode());
         } catch (Exception e) {
             setErrorResponse(response, ErrorCode.INTERNAL_SERVER_ERROR);

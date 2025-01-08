@@ -1,14 +1,14 @@
 package com.favoriteplace.global.security.config;
 
 import com.favoriteplace.global.security.filter.ExceptionHandlerFilter;
-import com.favoriteplace.global.security.filter.JwtAuthenticationEntryPoint;
 import com.favoriteplace.global.security.filter.JwtAuthenticationFilter;
 import com.favoriteplace.global.security.filter.LoginFilter;
 import com.favoriteplace.global.security.handler.CustomAuthenticationFailHandler;
 import com.favoriteplace.global.security.handler.CustomAuthenticationSuccessHandler;
-import com.favoriteplace.global.security.handler.JwtAccessDeniedHandler;
 import com.favoriteplace.global.security.provider.JwtTokenProvider;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -29,6 +29,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private static final String LOGIN_URL = "/auth/login";
+
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate redisTemplate;
     private final ExceptionHandlerFilter exceptionHandlerFilter;
@@ -40,7 +42,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         LoginFilter loginFilter = new LoginFilter(authManagerBuilder.getOrBuild());
-        loginFilter.setFilterProcessesUrl("/auth/login");
+        loginFilter.setFilterProcessesUrl(LOGIN_URL);
 
         loginFilter.setAuthenticationFailureHandler(failureHandler);
         loginFilter.setAuthenticationSuccessHandler(successHandler);
