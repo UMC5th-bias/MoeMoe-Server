@@ -1,7 +1,7 @@
-package com.favoriteplace.app.controller;
+package com.favoriteplace.app.item.controller;
 
-import com.favoriteplace.app.dto.item.ItemDto;
-import com.favoriteplace.app.service.ShopService;
+import com.favoriteplace.app.item.controller.dto.ItemDto;
+import com.favoriteplace.app.item.service.ShopService;
 import com.favoriteplace.global.util.SecurityUtil;
 
 import jakarta.servlet.http.HttpServletRequest;

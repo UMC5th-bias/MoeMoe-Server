@@ -1,7 +1,7 @@
 package com.favoriteplace.app.domain.travel;
 
 import com.favoriteplace.app.domain.Image;
-import com.favoriteplace.app.domain.item.Item;
+import com.favoriteplace.app.item.domain.Item;
 import com.favoriteplace.app.domain.common.BaseTimeEntity;
 
 import jakarta.persistence.Column;

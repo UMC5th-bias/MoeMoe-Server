@@ -1,6 +1,6 @@
 package com.favoriteplace.app.dto.community;
 
-import com.favoriteplace.app.dto.UserInfoResponseDto;
+import com.favoriteplace.app.member.controller.dto.UserInfoResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

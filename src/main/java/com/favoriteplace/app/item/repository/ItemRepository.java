@@ -1,8 +1,8 @@
-package com.favoriteplace.app.repository;
+package com.favoriteplace.app.item.repository;
 
 import com.favoriteplace.app.domain.enums.ItemType;
 import com.favoriteplace.app.domain.enums.SaleStatus;
-import com.favoriteplace.app.domain.item.Item;
+import com.favoriteplace.app.item.domain.Item;
 import jakarta.persistence.QueryHint;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,7 +12,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
-import org.springframework.security.core.parameters.P;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
 

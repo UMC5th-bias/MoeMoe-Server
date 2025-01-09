@@ -1,4 +1,4 @@
-package com.favoriteplace.app.domain.item;
+package com.favoriteplace.app.item.domain;
 
 import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.common.BaseTimeEntity;

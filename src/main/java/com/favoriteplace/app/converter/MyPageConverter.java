@@ -1,7 +1,7 @@
 package com.favoriteplace.app.converter;
 
 import com.favoriteplace.app.member.domain.Member;
-import com.favoriteplace.app.domain.item.Item;
+import com.favoriteplace.app.item.domain.Item;
 import com.favoriteplace.app.domain.travel.Rally;
 import com.favoriteplace.app.dto.MyPageDto;
 

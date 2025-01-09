@@ -1,6 +1,6 @@
 package com.favoriteplace.app.service.community;
 
-import com.favoriteplace.app.converter.PointHistoryConverter;
+import com.favoriteplace.app.item.converter.PointHistoryConverter;
 import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.HashTag;
@@ -14,7 +14,7 @@ import com.favoriteplace.app.repository.HashtagRepository;
 import com.favoriteplace.app.repository.ImageRepository;
 import com.favoriteplace.app.repository.LikedPostRepository;
 import com.favoriteplace.app.repository.PilgrimageRepository;
-import com.favoriteplace.app.repository.PointHistoryRepository;
+import com.favoriteplace.app.item.repository.PointHistoryRepository;
 import com.favoriteplace.app.repository.VisitedPilgrimageRepository;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;

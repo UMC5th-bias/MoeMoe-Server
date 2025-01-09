@@ -1,19 +1,13 @@
-package com.favoriteplace.app.domain.item;
-
-import com.favoriteplace.app.member.domain.Member;
-import com.favoriteplace.app.member.domain.enums.PointType;
+package com.favoriteplace.app.item.domain;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.time.LocalDateTime;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -23,28 +17,26 @@ import lombok.AllArgsConstructor;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
 
+import com.favoriteplace.app.member.domain.Member;
+import com.favoriteplace.app.domain.common.BaseTimeEntity;
+
 @Entity
 @Getter
 @Builder
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor(access = PRIVATE)
-public class PointHistory {
+public class AcquiredItem extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "point_history_id")
+    @Column(name = "acquired_item_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @Column(nullable = false)
-    private long point;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "item_id", nullable = false)
+    private Item item;
 
-    @Column(nullable = false)
-    private LocalDateTime dealtAt;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private PointType pointType;
 }

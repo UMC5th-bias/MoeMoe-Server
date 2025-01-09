@@ -4,7 +4,7 @@ import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.favoriteplace.app.member.domain.Member;
-import com.favoriteplace.app.dto.member.MemberDto.TokenInfo;
+import com.favoriteplace.app.member.controller.dto.MemberDto.TokenInfo;
 import com.favoriteplace.app.member.repository.MemberRepository;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;

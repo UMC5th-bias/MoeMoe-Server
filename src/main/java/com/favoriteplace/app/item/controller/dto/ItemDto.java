@@ -1,9 +1,9 @@
-package com.favoriteplace.app.dto.item;
+package com.favoriteplace.app.item.controller.dto;
 
 import com.favoriteplace.app.member.domain.Member;
-import com.favoriteplace.app.domain.item.Item;
-import com.favoriteplace.app.dto.member.MemberDto;
-import com.favoriteplace.app.dto.member.MemberDto.MemberInfo;
+import com.favoriteplace.app.item.domain.Item;
+import com.favoriteplace.app.member.controller.dto.MemberDto;
+import com.favoriteplace.app.member.controller.dto.MemberDto.MemberInfo;
 import com.favoriteplace.global.util.DateTimeFormatUtils;
 import java.util.List;
 import lombok.AllArgsConstructor;

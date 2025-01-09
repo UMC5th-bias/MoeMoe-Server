@@ -1,9 +1,9 @@
-package com.favoriteplace.app.repository;
+package com.favoriteplace.app.item.repository;
 
 import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.domain.enums.ItemType;
-import com.favoriteplace.app.domain.item.AcquiredItem;
-import com.favoriteplace.app.domain.item.Item;
+import com.favoriteplace.app.item.domain.AcquiredItem;
+import com.favoriteplace.app.item.domain.Item;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

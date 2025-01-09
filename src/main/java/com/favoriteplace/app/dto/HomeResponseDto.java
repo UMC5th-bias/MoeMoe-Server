@@ -1,6 +1,7 @@
 package com.favoriteplace.app.dto;
 
 import com.favoriteplace.app.domain.travel.Rally;
+import com.favoriteplace.app.member.controller.dto.UserInfoResponseDto;
 import lombok.*;
 
 import java.util.List;

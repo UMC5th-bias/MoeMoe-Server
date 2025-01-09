@@ -3,7 +3,7 @@ package com.favoriteplace.app.converter;
 import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.community.Comment;
 import com.favoriteplace.app.domain.community.Post;
-import com.favoriteplace.app.dto.UserInfoResponseDto;
+import com.favoriteplace.app.member.controller.dto.UserInfoResponseDto;
 import com.favoriteplace.app.dto.community.PostResponseDto;
 import com.favoriteplace.global.util.DateTimeFormatUtils;
 

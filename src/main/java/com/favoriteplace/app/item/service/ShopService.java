@@ -1,21 +1,21 @@
-package com.favoriteplace.app.service;
+package com.favoriteplace.app.item.service;
 
 import static com.favoriteplace.global.exception.ErrorCode.ITEM_NOT_EXISTS;
 
-import com.favoriteplace.app.converter.ShopConverter;
+import com.favoriteplace.app.item.converter.ShopConverter;
 import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.domain.enums.ItemCategory;
 import com.favoriteplace.app.domain.enums.ItemType;
 import com.favoriteplace.app.domain.enums.SaleStatus;
-import com.favoriteplace.app.domain.item.AcquiredItem;
-import com.favoriteplace.app.domain.item.Item;
-import com.favoriteplace.app.dto.item.ItemDto;
-import com.favoriteplace.app.dto.item.ItemDto.ItemDetailResDto;
-import com.favoriteplace.app.dto.item.ItemDto.ItemListDivideByCategory;
-import com.favoriteplace.app.dto.item.ItemDto.ItemListDivideBySaleStatus;
-import com.favoriteplace.app.dto.item.ItemDto.ItemPurchaseRes;
-import com.favoriteplace.app.repository.AcquiredItemRepository;
-import com.favoriteplace.app.repository.ItemRepository;
+import com.favoriteplace.app.item.domain.AcquiredItem;
+import com.favoriteplace.app.item.domain.Item;
+import com.favoriteplace.app.item.controller.dto.ItemDto;
+import com.favoriteplace.app.item.controller.dto.ItemDto.ItemDetailResDto;
+import com.favoriteplace.app.item.controller.dto.ItemDto.ItemListDivideByCategory;
+import com.favoriteplace.app.item.controller.dto.ItemDto.ItemListDivideBySaleStatus;
+import com.favoriteplace.app.item.controller.dto.ItemDto.ItemPurchaseRes;
+import com.favoriteplace.app.item.repository.AcquiredItemRepository;
+import com.favoriteplace.app.item.repository.ItemRepository;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.util.SecurityUtil;

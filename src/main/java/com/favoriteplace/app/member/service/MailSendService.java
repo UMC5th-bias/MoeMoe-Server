@@ -2,7 +2,7 @@ package com.favoriteplace.app.member.service;
 
 import static com.favoriteplace.global.exception.ErrorCode.NOT_VAILD_EMAIL_AUTHCODE;
 
-import com.favoriteplace.app.dto.member.MemberDto;
+import com.favoriteplace.app.member.controller.dto.MemberDto;
 import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.util.RedisUtil;
 

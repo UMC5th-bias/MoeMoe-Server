@@ -1,15 +1,15 @@
-package com.favoriteplace.app.converter;
+package com.favoriteplace.app.item.converter;
 
 import com.favoriteplace.app.member.domain.Member;
-import com.favoriteplace.app.domain.item.Item;
-import com.favoriteplace.app.dto.item.ItemDto;
-import com.favoriteplace.app.dto.item.ItemDto.ItemList;
-import com.favoriteplace.app.dto.item.ItemDto.ItemListDivideByCategory;
-import com.favoriteplace.app.dto.item.ItemDto.ItemListDivideBySaleStatus;
-import com.favoriteplace.app.dto.item.ItemDto.ItemListResDto;
-import com.favoriteplace.app.dto.item.ItemDto.NewItemListResDto;
-import com.favoriteplace.app.dto.member.MemberDto;
-import com.favoriteplace.app.dto.member.MemberDto.MemberInfo;
+import com.favoriteplace.app.item.domain.Item;
+import com.favoriteplace.app.item.controller.dto.ItemDto;
+import com.favoriteplace.app.item.controller.dto.ItemDto.ItemList;
+import com.favoriteplace.app.item.controller.dto.ItemDto.ItemListDivideByCategory;
+import com.favoriteplace.app.item.controller.dto.ItemDto.ItemListDivideBySaleStatus;
+import com.favoriteplace.app.item.controller.dto.ItemDto.ItemListResDto;
+import com.favoriteplace.app.item.controller.dto.ItemDto.NewItemListResDto;
+import com.favoriteplace.app.member.controller.dto.MemberDto;
+import com.favoriteplace.app.member.controller.dto.MemberDto.MemberInfo;
 
 import java.util.List;
 import java.util.stream.Collectors;

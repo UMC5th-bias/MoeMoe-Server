@@ -1,4 +1,4 @@
-package com.favoriteplace.app.dto;
+package com.favoriteplace.app.member.controller.dto;
 
 import com.favoriteplace.app.member.domain.Member;
 import lombok.Builder;
