@@ -55,20 +55,21 @@ public class PilgrimageApiController {
     // 성지순례 애니메이션 카테고리
     // 회원 + 비회원
     @GetMapping("/anime")
-    public List<RallyResponseDto.PilgrimageCategoryAnimeDto> getCategoryAnime(HttpServletRequest request){
+    public List<RallyResponseDto.PilgrimageCategoryAnimeDto> getCategoryAnime(HttpServletRequest request) {
         Member member = securityUtil.getUserFromHeader(request);
         return pilgrimageQueryService.getCategoryAnime(member);
     }
 
     // 성지순례 지역 카테고리
     @GetMapping("/region")
-    public List<PilgrimageResponseDto.PilgrimageCategoryRegionDto> getCategoryRegion(){
+    public List<PilgrimageResponseDto.PilgrimageCategoryRegionDto> getCategoryRegion() {
         return pilgrimageQueryService.getCategoryRegion();
     }
 
     // 성지순례 지역 상세 카테고리
     @GetMapping("/region/{regionId}")
-    public List<PilgrimageResponseDto.PilgrimageCategoryRegionDetailDto> getCategoryRegionDetail(@PathVariable("regionId")Long regionId){
+    public List<PilgrimageResponseDto.PilgrimageCategoryRegionDetailDto> getCategoryRegionDetail(
+            @PathVariable("regionId") Long regionId) {
         return pilgrimageQueryService.getCategoryRegionDetail(regionId);
     }
 
@@ -77,7 +78,7 @@ public class PilgrimageApiController {
     // 회원 + 비회원
     @GetMapping("/{rallyId}")
     public RallyResponseDto.RallyDetailResponseDto getRallyDetail(HttpServletRequest request,
-                                                                  @PathVariable("rallyId")Long rallyId){
+                                                                  @PathVariable("rallyId") Long rallyId) {
         Member member = securityUtil.getUserFromHeader(request);
         return pilgrimageQueryService.getRallyDetail(rallyId, member);
     }
@@ -87,7 +88,7 @@ public class PilgrimageApiController {
     // 회원 + 비회원
     @GetMapping("/{rallyId}/list")
     public RallyResponseDto.RallyAddressListDto getRallyAddressList(
-            HttpServletRequest request, @PathVariable("rallyId")Long rallyId){
+            HttpServletRequest request, @PathVariable("rallyId") Long rallyId) {
         Member member = securityUtil.getUserFromHeader(request);
         return pilgrimageQueryService.getRallyAddressList(rallyId, member);
     }
@@ -95,7 +96,8 @@ public class PilgrimageApiController {
     // 성지순례 랠리 장소 상세
     // 회원
     @GetMapping("/detail/{pilgrimageId}")
-    public PilgrimageResponseDto.PilgrimageDetailDto getPilgrimageDetail(HttpServletRequest request, @PathVariable("pilgrimageId")Long pilgrimageId){
+    public PilgrimageResponseDto.PilgrimageDetailDto getPilgrimageDetail(HttpServletRequest request,
+                                                                         @PathVariable("pilgrimageId") Long pilgrimageId) {
         // Jwt AuthenticationFilter에 엔드포인트 추가
         Member member = securityUtil.getUserFromHeader(request);
         return pilgrimageQueryService.getPilgrimageDetail(pilgrimageId, member);
@@ -137,9 +139,9 @@ public class PilgrimageApiController {
 
     // 성지순례 애니 별 검색
     @GetMapping("/category")
-    public List<RallyResponseDto.SearchAnimeDto> searchAnime(HttpServletRequest request, @RequestParam String value){
+    public List<RallyResponseDto.SearchAnimeDto> searchAnime(HttpServletRequest request, @RequestParam String value) {
         Member member = securityUtil.getUserFromHeader(request);
-        if (value.equals("")){
+        if (value.equals("")) {
             throw new RestApiException(ErrorCode.RALLY_NOT_FOUND);
         }
         return pilgrimageQueryService.searchAnime(value, member);
@@ -147,7 +149,7 @@ public class PilgrimageApiController {
 
     // 성지순례 지역 별 검색
     @GetMapping("/category/region")
-    public List<RallyResponseDto.SearchRegionDto> searchRegion(HttpServletRequest request, @RequestParam String value){
+    public List<RallyResponseDto.SearchRegionDto> searchRegion(HttpServletRequest request, @RequestParam String value) {
         Member member = securityUtil.getUserFromHeader(request);
         if (value.equals("")) {
             throw new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND);

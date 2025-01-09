@@ -11,6 +11,7 @@ import com.favoriteplace.app.domain.travel.LikedRally;
 import com.favoriteplace.app.domain.travel.Pilgrimage;
 import com.favoriteplace.app.domain.travel.Rally;
 import com.favoriteplace.app.domain.travel.VisitedPilgrimage;
+import com.favoriteplace.app.dto.travel.PilgrimageResponseDto.PilgrimageCategoryRegionDto;
 import com.favoriteplace.app.repository.AddressRepository;
 import com.favoriteplace.app.repository.GuestBookRepository;
 import com.favoriteplace.app.repository.HashtagRepository;
@@ -27,6 +28,7 @@ import com.favoriteplace.global.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -216,17 +218,7 @@ public class PilgrimageQueryService {
         Map<String, List<Address>> addressGroupByState = address.stream()
                 .collect(Collectors.groupingBy(Address::getState));
 
-        List<PilgrimageResponseDto.PilgrimageCategoryRegionDto> dtos = addressKeyList.stream().map(
-                stateKey -> {
-                    List<Address> addressList = addressGroupByState.get(stateKey);
-                    List<PilgrimageResponseDto.PilgrimageAddressDetailDto> addressDetailDtos = addressList.stream()
-                            .map(addressDetail ->
-                                    PilgrimageConverter.toPilgrimageAddressDetailDto(addressDetail)
-                            ).collect(Collectors.toList());
-                    return PilgrimageConverter.toPilgrimageCategoryRegionDto(stateKey, addressDetailDtos);
-                }
-        ).collect(Collectors.toList());
-        return dtos;
+        return getPilgrimageCategoryRegionDtos(addressKeyList, addressGroupByState);
     }
 
     /***
@@ -278,6 +270,22 @@ public class PilgrimageQueryService {
                     }).collect(Collectors.toList());
             return RallyConverter.toSearchRegionDto(name, resultList);
         }).collect(Collectors.toList());
+    }
+
+    @NotNull
+    private static List<PilgrimageCategoryRegionDto> getPilgrimageCategoryRegionDtos(Set<String> addressKeyList,
+                                                                                     Map<String, List<Address>> addressGroupByState) {
+        List<PilgrimageCategoryRegionDto> dtos = addressKeyList.stream().map(
+                stateKey -> {
+                    List<Address> addressList = addressGroupByState.get(stateKey);
+                    List<PilgrimageResponseDto.PilgrimageAddressDetailDto> addressDetailDtos = addressList.stream()
+                            .map(addressDetail ->
+                                    PilgrimageConverter.toPilgrimageAddressDetailDto(addressDetail)
+                            ).collect(Collectors.toList());
+                    return PilgrimageConverter.toPilgrimageCategoryRegionDto(stateKey, addressDetailDtos);
+                }
+        ).collect(Collectors.toList());
+        return dtos;
     }
 
     private List<PilgrimageResponseDto.LikedRallyDto> getLikedRally(Member member) {
