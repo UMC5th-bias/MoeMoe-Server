@@ -2,9 +2,9 @@ package com.favoriteplace.app.item.domain;
 
 import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.common.BaseTimeEntity;
-import com.favoriteplace.app.domain.enums.ItemCategory;
-import com.favoriteplace.app.domain.enums.ItemType;
-import com.favoriteplace.app.domain.enums.SaleStatus;
+import com.favoriteplace.app.item.domain.enums.ItemCategory;
+import com.favoriteplace.app.item.domain.enums.ItemType;
+import com.favoriteplace.app.item.domain.enums.SaleStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

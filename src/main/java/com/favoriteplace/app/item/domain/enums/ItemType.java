@@ -1,4 +1,4 @@
-package com.favoriteplace.app.domain.enums;
+package com.favoriteplace.app.item.domain.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

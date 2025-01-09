@@ -1,7 +1,7 @@
 package com.favoriteplace.app.item.repository;
 
 import com.favoriteplace.app.member.domain.Member;
-import com.favoriteplace.app.domain.enums.ItemType;
+import com.favoriteplace.app.item.domain.enums.ItemType;
 import com.favoriteplace.app.item.domain.AcquiredItem;
 import com.favoriteplace.app.item.domain.Item;
 import java.util.Optional;

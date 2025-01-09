@@ -1,7 +1,7 @@
 package com.favoriteplace.app.item.repository;
 
-import com.favoriteplace.app.domain.enums.ItemType;
-import com.favoriteplace.app.domain.enums.SaleStatus;
+import com.favoriteplace.app.item.domain.enums.ItemType;
+import com.favoriteplace.app.item.domain.enums.SaleStatus;
 import com.favoriteplace.app.item.domain.Item;
 import jakarta.persistence.QueryHint;
 import java.time.LocalDateTime;

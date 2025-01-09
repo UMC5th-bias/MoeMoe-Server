@@ -3,7 +3,7 @@ package com.favoriteplace.app.service;
 import com.favoriteplace.app.converter.CommonConverter;
 import com.favoriteplace.app.domain.Block;
 import com.favoriteplace.app.member.domain.Member;
-import com.favoriteplace.app.domain.enums.ItemType;
+import com.favoriteplace.app.item.domain.enums.ItemType;
 import com.favoriteplace.app.item.domain.Item;
 import com.favoriteplace.app.dto.CommonResponseDto;
 import com.favoriteplace.app.dto.MyPageDto;
