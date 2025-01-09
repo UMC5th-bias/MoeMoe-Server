@@ -1,12 +1,12 @@
 package com.favoriteplace.app.service;
 
-import com.favoriteplace.app.converter.TrendingPostConverter;
-import com.favoriteplace.app.domain.community.GuestBook;
-import com.favoriteplace.app.domain.community.Post;
+import com.favoriteplace.app.community.converter.TrendingPostConverter;
+import com.favoriteplace.app.community.domain.GuestBook;
+import com.favoriteplace.app.community.domain.Post;
 import com.favoriteplace.app.dto.HomeResponseDto;
-import com.favoriteplace.app.dto.community.TrendingPostResponseDto;
-import com.favoriteplace.app.repository.GuestBookImplRepository;
-import com.favoriteplace.app.repository.PostImplRepository;
+import com.favoriteplace.app.community.controller.dto.TrendingPostResponseDto;
+import com.favoriteplace.app.community.repository.GuestBookImplRepository;
+import com.favoriteplace.app.community.repository.PostImplRepository;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 

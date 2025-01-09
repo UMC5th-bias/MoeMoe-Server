@@ -1,7 +1,7 @@
 package com.favoriteplace.app.repository;
 
 import com.favoriteplace.app.domain.Image;
-import com.favoriteplace.app.domain.community.GuestBook;
+import com.favoriteplace.app.community.domain.GuestBook;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

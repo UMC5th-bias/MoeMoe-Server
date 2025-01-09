@@ -1,8 +1,8 @@
 package com.favoriteplace.app.notification.converter;
 
-import com.favoriteplace.app.domain.community.Comment;
-import com.favoriteplace.app.domain.community.GuestBook;
-import com.favoriteplace.app.domain.community.Post;
+import com.favoriteplace.app.community.domain.Comment;
+import com.favoriteplace.app.community.domain.GuestBook;
+import com.favoriteplace.app.community.domain.Post;
 import com.favoriteplace.app.notification.controller.dto.PostTokenCond;
 import com.favoriteplace.app.notification.service.TokenMessage;
 import com.favoriteplace.global.exception.ErrorCode;

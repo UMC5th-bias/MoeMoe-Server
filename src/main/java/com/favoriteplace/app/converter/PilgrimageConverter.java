@@ -1,7 +1,7 @@
 package com.favoriteplace.app.converter;
 
 import com.favoriteplace.app.domain.Image;
-import com.favoriteplace.app.domain.community.GuestBook;
+import com.favoriteplace.app.community.domain.GuestBook;
 import com.favoriteplace.app.domain.travel.Address;
 import com.favoriteplace.app.domain.travel.Pilgrimage;
 import com.favoriteplace.app.domain.travel.Rally;

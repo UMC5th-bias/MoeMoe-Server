@@ -1,7 +1,4 @@
-package com.favoriteplace.app.domain;
-
-import com.favoriteplace.app.community.domain.GuestBook;
-import com.favoriteplace.app.community.domain.Post;
+package com.favoriteplace.app.community.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,6 +14,7 @@ import lombok.NoArgsConstructor;
 
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
+
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
 
@@ -25,25 +23,20 @@ import static lombok.AccessLevel.PROTECTED;
 @Builder
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor(access = PRIVATE)
-public class Image {
+public class HashTag {
 
     @Id @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "image_id")
+    @Column(name = "hashtag_id")
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "post_id")
-    private Post post;
-
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "guestbook_id")
+    @JoinColumn(name = "guest_book_id", nullable = true)
     private GuestBook guestBook;
 
     @Column(nullable = false)
-    private String url;
+    private String tagName;
 
-    public void setPost(Post post) {
-        this.post = post;
+    public void setGuestBook(GuestBook guestBook){
+        this.guestBook = guestBook;
     }
-    public void setGuestBook(GuestBook guestBook){this.guestBook = guestBook;}
 }
