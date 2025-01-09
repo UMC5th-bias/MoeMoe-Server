@@ -1,7 +1,5 @@
 package com.favoriteplace.app.service;
 
-import static org.mockito.Mockito.when;
-
 import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.domain.travel.Rally;
@@ -80,10 +78,20 @@ class PilgrimageQueryServiceTest {
         @DisplayName("로그인 성지순례 애니 별 카테고리 조회 성공")
         void 로그인_성지순례_애니별_카테고리_조회() {
             //given
+            Member member = Mockito.mock(Member.class);
+            Mockito.when(member.getId()).thenReturn(0L);
+            Image image = Mockito.mock(Image.class);
+            Mockito.when(image.getUrl()).thenReturn("이미지");
+            Rally rally = getRally(0L, "최애의아이", image);
+            Mockito.when(rallyRepository.findAllOrderByCreatedAt()).thenReturn(List.of(rally));
+            Mockito.when(visitedPilgrimageRepository.findByDistinctCount(member.getId(), rally.getId())).thenReturn(1L);
 
             //when
+            List<PilgrimageCategoryAnimeDto> categoryAnime = pilgrimageService.getCategoryAnime(member);
 
             //then
+            Assertions.assertThat(categoryAnime.get(0).getId()).isEqualTo(0L);
+            Assertions.assertThat(categoryAnime.get(0).getName()).isEqualTo("최애의아이");
         }
 
         @NotNull
@@ -95,6 +103,4 @@ class PilgrimageQueryServiceTest {
             return rally;
         }
     }
-
-
 }
