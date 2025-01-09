@@ -1,4 +1,4 @@
-package com.favoriteplace.app.dto.travel;
+package com.favoriteplace.app.pilgrimage.controller.dto;
 
 import lombok.*;
 

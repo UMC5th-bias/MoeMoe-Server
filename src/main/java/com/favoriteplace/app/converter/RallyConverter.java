@@ -1,7 +1,7 @@
 package com.favoriteplace.app.converter;
 
 import com.favoriteplace.app.domain.travel.Address;
-import com.favoriteplace.app.domain.travel.Pilgrimage;
+import com.favoriteplace.app.pilgrimage.domain.Pilgrimage;
 import com.favoriteplace.app.domain.travel.Rally;
 import com.favoriteplace.app.dto.travel.RallyResponseDto;
 

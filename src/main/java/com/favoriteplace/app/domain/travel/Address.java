@@ -1,5 +1,6 @@
 package com.favoriteplace.app.domain.travel;
 
+import com.favoriteplace.app.pilgrimage.domain.Pilgrimage;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

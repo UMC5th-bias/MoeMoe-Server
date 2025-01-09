@@ -1,4 +1,4 @@
-package com.favoriteplace.app.domain.travel;
+package com.favoriteplace.app.pilgrimage.domain;
 
 import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.domain.common.BaseTimeEntity;

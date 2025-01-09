@@ -1,13 +1,13 @@
 package com.favoriteplace.app.service;
 
 import com.favoriteplace.app.member.domain.Member;
-import com.favoriteplace.app.domain.travel.Pilgrimage;
+import com.favoriteplace.app.pilgrimage.domain.Pilgrimage;
 import com.favoriteplace.app.domain.travel.Rally;
-import com.favoriteplace.app.domain.travel.VisitedPilgrimage;
+import com.favoriteplace.app.pilgrimage.domain.VisitedPilgrimage;
 import com.favoriteplace.app.dto.HomeResponseDto;
-import com.favoriteplace.app.repository.PilgrimageRepository;
+import com.favoriteplace.app.pilgrimage.repository.PilgrimageRepository;
 import com.favoriteplace.app.repository.RallyRepository;
-import com.favoriteplace.app.repository.VisitedPilgrimageRepository;
+import com.favoriteplace.app.pilgrimage.repository.VisitedPilgrimageRepository;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 

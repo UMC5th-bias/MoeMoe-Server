@@ -1,4 +1,4 @@
-package com.favoriteplace.app.service;
+package com.favoriteplace.app.community.service;
 
 import com.favoriteplace.app.community.converter.TrendingPostConverter;
 import com.favoriteplace.app.community.domain.GuestBook;

@@ -1,7 +1,7 @@
 package com.favoriteplace.global.websocket;
 
 import com.favoriteplace.app.member.domain.Member;
-import com.favoriteplace.app.domain.travel.Pilgrimage;
+import com.favoriteplace.app.pilgrimage.domain.Pilgrimage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;

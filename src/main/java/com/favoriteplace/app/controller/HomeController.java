@@ -4,7 +4,7 @@ import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.dto.HomeResponseDto;
 import com.favoriteplace.app.member.service.MemberService;
 import com.favoriteplace.app.service.RallyService;
-import com.favoriteplace.app.service.TotalPostService;
+import com.favoriteplace.app.community.service.TotalPostService;
 import com.favoriteplace.global.util.SecurityUtil;
 
 import jakarta.servlet.http.HttpServletRequest;

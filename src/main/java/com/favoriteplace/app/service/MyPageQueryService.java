@@ -17,7 +17,7 @@ import com.favoriteplace.app.repository.CompleteRallyRepository;
 import com.favoriteplace.app.community.repository.GuestBookRepository;
 import com.favoriteplace.app.repository.LikedRallyRepository;
 import com.favoriteplace.app.community.repository.PostRepository;
-import com.favoriteplace.app.repository.VisitedPilgrimageRepository;
+import com.favoriteplace.app.pilgrimage.repository.VisitedPilgrimageRepository;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 

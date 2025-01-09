@@ -4,6 +4,7 @@ import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.item.domain.Item;
 import com.favoriteplace.app.domain.common.BaseTimeEntity;
 
+import com.favoriteplace.app.pilgrimage.domain.Pilgrimage;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

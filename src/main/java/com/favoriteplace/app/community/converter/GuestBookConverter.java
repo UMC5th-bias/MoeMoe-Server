@@ -4,7 +4,7 @@ import com.favoriteplace.app.domain.Image;
 import com.favoriteplace.app.community.domain.Comment;
 import com.favoriteplace.app.community.domain.GuestBook;
 import com.favoriteplace.app.community.domain.HashTag;
-import com.favoriteplace.app.domain.travel.Pilgrimage;
+import com.favoriteplace.app.pilgrimage.domain.Pilgrimage;
 import com.favoriteplace.app.member.controller.dto.UserInfoResponseDto;
 import com.favoriteplace.app.community.controller.dto.guestbook.GuestBookResponseDto;
 import com.favoriteplace.global.util.DateTimeFormatUtils;
