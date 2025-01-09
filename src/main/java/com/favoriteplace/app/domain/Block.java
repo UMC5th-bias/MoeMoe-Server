@@ -2,6 +2,7 @@ package com.favoriteplace.app.domain;
 
 import com.favoriteplace.app.domain.common.BaseTimeEntity;
 
+import com.favoriteplace.app.member.domain.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

@@ -1,7 +1,7 @@
 package com.favoriteplace.app.converter;
 
-import com.favoriteplace.app.domain.Member;
-import com.favoriteplace.app.domain.enums.PointType;
+import com.favoriteplace.app.member.domain.Member;
+import com.favoriteplace.app.member.domain.enums.PointType;
 import com.favoriteplace.app.domain.item.PointHistory;
 
 import java.time.LocalDateTime;

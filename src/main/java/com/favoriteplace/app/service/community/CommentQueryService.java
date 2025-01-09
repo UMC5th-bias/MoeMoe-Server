@@ -1,7 +1,7 @@
 package com.favoriteplace.app.service.community;
 
 import com.favoriteplace.app.converter.CommentConverter;
-import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.domain.community.Comment;
 import com.favoriteplace.app.dto.community.comment.CommentParentResponseDto;
 import com.favoriteplace.app.dto.community.guestbook.GuestBookResponseDto;

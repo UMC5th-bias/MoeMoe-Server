@@ -1,6 +1,6 @@
 package com.favoriteplace.app.dto.item;
 
-import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.domain.item.Item;
 import com.favoriteplace.app.dto.member.MemberDto;
 import com.favoriteplace.app.dto.member.MemberDto.MemberInfo;

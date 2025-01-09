@@ -1,6 +1,6 @@
 package com.favoriteplace.app.repository;
 
-import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.domain.enums.ItemType;
 import com.favoriteplace.app.domain.item.AcquiredItem;
 import com.favoriteplace.app.domain.item.Item;

@@ -1,6 +1,6 @@
 package com.favoriteplace.app.repository;
 
-import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.domain.travel.CompleteRally;
 import com.favoriteplace.app.domain.travel.Rally;
 import org.springframework.data.jpa.repository.JpaRepository;

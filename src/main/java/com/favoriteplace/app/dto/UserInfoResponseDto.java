@@ -1,6 +1,6 @@
 package com.favoriteplace.app.dto;
 
-import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.member.domain.Member;
 import lombok.Builder;
 import lombok.Getter;
 

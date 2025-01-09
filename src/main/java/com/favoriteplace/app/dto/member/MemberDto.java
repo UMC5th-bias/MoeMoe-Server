@@ -1,10 +1,9 @@
 package com.favoriteplace.app.dto.member;
 
-import com.favoriteplace.app.domain.Member;
-import com.favoriteplace.app.domain.enums.LoginType;
-import com.favoriteplace.app.domain.enums.MemberStatus;
+import com.favoriteplace.app.member.domain.Member;
+import com.favoriteplace.app.member.domain.enums.LoginType;
+import com.favoriteplace.app.member.domain.enums.MemberStatus;
 import com.favoriteplace.app.domain.item.Item;
-import com.favoriteplace.global.gcpImage.ConvertUuidToUrl;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

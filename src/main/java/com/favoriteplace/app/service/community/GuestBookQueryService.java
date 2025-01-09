@@ -1,7 +1,7 @@
 package com.favoriteplace.app.service.community;
 
 import com.favoriteplace.app.converter.GuestBookConverter;
-import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.travel.Pilgrimage;
 import com.favoriteplace.app.dto.community.guestbook.GuestBookResponseDto;

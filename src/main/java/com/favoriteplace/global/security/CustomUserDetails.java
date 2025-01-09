@@ -1,6 +1,6 @@
 package com.favoriteplace.global.security;
 
-import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.member.domain.Member;
 import java.util.Collection;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

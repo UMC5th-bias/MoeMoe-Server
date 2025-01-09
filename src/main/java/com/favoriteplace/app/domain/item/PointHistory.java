@@ -1,7 +1,7 @@
 package com.favoriteplace.app.domain.item;
 
-import com.favoriteplace.app.domain.Member;
-import com.favoriteplace.app.domain.enums.PointType;
+import com.favoriteplace.app.member.domain.Member;
+import com.favoriteplace.app.member.domain.enums.PointType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;

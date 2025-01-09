@@ -1,6 +1,6 @@
-package com.favoriteplace.app.repository;
+package com.favoriteplace.app.member.repository;
 
-import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.member.domain.Member;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 

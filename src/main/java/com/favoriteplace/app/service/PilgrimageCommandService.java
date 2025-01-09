@@ -2,9 +2,9 @@ package com.favoriteplace.app.service;
 
 import com.favoriteplace.app.converter.CommonConverter;
 import com.favoriteplace.app.converter.PointHistoryConverter;
-import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.domain.community.GuestBook;
-import com.favoriteplace.app.domain.enums.PointType;
+import com.favoriteplace.app.member.domain.enums.PointType;
 import com.favoriteplace.app.domain.enums.RallyVersion;
 import com.favoriteplace.app.domain.item.AcquiredItem;
 import com.favoriteplace.app.domain.travel.CompleteRally;

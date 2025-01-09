@@ -1,6 +1,6 @@
 package com.favoriteplace.app.notification.domain;
 
-import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.domain.common.BaseTimeEntity;
 
 import jakarta.persistence.Column;

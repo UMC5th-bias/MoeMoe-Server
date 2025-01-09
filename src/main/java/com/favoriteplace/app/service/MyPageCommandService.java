@@ -2,7 +2,7 @@ package com.favoriteplace.app.service;
 
 import com.favoriteplace.app.converter.CommonConverter;
 import com.favoriteplace.app.domain.Block;
-import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.domain.enums.ItemType;
 import com.favoriteplace.app.domain.item.Item;
 import com.favoriteplace.app.dto.CommonResponseDto;
@@ -11,7 +11,7 @@ import com.favoriteplace.app.dto.MyPageDto.MyFcmTokenDto;
 import com.favoriteplace.app.repository.AcquiredItemRepository;
 import com.favoriteplace.app.repository.BlockRepository;
 import com.favoriteplace.app.repository.ItemRepository;
-import com.favoriteplace.app.repository.MemberRepository;
+import com.favoriteplace.app.member.repository.MemberRepository;
 import com.favoriteplace.app.notification.service.FCMNotificationService;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;

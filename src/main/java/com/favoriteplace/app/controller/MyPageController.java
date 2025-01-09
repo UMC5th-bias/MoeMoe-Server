@@ -1,6 +1,6 @@
 package com.favoriteplace.app.controller;
 
-import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.dto.CommonResponseDto;
 import com.favoriteplace.app.dto.MyPageDto;
 import com.favoriteplace.app.dto.MyPageDto.MyFcmTokenDto;

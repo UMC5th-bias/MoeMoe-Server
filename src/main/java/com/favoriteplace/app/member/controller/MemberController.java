@@ -1,4 +1,4 @@
-package com.favoriteplace.app.controller;
+package com.favoriteplace.app.member.controller;
 
 import com.favoriteplace.app.dto.member.KaKaoSignUpRequestDto;
 import com.favoriteplace.app.dto.member.MemberDto;
@@ -7,8 +7,8 @@ import com.favoriteplace.app.dto.member.MemberDto.EmailDuplicateResDto;
 import com.favoriteplace.app.dto.member.MemberDto.EmailSendResDto;
 import com.favoriteplace.app.dto.member.MemberDto.MemberSignUpReqDto;
 import com.favoriteplace.app.dto.member.MemberDto.TokenInfo;
-import com.favoriteplace.app.service.MailSendService;
-import com.favoriteplace.app.service.MemberService;
+import com.favoriteplace.app.member.service.MailSendService;
+import com.favoriteplace.app.member.service.MemberService;
 import com.favoriteplace.global.security.provider.JwtTokenProvider;
 import com.favoriteplace.global.util.SecurityUtil;
 

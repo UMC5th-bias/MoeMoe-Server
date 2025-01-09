@@ -3,7 +3,7 @@ package com.favoriteplace.app.service;
 import static com.favoriteplace.global.exception.ErrorCode.ITEM_NOT_EXISTS;
 
 import com.favoriteplace.app.converter.ShopConverter;
-import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.domain.enums.ItemCategory;
 import com.favoriteplace.app.domain.enums.ItemType;
 import com.favoriteplace.app.domain.enums.SaleStatus;

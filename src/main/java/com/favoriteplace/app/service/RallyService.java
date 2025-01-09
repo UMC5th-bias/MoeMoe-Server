@@ -1,6 +1,6 @@
 package com.favoriteplace.app.service;
 
-import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.domain.travel.Pilgrimage;
 import com.favoriteplace.app.domain.travel.Rally;
 import com.favoriteplace.app.domain.travel.VisitedPilgrimage;

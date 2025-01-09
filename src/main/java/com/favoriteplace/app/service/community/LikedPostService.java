@@ -1,6 +1,6 @@
 package com.favoriteplace.app.service.community;
 
-import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.LikedPost;
 import com.favoriteplace.app.domain.community.Post;

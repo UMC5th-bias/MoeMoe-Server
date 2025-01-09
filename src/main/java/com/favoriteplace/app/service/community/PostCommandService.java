@@ -1,6 +1,6 @@
 package com.favoriteplace.app.service.community;
 
-import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.domain.community.Post;
 import com.favoriteplace.app.dto.community.PostRequestDto;
 import com.favoriteplace.app.repository.ImageRepository;

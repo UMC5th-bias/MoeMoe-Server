@@ -1,4 +1,4 @@
-package com.favoriteplace.app.converter;
+package com.favoriteplace.app.notification.converter;
 
 import com.favoriteplace.app.domain.community.Comment;
 import com.favoriteplace.app.domain.community.GuestBook;

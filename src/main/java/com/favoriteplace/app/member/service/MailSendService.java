@@ -1,4 +1,4 @@
-package com.favoriteplace.app.service;
+package com.favoriteplace.app.member.service;
 
 import static com.favoriteplace.global.exception.ErrorCode.NOT_VAILD_EMAIL_AUTHCODE;
 

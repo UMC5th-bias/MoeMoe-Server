@@ -3,7 +3,7 @@ package com.favoriteplace.app.service;
 import com.favoriteplace.app.converter.PilgrimageConverter;
 import com.favoriteplace.app.converter.RallyConverter;
 import com.favoriteplace.app.domain.Image;
-import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.HashTag;
 import com.favoriteplace.app.domain.travel.Address;

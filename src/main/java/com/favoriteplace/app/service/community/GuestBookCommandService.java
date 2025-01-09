@@ -1,10 +1,10 @@
 package com.favoriteplace.app.service.community;
 
 import com.favoriteplace.app.converter.PointHistoryConverter;
-import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.HashTag;
-import com.favoriteplace.app.domain.enums.PointType;
+import com.favoriteplace.app.member.domain.enums.PointType;
 import com.favoriteplace.app.domain.travel.Pilgrimage;
 import com.favoriteplace.app.domain.travel.VisitedPilgrimage;
 import com.favoriteplace.app.dto.community.guestbook.GuestBookModifyRequestDto;

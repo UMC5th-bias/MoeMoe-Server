@@ -1,11 +1,11 @@
-package com.favoriteplace.app.service;
+package com.favoriteplace.app.member.service;
 
 import static com.favoriteplace.global.exception.ErrorCode.NOT_SIGNUP_WITH_KAKAO;
 import static com.favoriteplace.global.exception.ErrorCode.TOKEN_NOT_VALID;
 import static com.favoriteplace.global.exception.ErrorCode.USER_ALREADY_EXISTS;
 import static com.favoriteplace.global.exception.ErrorCode.USER_NOT_FOUND;
 
-import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.domain.item.Item;
 import com.favoriteplace.app.dto.UserInfoResponseDto;
 import com.favoriteplace.app.dto.member.AuthKakaoLoginDto;
@@ -15,7 +15,7 @@ import com.favoriteplace.app.dto.member.MemberDto.EmailDuplicateResDto;
 import com.favoriteplace.app.dto.member.MemberDto.EmailSendReqDto;
 import com.favoriteplace.app.dto.member.MemberDto.MemberSignUpReqDto;
 import com.favoriteplace.app.repository.ItemRepository;
-import com.favoriteplace.app.repository.MemberRepository;
+import com.favoriteplace.app.member.repository.MemberRepository;
 import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.s3Image.AmazonS3ImageManager;
 import com.favoriteplace.global.security.kakao.KakaoClient;

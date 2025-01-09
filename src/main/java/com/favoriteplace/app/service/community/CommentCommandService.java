@@ -1,6 +1,6 @@
 package com.favoriteplace.app.service.community;
 
-import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.notification.domain.Notification;
 import com.favoriteplace.app.domain.community.Comment;
 import com.favoriteplace.app.domain.community.GuestBook;
@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static com.favoriteplace.app.converter.FcmConverter.*;
+import static com.favoriteplace.app.notification.converter.FcmConverter.*;
 import static com.favoriteplace.app.notification.converter.NotificationConverter.*;
 
 @Service

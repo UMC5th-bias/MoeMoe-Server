@@ -2,7 +2,7 @@ package com.favoriteplace.app.service;
 
 import com.favoriteplace.app.converter.MyPageConverter;
 import com.favoriteplace.app.domain.Block;
-import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.domain.enums.ItemType;
 import com.favoriteplace.app.domain.enums.SaleStatus;
 import com.favoriteplace.app.domain.item.AcquiredItem;

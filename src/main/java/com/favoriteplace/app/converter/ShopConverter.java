@@ -1,6 +1,6 @@
 package com.favoriteplace.app.converter;
 
-import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.domain.item.Item;
 import com.favoriteplace.app.dto.item.ItemDto;
 import com.favoriteplace.app.dto.item.ItemDto.ItemList;

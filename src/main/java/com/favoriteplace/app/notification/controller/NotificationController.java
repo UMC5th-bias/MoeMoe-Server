@@ -1,6 +1,6 @@
 package com.favoriteplace.app.notification.controller;
 
-import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.notification.controller.dto.NotificationResponseDto;
 import com.favoriteplace.app.notification.service.NotificationService;
 import com.favoriteplace.global.util.SecurityUtil;

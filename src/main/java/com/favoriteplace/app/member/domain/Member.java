@@ -1,8 +1,8 @@
-package com.favoriteplace.app.domain;
+package com.favoriteplace.app.member.domain;
 
 import com.favoriteplace.app.domain.common.BaseTimeEntity;
-import com.favoriteplace.app.domain.enums.LoginType;
-import com.favoriteplace.app.domain.enums.MemberStatus;
+import com.favoriteplace.app.member.domain.enums.LoginType;
+import com.favoriteplace.app.member.domain.enums.MemberStatus;
 import com.favoriteplace.app.domain.item.Item;
 
 import jakarta.persistence.Column;

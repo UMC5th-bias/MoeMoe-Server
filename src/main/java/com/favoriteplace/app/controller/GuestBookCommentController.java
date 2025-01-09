@@ -1,6 +1,6 @@
 package com.favoriteplace.app.controller;
 
-import com.favoriteplace.app.domain.Member;
+import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.dto.community.comment.CommentCreateRequestDto;
 import com.favoriteplace.app.dto.community.comment.CommentModifyRequestDto;
 import com.favoriteplace.app.dto.community.guestbook.GuestBookResponseDto;

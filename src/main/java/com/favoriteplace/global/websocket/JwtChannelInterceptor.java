@@ -1,13 +1,11 @@
 package com.favoriteplace.global.websocket;
 
-import com.favoriteplace.app.domain.Member;
-import com.favoriteplace.app.repository.MemberRepository;
+import com.favoriteplace.app.member.domain.Member;
+import com.favoriteplace.app.member.repository.MemberRepository;
 import com.favoriteplace.global.exception.ErrorCode;
-import com.favoriteplace.global.exception.ErrorResponse;
 import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.security.CustomUserDetails;
 import com.favoriteplace.global.security.provider.JwtTokenProvider;
-import com.google.api.gax.rpc.ApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
@@ -17,10 +15,8 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
-import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
