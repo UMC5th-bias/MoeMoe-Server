@@ -58,8 +58,8 @@ public class PilgrimageQueryService {
      */
     public RallyResponseDto.RallyDetailResponseDto getRallyDetail(Long rallyId, Member member) {
         Rally rally = rallyRepository.findById(rallyId).orElseThrow(
-                ()-> new RestApiException(ErrorCode.RALLY_NOT_FOUND));
-        if (member == null){
+                () -> new RestApiException(ErrorCode.RALLY_NOT_FOUND));
+        if (member == null) {
             return RallyConverter.toRallyDetailResponseDto(rally, 0L, false, false);
         }
         LikedRally isLikeList = likedRallyRepository.findByRallyAndMember(rally, member);
@@ -79,24 +79,26 @@ public class PilgrimageQueryService {
      */
     public RallyResponseDto.RallyAddressListDto getRallyAddressList(Long rallyId, Member member) {
         Rally rally = rallyRepository.findById(rallyId).orElseThrow(
-                ()-> new RestApiException(ErrorCode.RALLY_NOT_FOUND));
+                () -> new RestApiException(ErrorCode.RALLY_NOT_FOUND));
 
         // 주소, 성지순례 리스트 정보 담은 주소 리스트 생성
         List<Address> addressList = addressRepository.findByPilgrimages_Rally(rally);
         System.out.println(addressList.size());
-        if (addressList.isEmpty()) throw new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND);
+        if (addressList.isEmpty()) {
+            throw new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND);
+        }
 
         List<RallyResponseDto.RallyAddressDto> addressDtoList = addressList.stream()
                 .map(address -> rallyAddressDtoList(rally, address))
                 .collect(Collectors.toList());
 
         // 회원이라면 방문기록 수정하기
-        if (member != null){
+        if (member != null) {
             addressDtoList.stream().forEach(rallyAddressDto ->
                     rallyAddressDto.getPilgrimage()
-                    .stream()
-                    .forEach(rallyAddressPilgrimageDto ->
-                            checkVisitedPilgrimage(rallyAddressPilgrimageDto, member)));
+                            .stream()
+                            .forEach(rallyAddressPilgrimageDto ->
+                                    checkVisitedPilgrimage(rallyAddressPilgrimageDto, member)));
             Long myPilgrimageNumber = visitedPilgrimageRepository
                     .findByDistinctCount(member.getId(), rally.getId());
             return RallyConverter.toRallyAddressListDto(rally, addressDtoList, myPilgrimageNumber);
@@ -114,14 +116,16 @@ public class PilgrimageQueryService {
     public PilgrimageResponseDto.PilgrimageDetailDto getPilgrimageDetail(Long pilgrimageId, Member member) {
         Pilgrimage pilgrimage = pilgrimageRepository.findById(pilgrimageId)
                 .orElseThrow(() -> new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
-        if (member == null){
-            PilgrimageResponseDto.PilgrimageDetailDto result = PilgrimageConverter.toPilgrimageDetailDto(pilgrimage, 0L);
+        if (member == null) {
+            PilgrimageResponseDto.PilgrimageDetailDto result = PilgrimageConverter.toPilgrimageDetailDto(pilgrimage,
+                    0L);
             result.setIsCertified(false);
             return result;
         }
         Long visitedPilgrimages = visitedPilgrimageRepository
                 .findByDistinctCount(member.getId(), pilgrimage.getRally().getId());
-        PilgrimageResponseDto.PilgrimageDetailDto result = PilgrimageConverter.toPilgrimageDetailDto(pilgrimage, visitedPilgrimages);
+        PilgrimageResponseDto.PilgrimageDetailDto result = PilgrimageConverter.toPilgrimageDetailDto(pilgrimage,
+                visitedPilgrimages);
 
         List<VisitedPilgrimage> visitedLog = visitedPilgrimageRepository
                 .findByPilgrimageAndMemberOrderByCreatedAtDesc(pilgrimage, member);
@@ -170,7 +174,7 @@ public class PilgrimageQueryService {
             throw new RestApiException(ErrorCode.TRENDING_RALLY_NOT_FOUND);
         }
         if (member == null) {
-            return RallyConverter.toRallyTrendingDto(rallys.get(0),0L);
+            return RallyConverter.toRallyTrendingDto(rallys.get(0), 0L);
         }
         Long visited = visitedPilgrimageRepository
                 .findByDistinctCount(member.getId(), rallys.get(0).getId());
@@ -190,7 +194,7 @@ public class PilgrimageQueryService {
                     .map(rally -> RallyConverter.toPilgrimageCategoryAnimeDto(rally, 0L))
                     .collect(Collectors.toList());
         }
-        return rallyList.stream().map(rally->{
+        return rallyList.stream().map(rally -> {
             Long visitedPilgrimages = visitedPilgrimageRepository.findByDistinctCount(member.getId(), rally.getId());
             return RallyConverter.toPilgrimageCategoryAnimeDto(rally, visitedPilgrimages);
         }).collect(Collectors.toList());
@@ -215,9 +219,10 @@ public class PilgrimageQueryService {
         List<PilgrimageResponseDto.PilgrimageCategoryRegionDto> dtos = addressKeyList.stream().map(
                 stateKey -> {
                     List<Address> addressList = addressGroupByState.get(stateKey);
-                    List<PilgrimageResponseDto.PilgrimageAddressDetailDto> addressDetailDtos = addressList.stream().map(addressDetail ->
-                            PilgrimageConverter.toPilgrimageAddressDetailDto(addressDetail)
-                    ).collect(Collectors.toList());
+                    List<PilgrimageResponseDto.PilgrimageAddressDetailDto> addressDetailDtos = addressList.stream()
+                            .map(addressDetail ->
+                                    PilgrimageConverter.toPilgrimageAddressDetailDto(addressDetail)
+                            ).collect(Collectors.toList());
                     return PilgrimageConverter.toPilgrimageCategoryRegionDto(stateKey, addressDetailDtos);
                 }
         ).collect(Collectors.toList());
@@ -230,7 +235,7 @@ public class PilgrimageQueryService {
      * @return district 별 성지순례 리스트
      */
     public List<PilgrimageResponseDto.PilgrimageCategoryRegionDetailDto> getCategoryRegionDetail(Long regionId) {
-        Address address = addressRepository.findById(regionId).orElseThrow(()->
+        Address address = addressRepository.findById(regionId).orElseThrow(() ->
                 new RestApiException(ErrorCode.ADDRESS_NOT_FOUND));
         List<Pilgrimage> pilgrimages = pilgrimageRepository.findByAddress(address);
 
@@ -244,7 +249,8 @@ public class PilgrimageQueryService {
 
     /**
      * 애니메이션 별 랠리 검색
-     * @param value 검색어
+     *
+     * @param value  검색어
      * @param member 사용자
      * @return
      */
@@ -262,8 +268,8 @@ public class PilgrimageQueryService {
     public List<RallyResponseDto.SearchRegionDto> searchRegion(String value, Member member) {
         List<Address> addressList = addressRepository.findByStateOrDistrictContaining(value);
 
-        return addressList.stream().map(address-> {
-            log.info("address=" + address.getState()+' '+address.getDistrict());
+        return addressList.stream().map(address -> {
+            log.info("address=" + address.getState() + ' ' + address.getDistrict());
             List<Pilgrimage> pilgrimages = pilgrimageRepository.findByAddress(address);
             String name = address.getState() + ' ' + address.getDistrict();
             List<RallyResponseDto.SearchRegionDetailDto> resultList = pilgrimages.stream()
@@ -279,36 +285,37 @@ public class PilgrimageQueryService {
         return likedRally.stream().map(
                         likeRally -> {
                             Rally rally = rallyRepository.findById(likeRally.getRally().getId())
-                                    .orElseThrow(()->new RestApiException(ErrorCode.RALLY_NOT_FOUND));
+                                    .orElseThrow(() -> new RestApiException(ErrorCode.RALLY_NOT_FOUND));
                             return PilgrimageConverter.toLikedRallyDto(rally);
                         })
                 .collect(Collectors.toList());
     }
 
-    private List<PilgrimageResponseDto.MyGuestBookDto> getMyGuestBook(Member member){
+    private List<PilgrimageResponseDto.MyGuestBookDto> getMyGuestBook(Member member) {
         List<GuestBook> guestBooks = guestBookRepository.findByMemberOrderByCreatedAtDesc(member);
         return guestBooks.stream().map(
                 guestBook -> {
                     Image image = imageRepository.findFirstByGuestBook(guestBook);
                     List<HashTag> hashTags = hashtagRepository.findAllByGuestBookId(guestBook.getId());
-                    List<String> hashTagsDto = hashTags.stream().map(hashTag -> hashTag.getTagName()).collect(Collectors.toList());
+                    List<String> hashTagsDto = hashTags.stream().map(hashTag -> hashTag.getTagName())
+                            .collect(Collectors.toList());
                     return PilgrimageConverter.toMyGuestBookDto(guestBook, image, hashTagsDto);
                 }
         ).collect(Collectors.toList());
     }
 
-    private void checkVisitedPilgrimage(RallyResponseDto.RallyAddressPilgrimageDto dto, Member member){
+    private void checkVisitedPilgrimage(RallyResponseDto.RallyAddressPilgrimageDto dto, Member member) {
         Pilgrimage pilgrimage = pilgrimageRepository.findById(dto.getId())
                 .orElseThrow(() -> new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND));
         List<VisitedPilgrimage> count = visitedPilgrimageRepository
                 .findByPilgrimageAndMemberOrderByCreatedAtDesc(pilgrimage, member);
-        if (!count.isEmpty()){
+        if (!count.isEmpty()) {
             dto.setIsVisited(true);
         }
     }
 
     // 어떤 랠리의 어떤 주소에 대한 모든 성지순례 조회 (isVisited false로 초기화)
-    private RallyResponseDto.RallyAddressDto rallyAddressDtoList(Rally rally, Address address){
+    private RallyResponseDto.RallyAddressDto rallyAddressDtoList(Rally rally, Address address) {
         List<Pilgrimage> pilgrimageList = pilgrimageRepository.findByRallyAndAddress(rally, address);
 
         List<RallyResponseDto.RallyAddressPilgrimageDto> dtoList = pilgrimageList.stream().map(pilgrimage ->
