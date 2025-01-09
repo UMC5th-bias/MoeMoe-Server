@@ -55,7 +55,6 @@ class PilgrimageQueryServiceTest {
     @Nested
     @DisplayName("성지순례 애니 별 카테고리 조회")
     class AnemeCategories {
-
         @Test
         @DisplayName("비로그인 성지순례 애니 별 카테고리 조회 성공")
         void 비로그인_성지순례_애니별_카테고리_조회() {
@@ -72,6 +71,7 @@ class PilgrimageQueryServiceTest {
             //then
             Assertions.assertThat(categoryAnime.get(0).getId()).isEqualTo(0L);
             Assertions.assertThat(categoryAnime.get(1).getId()).isEqualTo(1L);
+            Assertions.assertThat(categoryAnime.size()).isEqualTo(2);
         }
 
         @Test
@@ -101,6 +101,22 @@ class PilgrimageQueryServiceTest {
             Mockito.when(rally.getName()).thenReturn(name);
             Mockito.when(rally.getImage()).thenReturn(image);
             return rally;
+        }
+    }
+
+    @Nested
+    @DisplayName("성지순례 지역 별 카테고리 조회")
+    class RegionCategories {
+        @Test
+        @DisplayName("비로그인 성지순례 지역 별 카테고리 조회 성공")
+        void 비로그인_성지순례_지역별_카테고리_조회_성공() {
+
+        }
+
+        @Test
+        @DisplayName("로그인 성지순례 지역 별 카테고리 조회 성공")
+        void 로그인_성지순례_지역별_카테고리_조회_성공() {
+
         }
     }
 }
