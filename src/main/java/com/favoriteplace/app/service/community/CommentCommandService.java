@@ -1,7 +1,7 @@
 package com.favoriteplace.app.service.community;
 
 import com.favoriteplace.app.domain.Member;
-import com.favoriteplace.app.domain.Notification;
+import com.favoriteplace.app.notification.domain.Notification;
 import com.favoriteplace.app.domain.community.Comment;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.Post;
@@ -9,9 +9,9 @@ import com.favoriteplace.app.domain.enums.CommentType;
 import com.favoriteplace.app.dto.community.comment.CommentCreateRequestDto;
 import com.favoriteplace.app.repository.CommentRepository;
 import com.favoriteplace.app.repository.GuestBookRepository;
-import com.favoriteplace.app.repository.NotificationRepository;
+import com.favoriteplace.app.notification.repository.NotificationRepository;
 import com.favoriteplace.app.repository.PostRepository;
-import com.favoriteplace.app.service.fcm.FCMNotificationService;
+import com.favoriteplace.app.notification.service.FCMNotificationService;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 
@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 import static com.favoriteplace.app.converter.FcmConverter.*;
-import static com.favoriteplace.app.converter.NotificationConverter.*;
+import static com.favoriteplace.app.notification.converter.NotificationConverter.*;
 
 @Service
 @RequiredArgsConstructor

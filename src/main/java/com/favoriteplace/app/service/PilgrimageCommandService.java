@@ -14,7 +14,6 @@ import com.favoriteplace.app.domain.travel.Rally;
 import com.favoriteplace.app.domain.travel.VisitedPilgrimage;
 import com.favoriteplace.app.dto.CommonResponseDto;
 import com.favoriteplace.app.dto.travel.PilgrimageCertifyRequestDto;
-import com.favoriteplace.app.dto.travel.PilgrimageResponseDto;
 import com.favoriteplace.app.dto.travel.PilgrimageSocketDto;
 import com.favoriteplace.app.repository.AcquiredItemRepository;
 import com.favoriteplace.app.repository.CompleteRallyRepository;
@@ -24,7 +23,7 @@ import com.favoriteplace.app.repository.PilgrimageRepository;
 import com.favoriteplace.app.repository.PointHistoryRepository;
 import com.favoriteplace.app.repository.RallyRepository;
 import com.favoriteplace.app.repository.VisitedPilgrimageRepository;
-import com.favoriteplace.app.service.fcm.FCMNotificationService;
+import com.favoriteplace.app.notification.service.FCMNotificationService;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.websocket.RedisService;
@@ -43,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.favoriteplace.app.service.fcm.FCMNotificationService.makeAnimationTopicName;
+import static com.favoriteplace.app.notification.service.FCMNotificationService.makeAnimationTopicName;
 
 @Service
 @Slf4j

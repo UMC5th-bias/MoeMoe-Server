@@ -1,12 +1,12 @@
-package com.favoriteplace.app.converter;
+package com.favoriteplace.app.notification.converter;
 
-import com.favoriteplace.app.domain.Notification;
+import com.favoriteplace.app.notification.domain.Notification;
 import com.favoriteplace.app.domain.community.Comment;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.Post;
-import com.favoriteplace.app.dto.NotificationResponseDto;
-import com.favoriteplace.app.dto.NotificationResponseDto.NotificationInfo;
-import com.favoriteplace.app.service.fcm.enums.TokenMessage;
+import com.favoriteplace.app.notification.controller.dto.NotificationResponseDto;
+import com.favoriteplace.app.notification.controller.dto.NotificationResponseDto.NotificationInfo;
+import com.favoriteplace.app.notification.service.TokenMessage;
 import com.favoriteplace.global.util.DateTimeFormatUtils;
 import org.springframework.data.domain.Page;
 

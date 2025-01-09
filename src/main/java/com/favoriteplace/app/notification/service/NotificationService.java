@@ -1,9 +1,9 @@
-package com.favoriteplace.app.service;
+package com.favoriteplace.app.notification.service;
 
 import com.favoriteplace.app.domain.Member;
-import com.favoriteplace.app.domain.Notification;
-import com.favoriteplace.app.dto.NotificationResponseDto;
-import com.favoriteplace.app.repository.NotificationRepository;
+import com.favoriteplace.app.notification.domain.Notification;
+import com.favoriteplace.app.notification.controller.dto.NotificationResponseDto;
+import com.favoriteplace.app.notification.repository.NotificationRepository;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 
@@ -14,7 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.favoriteplace.app.converter.NotificationConverter.toNotificationResponseDto;
+import static com.favoriteplace.app.notification.converter.NotificationConverter.toNotificationResponseDto;
 
 @Service
 @RequiredArgsConstructor

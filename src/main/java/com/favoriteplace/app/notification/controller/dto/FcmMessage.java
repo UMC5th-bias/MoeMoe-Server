@@ -1,4 +1,4 @@
-package com.favoriteplace.app.dto.fcm;
+package com.favoriteplace.app.notification.controller.dto;
 
 import lombok.Builder;
 import lombok.Getter;

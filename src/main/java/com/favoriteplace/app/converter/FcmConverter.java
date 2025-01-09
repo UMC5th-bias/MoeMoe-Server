@@ -3,8 +3,8 @@ package com.favoriteplace.app.converter;
 import com.favoriteplace.app.domain.community.Comment;
 import com.favoriteplace.app.domain.community.GuestBook;
 import com.favoriteplace.app.domain.community.Post;
-import com.favoriteplace.app.service.fcm.dto.PostTokenCond;
-import com.favoriteplace.app.service.fcm.enums.TokenMessage;
+import com.favoriteplace.app.notification.controller.dto.PostTokenCond;
+import com.favoriteplace.app.notification.service.TokenMessage;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 

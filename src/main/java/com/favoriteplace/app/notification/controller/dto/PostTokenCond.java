@@ -1,6 +1,6 @@
-package com.favoriteplace.app.service.fcm.dto;
+package com.favoriteplace.app.notification.controller.dto;
 
-import com.favoriteplace.app.service.fcm.enums.TokenMessage;
+import com.favoriteplace.app.notification.service.TokenMessage;
 import lombok.Builder;
 
 @Builder

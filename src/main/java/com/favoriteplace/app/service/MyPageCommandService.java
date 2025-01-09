@@ -12,7 +12,7 @@ import com.favoriteplace.app.repository.AcquiredItemRepository;
 import com.favoriteplace.app.repository.BlockRepository;
 import com.favoriteplace.app.repository.ItemRepository;
 import com.favoriteplace.app.repository.MemberRepository;
-import com.favoriteplace.app.service.fcm.FCMNotificationService;
+import com.favoriteplace.app.notification.service.FCMNotificationService;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 

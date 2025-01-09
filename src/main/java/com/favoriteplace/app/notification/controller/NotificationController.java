@@ -1,8 +1,8 @@
-package com.favoriteplace.app.controller;
+package com.favoriteplace.app.notification.controller;
 
 import com.favoriteplace.app.domain.Member;
-import com.favoriteplace.app.dto.NotificationResponseDto;
-import com.favoriteplace.app.service.NotificationService;
+import com.favoriteplace.app.notification.controller.dto.NotificationResponseDto;
+import com.favoriteplace.app.notification.service.NotificationService;
 import com.favoriteplace.global.util.SecurityUtil;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

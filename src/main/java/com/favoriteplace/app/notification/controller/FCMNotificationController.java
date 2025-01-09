@@ -1,9 +1,9 @@
-package com.favoriteplace.app.controller;
+package com.favoriteplace.app.notification.controller;
 
-import com.favoriteplace.app.service.fcm.FCMNotificationService;
-import com.favoriteplace.app.service.fcm.dto.PostTokenCond;
-import com.favoriteplace.app.service.fcm.enums.TokenMessage;
-import com.favoriteplace.app.service.fcm.enums.TotalTopicMessage;
+import com.favoriteplace.app.notification.service.FCMNotificationService;
+import com.favoriteplace.app.notification.controller.dto.PostTokenCond;
+import com.favoriteplace.app.notification.service.TokenMessage;
+import com.favoriteplace.app.notification.service.TotalTopicMessage;
 
 import lombok.RequiredArgsConstructor;
 

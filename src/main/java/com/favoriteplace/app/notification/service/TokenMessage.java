@@ -1,4 +1,4 @@
-package com.favoriteplace.app.service.fcm.enums;
+package com.favoriteplace.app.notification.service;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

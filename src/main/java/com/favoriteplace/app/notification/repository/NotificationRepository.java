@@ -1,6 +1,6 @@
-package com.favoriteplace.app.repository;
+package com.favoriteplace.app.notification.repository;
 
-import com.favoriteplace.app.domain.Notification;
+import com.favoriteplace.app.notification.domain.Notification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
