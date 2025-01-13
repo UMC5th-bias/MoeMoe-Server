@@ -3,12 +3,11 @@ package com.favoriteplace.app.controller;
 import com.favoriteplace.app.domain.Member;
 import com.favoriteplace.app.dto.CommonResponseDto;
 import com.favoriteplace.app.dto.travel.PilgrimageCertifyRequestDto;
-import com.favoriteplace.app.dto.travel.PilgrimageResponseDto;
 import com.favoriteplace.app.dto.travel.PilgrimageSocketDto;
 import com.favoriteplace.app.service.PilgrimageCommandService;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
-import com.favoriteplace.global.security.CustomUserDetails;
+import com.favoriteplace.global.auth.CustomUserDetails;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

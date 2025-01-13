@@ -14,12 +14,13 @@ import com.favoriteplace.app.dto.member.MemberDto;
 import com.favoriteplace.app.dto.member.MemberDto.EmailDuplicateResDto;
 import com.favoriteplace.app.dto.member.MemberDto.EmailSendReqDto;
 import com.favoriteplace.app.dto.member.MemberDto.MemberSignUpReqDto;
+import com.favoriteplace.app.dto.member.TokenInfoDto;
 import com.favoriteplace.app.repository.ItemRepository;
 import com.favoriteplace.app.repository.MemberRepository;
 import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.s3Image.AmazonS3ImageManager;
-import com.favoriteplace.global.security.kakao.KakaoClient;
-import com.favoriteplace.global.security.provider.JwtTokenProvider;
+import com.favoriteplace.global.auth.kakao.KakaoClient;
+import com.favoriteplace.global.auth.provider.JwtTokenProvider;
 import com.favoriteplace.global.util.SecurityUtil;
 
 import java.io.IOException;
@@ -49,7 +50,7 @@ public class MemberService {
     private final RedisTemplate redisTemplate;
     private final KakaoClient kakaoClient;
 
-    public MemberDto.TokenInfo kakaoLogin(final String token) {
+    public TokenInfoDto kakaoLogin(final String token) {
         AuthKakaoLoginDto userInfo = kakaoClient.getUserInfo(token);
 
         // 최초 로그인이라면 회원가입 API로 통신하도록
@@ -83,8 +84,8 @@ public class MemberService {
         Member member = memberSignUpReqDto.toEntity(profileImageUrl, titleItem, userEmail);
         memberRepository.save(member);
 
-        MemberDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(userEmail);
-        member.updateRefreshToken(tokenInfo.getRefreshToken());
+        TokenInfoDto tokenInfo = jwtTokenProvider.generateToken(userEmail);
+        member.updateRefreshToken(tokenInfo.refreshToken());
 
         return MemberDto.MemberSignUpResDto.from(member, tokenInfo);
 
@@ -115,8 +116,8 @@ public class MemberService {
         Member member = memberSignUpReqDto.toEntity(password, profileImageUrl, titleItem);
         memberRepository.save(member);
 
-        MemberDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(member.getEmail());
-        member.updateRefreshToken(tokenInfo.getRefreshToken());
+        TokenInfoDto tokenInfo = jwtTokenProvider.generateToken(member.getEmail());
+        member.updateRefreshToken(tokenInfo.refreshToken());
 
         return MemberDto.MemberSignUpResDto.from(member, tokenInfo);
     }

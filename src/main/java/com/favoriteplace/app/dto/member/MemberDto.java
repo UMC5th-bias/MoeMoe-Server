@@ -51,14 +51,14 @@ public class MemberDto {
         private String accessToken;
         private String refreshToken;
 
-        public static MemberSignUpResDto from(Member member, TokenInfo tokenInfo) {
+        public static MemberSignUpResDto from(Member member, TokenInfoDto tokenInfo) {
             return MemberSignUpResDto.builder()
                     .nickname(member.getNickname())
                     .introduction(member.getDescription())
                     .profileImage(member.getProfileImageUrl())
                     .profileTitleItem(member.getProfileTitle().getDefaultImage().getUrl())
-                    .accessToken(tokenInfo.accessToken)
-                    .refreshToken(tokenInfo.refreshToken)
+                    .accessToken(tokenInfo.accessToken())
+                    .refreshToken(tokenInfo.refreshToken())
                     .build();
         }
     }
@@ -106,16 +106,6 @@ public class MemberDto {
 
         @NotNull(message = "인증 번호를 입력해 주세요")
         private Integer authNum;
-    }
-
-    @Builder
-    @Getter
-    @AllArgsConstructor
-    public static class TokenInfo {
-
-        private String grantType;
-        private String accessToken;
-        private String refreshToken;
     }
 
     @Builder
