@@ -1,8 +1,8 @@
 package com.favoriteplace.app.community.domain;
 
-import com.favoriteplace.app.domain.Image;
+import com.favoriteplace.app.common.domain.Image;
 import com.favoriteplace.app.member.domain.Member;
-import com.favoriteplace.app.domain.common.BaseTimeEntity;
+import com.favoriteplace.app.common.domain.BaseTimeEntity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

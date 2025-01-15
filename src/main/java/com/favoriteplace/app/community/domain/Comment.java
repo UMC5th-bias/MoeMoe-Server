@@ -11,7 +11,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
 import com.favoriteplace.app.member.domain.Member;
-import com.favoriteplace.app.domain.common.BaseTimeEntity;
+import com.favoriteplace.app.common.domain.BaseTimeEntity;
 import com.favoriteplace.app.community.domain.enums.CommentType;
 
 import lombok.AllArgsConstructor;

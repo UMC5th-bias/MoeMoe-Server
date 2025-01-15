@@ -1,7 +1,7 @@
 package com.favoriteplace.app.notification.service;
 
 import com.favoriteplace.app.member.domain.Member;
-import com.favoriteplace.app.repository.LikedRallyRepository;
+import com.favoriteplace.app.rally.repository.LikedRallyRepository;
 import com.favoriteplace.app.notification.controller.dto.PostTokenCond;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;

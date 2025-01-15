@@ -1,10 +1,10 @@
 package com.favoriteplace.app.pilgrimage.converter;
 
-import com.favoriteplace.app.domain.Image;
+import com.favoriteplace.app.common.domain.Image;
 import com.favoriteplace.app.community.domain.GuestBook;
-import com.favoriteplace.app.domain.travel.Address;
+import com.favoriteplace.app.rally.domain.Address;
 import com.favoriteplace.app.pilgrimage.domain.Pilgrimage;
-import com.favoriteplace.app.domain.travel.Rally;
+import com.favoriteplace.app.rally.domain.Rally;
 import com.favoriteplace.app.pilgrimage.controller.dto.PilgrimageResponseDto;
 
 import java.util.ArrayList;

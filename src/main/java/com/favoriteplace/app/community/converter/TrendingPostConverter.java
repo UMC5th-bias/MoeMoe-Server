@@ -3,7 +3,7 @@ package com.favoriteplace.app.community.converter;
 import com.favoriteplace.app.community.domain.GuestBook;
 import com.favoriteplace.app.community.domain.HashTag;
 import com.favoriteplace.app.community.domain.Post;
-import com.favoriteplace.app.dto.HomeResponseDto;
+import com.favoriteplace.app.community.controller.dto.HomeResponseDto;
 import com.favoriteplace.global.util.DateTimeFormatUtils;
 
 import java.util.ArrayList;

@@ -18,7 +18,7 @@ import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
 
 import com.favoriteplace.app.member.domain.Member;
-import com.favoriteplace.app.domain.common.BaseTimeEntity;
+import com.favoriteplace.app.common.domain.BaseTimeEntity;
 
 @Entity
 @Getter

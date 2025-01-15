@@ -1,6 +1,6 @@
 package com.favoriteplace.app.member.domain;
 
-import com.favoriteplace.app.domain.common.BaseTimeEntity;
+import com.favoriteplace.app.common.domain.BaseTimeEntity;
 import com.favoriteplace.app.member.domain.enums.LoginType;
 import com.favoriteplace.app.member.domain.enums.MemberStatus;
 import com.favoriteplace.app.item.domain.Item;

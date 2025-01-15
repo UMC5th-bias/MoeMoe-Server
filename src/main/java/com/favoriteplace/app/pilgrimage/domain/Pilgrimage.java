@@ -1,10 +1,10 @@
 package com.favoriteplace.app.pilgrimage.domain;
 
-import com.favoriteplace.app.domain.Image;
-import com.favoriteplace.app.domain.common.BaseTimeEntity;
+import com.favoriteplace.app.common.domain.Image;
+import com.favoriteplace.app.common.domain.BaseTimeEntity;
 
-import com.favoriteplace.app.domain.travel.Address;
-import com.favoriteplace.app.domain.travel.Rally;
+import com.favoriteplace.app.rally.domain.Address;
+import com.favoriteplace.app.rally.domain.Rally;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

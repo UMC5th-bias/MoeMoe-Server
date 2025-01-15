@@ -3,7 +3,7 @@ package com.favoriteplace.app.community.service;
 import com.favoriteplace.app.community.converter.TrendingPostConverter;
 import com.favoriteplace.app.community.domain.GuestBook;
 import com.favoriteplace.app.community.domain.Post;
-import com.favoriteplace.app.dto.HomeResponseDto;
+import com.favoriteplace.app.community.controller.dto.HomeResponseDto;
 import com.favoriteplace.app.community.controller.dto.TrendingPostResponseDto;
 import com.favoriteplace.app.community.repository.GuestBookImplRepository;
 import com.favoriteplace.app.community.repository.PostImplRepository;

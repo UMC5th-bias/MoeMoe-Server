@@ -2,7 +2,7 @@ package com.favoriteplace.app.pilgrimage.repository;
 
 import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.pilgrimage.domain.Pilgrimage;
-import com.favoriteplace.app.domain.travel.Rally;
+import com.favoriteplace.app.rally.domain.Rally;
 import com.favoriteplace.app.pilgrimage.domain.VisitedPilgrimage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

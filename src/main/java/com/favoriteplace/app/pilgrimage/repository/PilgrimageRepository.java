@@ -1,8 +1,8 @@
 package com.favoriteplace.app.pilgrimage.repository;
 
-import com.favoriteplace.app.domain.travel.Address;
+import com.favoriteplace.app.rally.domain.Address;
 import com.favoriteplace.app.pilgrimage.domain.Pilgrimage;
-import com.favoriteplace.app.domain.travel.Rally;
+import com.favoriteplace.app.rally.domain.Rally;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,9 +1,9 @@
 package com.favoriteplace.app.pilgrimage.controller;
 
 import com.favoriteplace.app.member.domain.Member;
-import com.favoriteplace.app.dto.CommonResponseDto;
+import com.favoriteplace.app.common.dto.CommonResponseDto;
 import com.favoriteplace.app.pilgrimage.controller.dto.PilgrimageResponseDto;
-import com.favoriteplace.app.dto.travel.RallyResponseDto;
+import com.favoriteplace.app.rally.controller.dto.RallyResponseDto;
 import com.favoriteplace.app.pilgrimage.service.PilgrimageCommandService;
 import com.favoriteplace.app.pilgrimage.service.PilgrimageQueryService;
 import com.favoriteplace.global.exception.ErrorCode;

@@ -1,22 +1,21 @@
-package com.favoriteplace.app.community.domain;
+package com.favoriteplace.app.member.domain;
 
-import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.common.domain.BaseTimeEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
-import static jakarta.persistence.FetchType.LAZY;
-import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
 
@@ -25,22 +24,18 @@ import static lombok.AccessLevel.PROTECTED;
 @Builder
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor(access = PRIVATE)
-public class LikedPost extends BaseTimeEntity {
+public class Block extends BaseTimeEntity{
 
-    @Id @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "liked_post_id")
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "block_id")
     private Long id;
 
-    @ManyToOne(fetch = LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "post_id")
-    private Post post;
-
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "guestbook_id")
-    private GuestBook guestBook;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "blocked_member_id",nullable = false)
+    private Member blockedMember;
 
 }

@@ -1,7 +1,7 @@
 package com.favoriteplace.app.pilgrimage.controller;
 
 import com.favoriteplace.app.member.domain.Member;
-import com.favoriteplace.app.dto.CommonResponseDto;
+import com.favoriteplace.app.common.dto.CommonResponseDto;
 import com.favoriteplace.app.pilgrimage.controller.dto.PilgrimageCertifyRequestDto;
 import com.favoriteplace.app.pilgrimage.controller.dto.PilgrimageSocketDto;
 import com.favoriteplace.app.pilgrimage.service.PilgrimageCommandService;

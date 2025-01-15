@@ -1,7 +1,7 @@
 package com.favoriteplace.app.item.domain;
 
-import com.favoriteplace.app.domain.Image;
-import com.favoriteplace.app.domain.common.BaseTimeEntity;
+import com.favoriteplace.app.common.domain.Image;
+import com.favoriteplace.app.common.domain.BaseTimeEntity;
 import com.favoriteplace.app.item.domain.enums.ItemCategory;
 import com.favoriteplace.app.item.domain.enums.ItemType;
 import com.favoriteplace.app.item.domain.enums.SaleStatus;

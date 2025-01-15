@@ -3,7 +3,7 @@ package com.favoriteplace.app.community.service;
 import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.community.domain.Post;
 import com.favoriteplace.app.community.controller.dto.PostRequestDto;
-import com.favoriteplace.app.repository.ImageRepository;
+import com.favoriteplace.app.common.repository.ImageRepository;
 import com.favoriteplace.app.community.repository.LikedPostRepository;
 import com.favoriteplace.app.community.repository.PostRepository;
 import com.favoriteplace.global.exception.ErrorCode;

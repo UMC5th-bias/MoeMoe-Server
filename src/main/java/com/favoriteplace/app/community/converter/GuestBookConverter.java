@@ -1,6 +1,6 @@
 package com.favoriteplace.app.community.converter;
 
-import com.favoriteplace.app.domain.Image;
+import com.favoriteplace.app.common.domain.Image;
 import com.favoriteplace.app.community.domain.Comment;
 import com.favoriteplace.app.community.domain.GuestBook;
 import com.favoriteplace.app.community.domain.HashTag;

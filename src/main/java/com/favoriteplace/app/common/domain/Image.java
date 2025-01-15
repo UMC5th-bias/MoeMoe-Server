@@ -1,7 +1,7 @@
-package com.favoriteplace.app.community.domain;
+package com.favoriteplace.app.common.domain;
 
-import com.favoriteplace.app.member.domain.Member;
-import com.favoriteplace.app.common.domain.BaseTimeEntity;
+import com.favoriteplace.app.community.domain.GuestBook;
+import com.favoriteplace.app.community.domain.Post;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,15 +25,11 @@ import static lombok.AccessLevel.PROTECTED;
 @Builder
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor(access = PRIVATE)
-public class LikedPost extends BaseTimeEntity {
+public class Image {
 
     @Id @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "liked_post_id")
+    @Column(name = "image_id")
     private Long id;
-
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "post_id")
@@ -43,4 +39,11 @@ public class LikedPost extends BaseTimeEntity {
     @JoinColumn(name = "guestbook_id")
     private GuestBook guestBook;
 
+    @Column(nullable = false)
+    private String url;
+
+    public void setPost(Post post) {
+        this.post = post;
+    }
+    public void setGuestBook(GuestBook guestBook){this.guestBook = guestBook;}
 }

@@ -1,26 +1,26 @@
 package com.favoriteplace.app.pilgrimage.service;
 
 import com.favoriteplace.app.pilgrimage.converter.PilgrimageConverter;
-import com.favoriteplace.app.converter.RallyConverter;
-import com.favoriteplace.app.domain.Image;
+import com.favoriteplace.app.rally.converter.RallyConverter;
+import com.favoriteplace.app.common.domain.Image;
 import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.community.domain.GuestBook;
 import com.favoriteplace.app.community.domain.HashTag;
-import com.favoriteplace.app.domain.travel.Address;
-import com.favoriteplace.app.domain.travel.LikedRally;
+import com.favoriteplace.app.rally.domain.Address;
+import com.favoriteplace.app.rally.domain.LikedRally;
 import com.favoriteplace.app.pilgrimage.domain.Pilgrimage;
-import com.favoriteplace.app.domain.travel.Rally;
+import com.favoriteplace.app.rally.domain.Rally;
 import com.favoriteplace.app.pilgrimage.domain.VisitedPilgrimage;
-import com.favoriteplace.app.repository.AddressRepository;
+import com.favoriteplace.app.rally.repository.AddressRepository;
 import com.favoriteplace.app.community.repository.GuestBookRepository;
 import com.favoriteplace.app.community.repository.HashtagRepository;
-import com.favoriteplace.app.repository.ImageRepository;
-import com.favoriteplace.app.repository.LikedRallyRepository;
+import com.favoriteplace.app.common.repository.ImageRepository;
+import com.favoriteplace.app.rally.repository.LikedRallyRepository;
 import com.favoriteplace.app.pilgrimage.repository.PilgrimageRepository;
-import com.favoriteplace.app.repository.RallyRepository;
+import com.favoriteplace.app.rally.repository.RallyRepository;
 import com.favoriteplace.app.pilgrimage.repository.VisitedPilgrimageRepository;
 import com.favoriteplace.app.pilgrimage.controller.dto.PilgrimageResponseDto;
-import com.favoriteplace.app.dto.travel.RallyResponseDto;
+import com.favoriteplace.app.rally.controller.dto.RallyResponseDto;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 
