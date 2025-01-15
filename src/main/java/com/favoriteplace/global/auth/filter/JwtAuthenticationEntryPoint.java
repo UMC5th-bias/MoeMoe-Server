@@ -1,4 +1,4 @@
-package com.favoriteplace.global.security.filter;
+package com.favoriteplace.global.auth.filter;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
