@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 
 import lombok.RequiredArgsConstructor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,6 +40,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class MemberService {
 
     private final MemberRepository memberRepository;
@@ -151,13 +153,8 @@ public class MemberService {
     }
 
     @Transactional
-    public void logout(String accessToken) {
-        /*1. Access Token 검증 */
-        if (!jwtTokenProvider.validateToken(accessToken)) {
-            new RestApiException(TOKEN_NOT_VALID);
-        }
-
-        Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+    public void logout(String token){
+        Authentication authentication = jwtTokenProvider.getAuthentication(token);
         Member member = findMember(authentication.getName());
 
         if (member.getRefreshToken() != null && !member.getRefreshToken().isEmpty()) {
@@ -165,9 +162,11 @@ public class MemberService {
         }
 
         /* 해당 asscess token 유효시간을 계산해서 blacklist로 저장 */
-        Long expriation = jwtTokenProvider.getExpiration(accessToken);
+        Long expriation = jwtTokenProvider.getExpiration(token);
+        log.info(String.valueOf(expriation));
         redisTemplate.opsForValue()
-                .set(accessToken, "logout", expriation, TimeUnit.MICROSECONDS);
+                .set(token, "logout", expriation, TimeUnit.MILLISECONDS);
+
     }
 
     public Member findMember(final String email) {
