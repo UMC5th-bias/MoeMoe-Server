@@ -2,6 +2,7 @@ package com.favoriteplace.app.controller;
 
 import com.favoriteplace.app.dto.item.ItemDto;
 import com.favoriteplace.app.service.ShopService;
+import com.favoriteplace.global.auth.resolver.UserEmail;
 import com.favoriteplace.global.util.SecurityUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,7 +46,10 @@ public class ShopController {
     }
 
     @PostMapping("/purchase/{item_id}")
-    public ResponseEntity<ItemDto.ItemPurchaseRes> buyItem(@PathVariable("item_id") Long itemId) {
+    public ResponseEntity<ItemDto.ItemPurchaseRes> buyItem(
+            @PathVariable("item_id") Long itemId,
+            @UserEmail String userEmail
+    ) {
         return ResponseEntity.ok(shopService.buyItem(itemId));
     }
 }

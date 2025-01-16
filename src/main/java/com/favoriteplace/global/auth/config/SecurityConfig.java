@@ -1,14 +1,14 @@
 package com.favoriteplace.global.auth.config;
 
 import com.favoriteplace.global.auth.filter.ExceptionHandlerFilter;
-import com.favoriteplace.global.auth.filter.JwtAuthenticationEntryPoint;
 import com.favoriteplace.global.auth.filter.JwtAuthenticationFilter;
 import com.favoriteplace.global.auth.filter.LoginFilter;
 import com.favoriteplace.global.auth.handler.CustomAuthenticationFailHandler;
 import com.favoriteplace.global.auth.handler.CustomAuthenticationSuccessHandler;
-import com.favoriteplace.global.auth.handler.JwtAccessDeniedHandler;
 import com.favoriteplace.global.auth.provider.JwtTokenProvider;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
