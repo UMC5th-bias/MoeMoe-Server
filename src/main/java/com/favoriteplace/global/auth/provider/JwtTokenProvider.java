@@ -63,9 +63,9 @@ public class JwtTokenProvider {
     }
 
     public Authentication getAuthentication(String token) {
-        String userPrincipal = parseClaims(token).getSubject();
+        String userEmail = parseClaims(token).getSubject();
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(userPrincipal);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
         return new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword());
     }
 
