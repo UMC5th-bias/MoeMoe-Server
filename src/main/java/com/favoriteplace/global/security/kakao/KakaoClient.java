@@ -1,6 +1,6 @@
 package com.favoriteplace.global.security.kakao;
 
-import com.favoriteplace.app.dto.member.AuthKakaoLoginDto;
+import com.favoriteplace.app.member.controller.dto.AuthKakaoLoginDto;
 import com.favoriteplace.global.security.config.FeignClientConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
