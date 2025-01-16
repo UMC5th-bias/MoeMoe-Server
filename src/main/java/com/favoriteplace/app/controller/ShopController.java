@@ -34,7 +34,8 @@ public class ShopController {
     }
 
     @GetMapping("/new")
-    public ResponseEntity<ItemDto.NewItemListResDto> getNewItemList() {
+    public ResponseEntity<ItemDto.NewItemListResDto> getNewItemList(@UserEmail String email) {
+        System.out.println("email = " + email);
         return ResponseEntity.ok(shopService.getNewItemList());
     }
 
