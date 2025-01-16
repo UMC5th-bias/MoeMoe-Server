@@ -1,4 +1,4 @@
-package com.favoriteplace.app.service;
+package com.favoriteplace.app.pilgrimage.service;
 
 import com.favoriteplace.app.community.repository.GuestBookRepository;
 import com.favoriteplace.app.community.repository.HashtagRepository;
