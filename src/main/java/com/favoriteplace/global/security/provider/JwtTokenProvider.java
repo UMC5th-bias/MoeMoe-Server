@@ -1,17 +1,13 @@
 package com.favoriteplace.global.security.provider;
 
-import com.favoriteplace.app.dto.member.MemberDto.TokenInfo;
-import com.favoriteplace.global.security.CustomUserDetails;
+import com.favoriteplace.app.member.controller.dto.MemberDto.TokenInfo;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
 import java.util.Date;
-import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
