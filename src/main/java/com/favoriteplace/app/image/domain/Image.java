@@ -1,4 +1,4 @@
-package com.favoriteplace.app.common.domain;
+package com.favoriteplace.app.image.domain;
 
 import com.favoriteplace.app.community.domain.GuestBook;
 import com.favoriteplace.app.community.domain.Post;

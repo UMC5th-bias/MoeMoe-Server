@@ -1,6 +1,6 @@
 package com.favoriteplace.app.community.domain;
 
-import com.favoriteplace.app.common.domain.Image;
+import com.favoriteplace.app.image.domain.Image;
 import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.common.domain.BaseTimeEntity;
 import com.favoriteplace.app.pilgrimage.domain.Pilgrimage;

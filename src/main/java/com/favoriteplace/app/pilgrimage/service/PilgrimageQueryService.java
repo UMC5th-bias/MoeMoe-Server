@@ -2,7 +2,7 @@ package com.favoriteplace.app.pilgrimage.service;
 
 import com.favoriteplace.app.pilgrimage.converter.PilgrimageConverter;
 import com.favoriteplace.app.rally.converter.RallyConverter;
-import com.favoriteplace.app.common.domain.Image;
+import com.favoriteplace.app.image.domain.Image;
 import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.community.domain.GuestBook;
 import com.favoriteplace.app.community.domain.HashTag;
@@ -14,7 +14,7 @@ import com.favoriteplace.app.pilgrimage.domain.VisitedPilgrimage;
 import com.favoriteplace.app.rally.repository.AddressRepository;
 import com.favoriteplace.app.community.repository.GuestBookRepository;
 import com.favoriteplace.app.community.repository.HashtagRepository;
-import com.favoriteplace.app.common.repository.ImageRepository;
+import com.favoriteplace.app.image.repository.ImageRepository;
 import com.favoriteplace.app.rally.repository.LikedRallyRepository;
 import com.favoriteplace.app.pilgrimage.repository.PilgrimageRepository;
 import com.favoriteplace.app.rally.repository.RallyRepository;

@@ -11,7 +11,7 @@ import com.favoriteplace.app.community.controller.dto.guestbook.GuestBookModifyR
 import com.favoriteplace.app.community.controller.dto.PostResponseDto;
 import com.favoriteplace.app.community.repository.GuestBookRepository;
 import com.favoriteplace.app.community.repository.HashtagRepository;
-import com.favoriteplace.app.common.repository.ImageRepository;
+import com.favoriteplace.app.image.repository.ImageRepository;
 import com.favoriteplace.app.community.repository.LikedPostRepository;
 import com.favoriteplace.app.pilgrimage.repository.PilgrimageRepository;
 import com.favoriteplace.app.item.repository.PointHistoryRepository;

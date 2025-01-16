@@ -1,6 +1,6 @@
 package com.favoriteplace.app.pilgrimage.converter;
 
-import com.favoriteplace.app.common.domain.Image;
+import com.favoriteplace.app.image.domain.Image;
 import com.favoriteplace.app.community.domain.GuestBook;
 import com.favoriteplace.app.rally.domain.Address;
 import com.favoriteplace.app.pilgrimage.domain.Pilgrimage;

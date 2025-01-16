@@ -1,6 +1,6 @@
 package com.favoriteplace.app.rally.domain;
 
-import com.favoriteplace.app.common.domain.Image;
+import com.favoriteplace.app.image.domain.Image;
 import com.favoriteplace.app.item.domain.Item;
 import com.favoriteplace.app.common.domain.BaseTimeEntity;
 

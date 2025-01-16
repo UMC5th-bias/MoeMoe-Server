@@ -1,6 +1,6 @@
-package com.favoriteplace.app.common.repository;
+package com.favoriteplace.app.image.repository;
 
-import com.favoriteplace.app.common.domain.Image;
+import com.favoriteplace.app.image.domain.Image;
 import com.favoriteplace.app.community.domain.GuestBook;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
