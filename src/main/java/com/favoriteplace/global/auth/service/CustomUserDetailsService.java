@@ -1,7 +1,7 @@
 package com.favoriteplace.global.auth.service;
 
-import com.favoriteplace.app.domain.Member;
-import com.favoriteplace.app.repository.MemberRepository;
+import com.favoriteplace.app.member.domain.Member;
+import com.favoriteplace.app.member.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
 

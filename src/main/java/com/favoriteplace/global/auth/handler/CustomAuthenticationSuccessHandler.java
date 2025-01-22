@@ -4,9 +4,9 @@ import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.favoriteplace.app.domain.Member;
-import com.favoriteplace.app.dto.member.TokenInfoDto;
-import com.favoriteplace.app.repository.MemberRepository;
+import com.favoriteplace.app.member.controller.dto.TokenInfoDto;
+import com.favoriteplace.app.member.domain.Member;
+import com.favoriteplace.app.member.repository.MemberRepository;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.auth.provider.JwtTokenProvider;
@@ -33,8 +33,11 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
     @Override
     @Transactional
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-        Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Authentication authentication
+    ) throws IOException, ServletException {
 
         String email = request.getParameter("email");
         Member member = memberRepository.findByEmail(email)

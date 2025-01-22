@@ -1,6 +1,6 @@
 package com.favoriteplace.global.auth.provider;
 
-import com.favoriteplace.app.dto.member.TokenInfoDto;
+import com.favoriteplace.app.member.controller.dto.TokenInfoDto;
 import com.favoriteplace.global.exception.RestApiException;
 
 import io.jsonwebtoken.Claims;
