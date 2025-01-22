@@ -1,4 +1,4 @@
-package com.favoriteplace.global.security;
+package com.favoriteplace.global.auth;
 
 import com.favoriteplace.app.member.domain.Member;
 import java.util.Collection;

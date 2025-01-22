@@ -1,8 +1,10 @@
-package com.favoriteplace.global.security.filter;
+package com.favoriteplace.global.auth.filter;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,13 +17,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
-        // 사용자가 제공한 인증 정보 추출
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
         // UsernamePasswordAuthenticationToken 생성(이때 authentication 는 인증 여부를 확인하는 authenticated 값이 false)
-        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
-            email, password);
+        UsernamePasswordAuthenticationToken authRequest =
+                new UsernamePasswordAuthenticationToken(email, password);
 
         /**
          * 실제 인증을 수행하도록 AuthenticationManager에게 위임
