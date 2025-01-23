@@ -4,10 +4,12 @@ import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.member.repository.MemberRepository;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
-import com.favoriteplace.global.security.CustomUserDetails;
-import com.favoriteplace.global.security.provider.JwtTokenProvider;
+import com.favoriteplace.global.auth.CustomUserDetails;
+import com.favoriteplace.global.auth.provider.JwtTokenProvider;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.messaging.Message;

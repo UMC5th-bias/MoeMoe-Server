@@ -1,25 +1,22 @@
 package com.favoriteplace.app.member.service;
 
 import static com.favoriteplace.global.exception.ErrorCode.NOT_SIGNUP_WITH_KAKAO;
-import static com.favoriteplace.global.exception.ErrorCode.TOKEN_NOT_VALID;
 import static com.favoriteplace.global.exception.ErrorCode.USER_ALREADY_EXISTS;
 import static com.favoriteplace.global.exception.ErrorCode.USER_NOT_FOUND;
 
-import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.item.domain.Item;
-import com.favoriteplace.app.member.controller.dto.UserInfoResponseDto;
+import com.favoriteplace.app.item.repository.ItemRepository;
 import com.favoriteplace.app.member.controller.dto.AuthKakaoLoginDto;
 import com.favoriteplace.app.member.controller.dto.KaKaoSignUpRequestDto;
 import com.favoriteplace.app.member.controller.dto.MemberDto;
-import com.favoriteplace.app.member.controller.dto.MemberDto.EmailDuplicateResDto;
-import com.favoriteplace.app.member.controller.dto.MemberDto.EmailSendReqDto;
-import com.favoriteplace.app.member.controller.dto.MemberDto.MemberSignUpReqDto;
-import com.favoriteplace.app.item.repository.ItemRepository;
+import com.favoriteplace.app.member.controller.dto.TokenInfoDto;
+import com.favoriteplace.app.member.controller.dto.UserInfoResponseDto;
+import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.member.repository.MemberRepository;
 import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.s3Image.AmazonS3ImageManager;
-import com.favoriteplace.global.security.kakao.KakaoClient;
-import com.favoriteplace.global.security.provider.JwtTokenProvider;
+import com.favoriteplace.global.auth.kakao.KakaoClient;
+import com.favoriteplace.global.auth.provider.JwtTokenProvider;
 import com.favoriteplace.global.util.SecurityUtil;
 
 import java.io.IOException;
@@ -27,6 +24,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
@@ -38,6 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class MemberService {
 
     private final MemberRepository memberRepository;
@@ -49,7 +48,7 @@ public class MemberService {
     private final RedisTemplate redisTemplate;
     private final KakaoClient kakaoClient;
 
-    public MemberDto.TokenInfo kakaoLogin(final String token) {
+    public TokenInfoDto kakaoLogin(final String token) {
         AuthKakaoLoginDto userInfo = kakaoClient.getUserInfo(token);
 
         // 최초 로그인이라면 회원가입 API로 통신하도록
@@ -83,8 +82,8 @@ public class MemberService {
         Member member = memberSignUpReqDto.toEntity(profileImageUrl, titleItem, userEmail);
         memberRepository.save(member);
 
-        MemberDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(userEmail);
-        member.updateRefreshToken(tokenInfo.getRefreshToken());
+        TokenInfoDto tokenInfo = jwtTokenProvider.generateToken(userEmail);
+        member.updateRefreshToken(tokenInfo.refreshToken());
 
         return MemberDto.MemberSignUpResDto.from(member, tokenInfo);
 
@@ -92,7 +91,7 @@ public class MemberService {
 
     @Transactional
     public MemberDto.MemberSignUpResDto signup(
-            final MemberSignUpReqDto memberSignUpReqDto,
+            final MemberDto.MemberSignUpReqDto memberSignUpReqDto,
             final List<MultipartFile> images
     ) throws IOException {
 
@@ -115,8 +114,8 @@ public class MemberService {
         Member member = memberSignUpReqDto.toEntity(password, profileImageUrl, titleItem);
         memberRepository.save(member);
 
-        MemberDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(member.getEmail());
-        member.updateRefreshToken(tokenInfo.getRefreshToken());
+        TokenInfoDto tokenInfo = jwtTokenProvider.generateToken(member.getEmail());
+        member.updateRefreshToken(tokenInfo.refreshToken());
 
         return MemberDto.MemberSignUpResDto.from(member, tokenInfo);
     }
@@ -126,11 +125,11 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberDto.EmailDuplicateResDto emailDuplicateCheck(EmailSendReqDto emailSendReqDto) {
+    public MemberDto.EmailDuplicateResDto emailDuplicateCheck(MemberDto.EmailSendReqDto emailSendReqDto) {
         String email = emailSendReqDto.getEmail();
         Boolean isExists = memberRepository.findByEmail(email).isPresent();
 
-        return new EmailDuplicateResDto(isExists);
+        return new MemberDto.EmailDuplicateResDto(isExists);
     }
 
     @Transactional
@@ -150,13 +149,8 @@ public class MemberService {
     }
 
     @Transactional
-    public void logout(String accessToken) {
-        /*1. Access Token 검증 */
-        if (!jwtTokenProvider.validateToken(accessToken)) {
-            new RestApiException(TOKEN_NOT_VALID);
-        }
-
-        Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+    public void logout(String token){
+        Authentication authentication = jwtTokenProvider.getAuthentication(token);
         Member member = findMember(authentication.getName());
 
         if (member.getRefreshToken() != null && !member.getRefreshToken().isEmpty()) {
@@ -164,9 +158,11 @@ public class MemberService {
         }
 
         /* 해당 asscess token 유효시간을 계산해서 blacklist로 저장 */
-        Long expriation = jwtTokenProvider.getExpiration(accessToken);
+        Long expriation = jwtTokenProvider.getExpiration(token);
+        log.info(String.valueOf(expriation));
         redisTemplate.opsForValue()
-                .set(accessToken, "logout", expriation, TimeUnit.MICROSECONDS);
+                .set(token, "logout", expriation, TimeUnit.MILLISECONDS);
+
     }
 
     public Member findMember(final String email) {

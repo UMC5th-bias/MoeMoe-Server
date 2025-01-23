@@ -7,7 +7,7 @@ import com.favoriteplace.app.pilgrimage.controller.dto.PilgrimageSocketDto;
 import com.favoriteplace.app.pilgrimage.service.PilgrimageCommandService;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
-import com.favoriteplace.global.security.CustomUserDetails;
+import com.favoriteplace.global.auth.CustomUserDetails;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
