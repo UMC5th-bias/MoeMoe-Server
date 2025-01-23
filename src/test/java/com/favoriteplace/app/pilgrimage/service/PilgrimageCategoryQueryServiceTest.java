@@ -2,6 +2,7 @@ package com.favoriteplace.app.pilgrimage.service;
 
 import com.favoriteplace.app.image.domain.Image;
 import com.favoriteplace.app.member.domain.Member;
+import com.favoriteplace.app.member.repository.MemberRepository;
 import com.favoriteplace.app.pilgrimage.repository.PilgrimageRepository;
 import com.favoriteplace.app.pilgrimage.repository.VisitedPilgrimageRepository;
 import com.favoriteplace.app.rally.controller.dto.RallyResponseDto.PilgrimageCategoryAnimeDto;
@@ -23,6 +24,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class PilgrimageCategoryQueryServiceTest {
     @Mock
+    MemberRepository memberRepository;
+    @Mock
     PilgrimageRepository pilgrimageRepository;
     @Mock
     RallyRepository rallyRepository;
@@ -34,7 +37,7 @@ class PilgrimageCategoryQueryServiceTest {
 
     @BeforeEach
     void setup() {
-        this.pilgrimageService = new PilgrimageCategoryQueryService(rallyRepository,
+        this.pilgrimageService = new PilgrimageCategoryQueryService(memberRepository, rallyRepository,
                 visitedPilgrimageRepository, addressRepository, pilgrimageRepository);
     }
 
@@ -66,6 +69,7 @@ class PilgrimageCategoryQueryServiceTest {
             //given
             Member member = Mockito.mock(Member.class);
             Mockito.when(member.getId()).thenReturn(0L);
+            Mockito.when(member.getEmail()).thenReturn("usre@user.com");
             Image image = Mockito.mock(Image.class);
             Mockito.when(image.getUrl()).thenReturn("이미지");
             Rally rally = getRally(0L, "최애의아이", image);
@@ -73,7 +77,7 @@ class PilgrimageCategoryQueryServiceTest {
             Mockito.when(visitedPilgrimageRepository.findByDistinctCount(member.getId(), rally.getId())).thenReturn(1L);
 
             //when
-            List<PilgrimageCategoryAnimeDto> categoryAnime = pilgrimageService.getCategoryAnime(member);
+            List<PilgrimageCategoryAnimeDto> categoryAnime = pilgrimageService.getCategoryAnime(member.getEmail());
 
             //then
             Assertions.assertThat(categoryAnime.get(0).getId()).isEqualTo(0L);

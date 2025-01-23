@@ -7,6 +7,7 @@ import com.favoriteplace.app.pilgrimage.service.PilgrimageCategoryQueryService;
 import com.favoriteplace.app.rally.controller.dto.RallyResponseDto;
 import com.favoriteplace.app.pilgrimage.service.PilgrimageCommandService;
 import com.favoriteplace.app.pilgrimage.service.PilgrimageQueryService;
+import com.favoriteplace.global.auth.resolver.UserEmail;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.util.SecurityUtil;
@@ -57,9 +58,8 @@ public class PilgrimageApiController {
     // 성지순례 애니메이션 카테고리
     // 회원 + 비회원
     @GetMapping("/anime")
-    public List<RallyResponseDto.PilgrimageCategoryAnimeDto> getCategoryAnime(HttpServletRequest request) {
-        Member member = securityUtil.getUserFromHeader(request);
-        return pilgrimageCategoryQueryService.getCategoryAnime(member);
+    public List<RallyResponseDto.PilgrimageCategoryAnimeDto> getCategoryAnime(@UserEmail String email) {
+        return pilgrimageCategoryQueryService.getCategoryAnime(email);
     }
 
     // 성지순례 지역 카테고리
@@ -129,15 +129,6 @@ public class PilgrimageApiController {
         pilgrimageCommandService.unsubscribeRally(rallyId, member);
         return ResponseEntity.noContent().build();
     }
-
-    // 성지순례 장소 방문 인증하기
-//    @PostMapping("/certified/{pilgrimage_id}")
-//    public CommonResponseDto.RallyResponseDto certifyToPilgrimage(
-//            @PathVariable("pilgrimage_id")Long pilgrimageId,
-//            @RequestBody PilgrimageDto.PilgrimageCertifyRequestDto form){
-//        Member member = securityUtil.getUser();
-//        return pilgrimageCommandService.certifyToPilgrimage(pilgrimageId, member, form);
-//    }
 
     // 성지순례 애니 별 검색
     @GetMapping("/category")
