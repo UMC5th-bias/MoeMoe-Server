@@ -1,6 +1,5 @@
 package com.favoriteplace.app.pilgrimage.service;
 
-import com.favoriteplace.app.pilgrimage.controller.dto.PilgrimageResponseDto.PilgrimageCategoryRegionDto;
 import com.favoriteplace.app.pilgrimage.converter.PilgrimageConverter;
 import com.favoriteplace.app.rally.converter.RallyConverter;
 import com.favoriteplace.app.image.domain.Image;
@@ -28,14 +27,11 @@ import com.favoriteplace.global.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -146,8 +142,6 @@ public class PilgrimageQueryService {
         return result;
     }
 
-    //
-
     /***
      * 성지순례 메인 (내 성지순례 + 인증글)
      * @param member
@@ -183,62 +177,6 @@ public class PilgrimageQueryService {
         return RallyConverter.toRallyTrendingDto(rallys.get(0), visited);
     }
 
-    /***
-     * 성지순례 애니 별 카테고리
-     * @param member
-     * @return
-     */
-    public List<RallyResponseDto.PilgrimageCategoryAnimeDto> getCategoryAnime(Member member) {
-        // 전체 랠리 최신 순으로 조회하기
-        List<Rally> rallyList = rallyRepository.findAllOrderByCreatedAt();
-        if (member == null) {
-            return rallyList.stream()
-                    .map(rally -> RallyConverter.toPilgrimageCategoryAnimeDto(rally, 0L))
-                    .collect(Collectors.toList());
-        }
-        return rallyList.stream().map(rally -> {
-            Long visitedPilgrimages = visitedPilgrimageRepository.findByDistinctCount(member.getId(), rally.getId());
-            return RallyConverter.toPilgrimageCategoryAnimeDto(rally, visitedPilgrimages);
-        }).collect(Collectors.toList());
-    }
-
-    /***
-     * 성지순례 지역 별 카테고리
-     * @return state 별로 그룹화 한 지역 정보
-     */
-    public List<PilgrimageResponseDto.PilgrimageCategoryRegionDto> getCategoryRegion() {
-        List<Address> address = addressRepository.findAll();
-
-        // 전체 state 추출
-        Set<String> addressKeyList = address.stream()
-                .map(Address::getState)
-                .collect(Collectors.toSet());
-
-        // 전체 address 정보 state 별로 그룹화
-        Map<String, List<Address>> addressGroupByState = address.stream()
-                .collect(Collectors.groupingBy(Address::getState));
-
-        return getPilgrimageCategoryRegionDtos(addressKeyList, addressGroupByState);
-    }
-
-    /***
-     * 성지순례 지역 상세 카테고리
-     * @param regionId
-     * @return district 별 성지순례 리스트
-     */
-    public List<PilgrimageResponseDto.PilgrimageCategoryRegionDetailDto> getCategoryRegionDetail(Long regionId) {
-        Address address = addressRepository.findById(regionId).orElseThrow(() ->
-                new RestApiException(ErrorCode.ADDRESS_NOT_FOUND));
-        List<Pilgrimage> pilgrimages = pilgrimageRepository.findByAddress(address);
-
-        return pilgrimages.stream()
-                .map(pilgrimage -> {
-                    Rally rally = rallyRepository.findByPilgrimage(pilgrimage);
-                    return PilgrimageConverter.toPilgrimageCategoryRegionDetailDto(rally.getName(), pilgrimage);
-                })
-                .collect(Collectors.toList());
-    }
-
     /**
      * 애니메이션 별 랠리 검색
      *
@@ -270,22 +208,6 @@ public class PilgrimageQueryService {
                     }).collect(Collectors.toList());
             return RallyConverter.toSearchRegionDto(name, resultList);
         }).collect(Collectors.toList());
-    }
-
-    @NotNull
-    private static List<PilgrimageCategoryRegionDto> getPilgrimageCategoryRegionDtos(Set<String> addressKeyList,
-                                                                                     Map<String, List<Address>> addressGroupByState) {
-        List<PilgrimageCategoryRegionDto> dtos = addressKeyList.stream().map(
-                stateKey -> {
-                    List<Address> addressList = addressGroupByState.get(stateKey);
-                    List<PilgrimageResponseDto.PilgrimageAddressDetailDto> addressDetailDtos = addressList.stream()
-                            .map(addressDetail ->
-                                    PilgrimageConverter.toPilgrimageAddressDetailDto(addressDetail)
-                            ).collect(Collectors.toList());
-                    return PilgrimageConverter.toPilgrimageCategoryRegionDto(stateKey, addressDetailDtos);
-                }
-        ).collect(Collectors.toList());
-        return dtos;
     }
 
     private List<PilgrimageResponseDto.LikedRallyDto> getLikedRally(Member member) {

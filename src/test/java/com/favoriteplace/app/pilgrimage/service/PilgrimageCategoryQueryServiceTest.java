@@ -1,17 +1,12 @@
 package com.favoriteplace.app.pilgrimage.service;
 
-import com.favoriteplace.app.community.repository.GuestBookRepository;
-import com.favoriteplace.app.community.repository.HashtagRepository;
 import com.favoriteplace.app.image.domain.Image;
-import com.favoriteplace.app.image.repository.ImageRepository;
 import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.pilgrimage.repository.PilgrimageRepository;
 import com.favoriteplace.app.pilgrimage.repository.VisitedPilgrimageRepository;
-import com.favoriteplace.app.pilgrimage.service.PilgrimageQueryService;
 import com.favoriteplace.app.rally.controller.dto.RallyResponseDto.PilgrimageCategoryAnimeDto;
 import com.favoriteplace.app.rally.domain.Rally;
 import com.favoriteplace.app.rally.repository.AddressRepository;
-import com.favoriteplace.app.rally.repository.LikedRallyRepository;
 import com.favoriteplace.app.rally.repository.RallyRepository;
 import java.util.List;
 import org.assertj.core.api.Assertions;
@@ -26,36 +21,26 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class PilgrimageQueryServiceTest {
+class PilgrimageCategoryQueryServiceTest {
     @Mock
     PilgrimageRepository pilgrimageRepository;
     @Mock
     RallyRepository rallyRepository;
     @Mock
-    LikedRallyRepository likedRallyRepository;
-    @Mock
     VisitedPilgrimageRepository visitedPilgrimageRepository;
     @Mock
     AddressRepository addressRepository;
-    @Mock
-    GuestBookRepository guestBookRepository;
-    @Mock
-    HashtagRepository hashtagRepository;
-    @Mock
-    ImageRepository imageRepository;
-    private PilgrimageQueryService pilgrimageService;
+    private PilgrimageCategoryQueryService pilgrimageService;
 
     @BeforeEach
     void setup() {
-        this.pilgrimageService = new PilgrimageQueryService(pilgrimageRepository,
-                rallyRepository,
-                likedRallyRepository, visitedPilgrimageRepository, addressRepository, guestBookRepository,
-                hashtagRepository, imageRepository);
+        this.pilgrimageService = new PilgrimageCategoryQueryService(rallyRepository,
+                visitedPilgrimageRepository, addressRepository, pilgrimageRepository);
     }
 
     @Nested
     @DisplayName("성지순례 애니 별 카테고리 조회")
-    class AnemeCategories {
+    class AnimeCategories {
         @Test
         @DisplayName("비로그인 성지순례 애니 별 카테고리 조회 성공")
         void 비로그인_성지순례_애니별_카테고리_조회() {

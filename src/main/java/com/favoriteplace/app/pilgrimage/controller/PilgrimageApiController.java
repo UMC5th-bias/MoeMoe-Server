@@ -3,6 +3,7 @@ package com.favoriteplace.app.pilgrimage.controller;
 import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.common.dto.CommonResponseDto;
 import com.favoriteplace.app.pilgrimage.controller.dto.PilgrimageResponseDto;
+import com.favoriteplace.app.pilgrimage.service.PilgrimageCategoryQueryService;
 import com.favoriteplace.app.rally.controller.dto.RallyResponseDto;
 import com.favoriteplace.app.pilgrimage.service.PilgrimageCommandService;
 import com.favoriteplace.app.pilgrimage.service.PilgrimageQueryService;
@@ -31,6 +32,7 @@ import java.util.List;
 @RequestMapping(value = "/pilgrimage")
 @RequiredArgsConstructor
 public class PilgrimageApiController {
+    private final PilgrimageCategoryQueryService pilgrimageCategoryQueryService;
     private final PilgrimageQueryService pilgrimageQueryService;
     private final PilgrimageCommandService pilgrimageCommandService;
     private final SecurityUtil securityUtil;
@@ -57,20 +59,20 @@ public class PilgrimageApiController {
     @GetMapping("/anime")
     public List<RallyResponseDto.PilgrimageCategoryAnimeDto> getCategoryAnime(HttpServletRequest request) {
         Member member = securityUtil.getUserFromHeader(request);
-        return pilgrimageQueryService.getCategoryAnime(member);
+        return pilgrimageCategoryQueryService.getCategoryAnime(member);
     }
 
     // 성지순례 지역 카테고리
     @GetMapping("/region")
     public List<PilgrimageResponseDto.PilgrimageCategoryRegionDto> getCategoryRegion() {
-        return pilgrimageQueryService.getCategoryRegion();
+        return pilgrimageCategoryQueryService.getCategoryRegion();
     }
 
     // 성지순례 지역 상세 카테고리
     @GetMapping("/region/{regionId}")
     public List<PilgrimageResponseDto.PilgrimageCategoryRegionDetailDto> getCategoryRegionDetail(
             @PathVariable("regionId") Long regionId) {
-        return pilgrimageQueryService.getCategoryRegionDetail(regionId);
+        return pilgrimageCategoryQueryService.getCategoryRegionDetail(regionId);
     }
 
     // 성지순례 랠리 상세
