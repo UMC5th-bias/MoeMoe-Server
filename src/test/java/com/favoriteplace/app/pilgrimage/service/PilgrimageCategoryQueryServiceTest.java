@@ -12,9 +12,10 @@ import com.favoriteplace.app.rally.domain.Address;
 import com.favoriteplace.app.rally.domain.Rally;
 import com.favoriteplace.app.rally.repository.AddressRepository;
 import com.favoriteplace.app.rally.repository.RallyRepository;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -103,7 +104,10 @@ class PilgrimageCategoryQueryServiceTest {
         @DisplayName("성지순례 지역 별 카테고리 조회 성공")
         void 성지순례_지역별_카테고리_조회_성공() {
             // given
-            List<Address> addresses = getAddresses();
+            List<Address> addresses = new ArrayList<>();
+            addresses.addAll(createAddress("도쿄", "시부야구", "신주쿠구"));
+            addresses.addAll(createAddress("오사카", "어쩌구"));
+
             Mockito.when(addressRepository.findAll()).thenReturn(addresses);
 
             // when
@@ -113,25 +117,13 @@ class PilgrimageCategoryQueryServiceTest {
             Assertions.assertThat(categoryRegion).hasSize(2);
             assertCategoryRegion(categoryRegion, "오사카", "어쩌구");
             assertCategoryRegion(categoryRegion, "도쿄", "시부야구", "신주쿠구");
-            assertCategoryRegion(categoryRegion, "도쿄", "시부야구", "신주쿠구");
         }
 
-        private List<Address> getAddresses() {
-            return List.of(Address.builder()
-                            .id(0L)
-                            .state("도쿄")
-                            .district("시부야구")
-                            .build(),
-                    Address.builder()
-                            .id(1L)
-                            .state("도쿄")
-                            .district("신주쿠구")
-                            .build(),
-                    Address.builder()
-                            .id(2L)
-                            .state("오사카")
-                            .district("어쩌구")
-                            .build());
+        private List<Address> createAddress(String state, String... districts) {
+            return Arrays.stream(districts).map(district -> Address.builder()
+                    .state(state)
+                    .district(district)
+                    .build()).toList();
         }
 
         private void assertCategoryRegion(List<PilgrimageCategoryRegionDto> categoryRegion, String state,
@@ -154,6 +146,16 @@ class PilgrimageCategoryQueryServiceTest {
                     .filter(region -> region.getState().equals(state))
                     .findFirst()
                     .orElseThrow(() -> new AssertionError("State를 찾을 수 없습니다: " + state));
+        }
+    }
+
+    @Nested
+    @DisplayName("성지순례 지역 상세 카테고리 조회")
+    class RegionDetails {
+        @Test
+        @DisplayName("성지순례 지역 상세 목록 조회 성공")
+        void 성지순례_지역_상세_목록_조회_성공() {
+
         }
     }
 
