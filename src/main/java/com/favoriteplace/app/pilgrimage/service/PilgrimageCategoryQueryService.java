@@ -51,7 +51,6 @@ public class PilgrimageCategoryQueryService {
         }).collect(Collectors.toList());
     }
 
-
     /***
      * 성지순례 지역 별 카테고리
      * @return state 별로 그룹화 한 지역 정보
@@ -88,7 +87,6 @@ public class PilgrimageCategoryQueryService {
                 })
                 .collect(Collectors.toList());
     }
-
 
     @NotNull
     private static List<PilgrimageCategoryRegionDto> getPilgrimageCategoryRegionDtos(Set<String> addressKeyList,
