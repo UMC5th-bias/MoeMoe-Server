@@ -4,7 +4,9 @@ import com.favoriteplace.app.image.domain.Image;
 import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.member.repository.MemberRepository;
 import com.favoriteplace.app.pilgrimage.controller.dto.PilgrimageResponseDto;
+import com.favoriteplace.app.pilgrimage.controller.dto.PilgrimageResponseDto.PilgrimageCategoryRegionDetailDto;
 import com.favoriteplace.app.pilgrimage.controller.dto.PilgrimageResponseDto.PilgrimageCategoryRegionDto;
+import com.favoriteplace.app.pilgrimage.domain.Pilgrimage;
 import com.favoriteplace.app.pilgrimage.repository.PilgrimageRepository;
 import com.favoriteplace.app.pilgrimage.repository.VisitedPilgrimageRepository;
 import com.favoriteplace.app.rally.controller.dto.RallyResponseDto.PilgrimageCategoryAnimeDto;
@@ -86,6 +88,13 @@ class PilgrimageCategoryQueryServiceTest {
             Assertions.assertThat(categoryAnime.get(0).getName()).isEqualTo("최애의아이");
         }
 
+        private Member getMember(Long id, String email) {
+            Member member = Mockito.mock(Member.class);
+            Mockito.when(member.getId()).thenReturn(id);
+            Mockito.when(member.getEmail()).thenReturn(email);
+            return member;
+        }
+
         private Rally getRally(Long id, String name) {
             Image image = Mockito.mock(Image.class);
             Mockito.when(image.getUrl()).thenReturn("이미지");
@@ -119,13 +128,6 @@ class PilgrimageCategoryQueryServiceTest {
             assertCategoryRegion(categoryRegion, "도쿄", "시부야구", "신주쿠구");
         }
 
-        private List<Address> createAddress(String state, String... districts) {
-            return Arrays.stream(districts).map(district -> Address.builder()
-                    .state(state)
-                    .district(district)
-                    .build()).toList();
-        }
-
         private void assertCategoryRegion(List<PilgrimageCategoryRegionDto> categoryRegion, String state,
                                           String... districts) {
             PilgrimageCategoryRegionDto region = findCategoryRegionByState(categoryRegion, state);
@@ -155,14 +157,56 @@ class PilgrimageCategoryQueryServiceTest {
         @Test
         @DisplayName("성지순례 지역 상세 목록 조회 성공")
         void 성지순례_지역_상세_목록_조회_성공() {
+            // given
+            Address address = createAddress("도쿄", "시부야구", "신주쿠구").get(0);
+            Pilgrimage pilgrimage1 = getPilgrimage(0L, "시부야 스크램교차로");
+            Pilgrimage pilgrimage2 = getPilgrimage(1L, "시부야 어쩌구");
+            Rally rally1 = getRally("최애의장소");
+            Rally rally2 = getRally("날씨의아이");
 
+            Mockito.when(addressRepository.findById(address.getId())).thenReturn(Optional.of(address));
+            Mockito.when(pilgrimageRepository.findByAddress(address)).thenReturn(List.of(pilgrimage1, pilgrimage2));
+            Mockito.when(rallyRepository.findByPilgrimage(pilgrimage1)).thenReturn(rally1);
+            Mockito.when(rallyRepository.findByPilgrimage(pilgrimage2)).thenReturn(rally2);
+
+            // when
+            List<PilgrimageCategoryRegionDetailDto> categoryRegionDetail = pilgrimageService.getCategoryRegionDetail(
+                    address.getId());
+
+            // then
+            Assertions.assertThat(categoryRegionDetail).hasSize(2);
+            Assertions.assertThat(categoryRegionDetail.get(0).getDetailAddress())
+                    .isEqualTo("시부야 스크램교차로");
+            Assertions.assertThat(categoryRegionDetail.get(1).getDetailAddress())
+                    .isEqualTo("시부야 어쩌구");
+            Assertions.assertThat(categoryRegionDetail.get(0).getTitle()).isEqualTo("최애의장소");
+            Assertions.assertThat(categoryRegionDetail.get(1).getTitle()).isEqualTo("날씨의아이");
+        }
+
+        private Rally getRally(String title) {
+            Rally rally = Mockito.mock(Rally.class);
+            Mockito.when(rally.getName()).thenReturn(title);
+            return rally;
+        }
+
+        private Pilgrimage getPilgrimage(Long id, String detailAddress) {
+            Image image = Mockito.mock(Image.class);
+            Mockito.when(image.getUrl()).thenReturn("이미지");
+            Pilgrimage pilgrimage = Mockito.mock(Pilgrimage.class);
+            Mockito.when(pilgrimage.getId()).thenReturn(id);
+            Mockito.when(pilgrimage.getDetailAddress()).thenReturn(detailAddress);
+            Mockito.when(pilgrimage.getVirtualImage()).thenReturn(image);
+            Mockito.when(pilgrimage.getLatitude()).thenReturn(11.111);
+            Mockito.when(pilgrimage.getLongitude()).thenReturn(127.111);
+            return pilgrimage;
         }
     }
 
-    protected Member getMember(Long id, String email) {
-        Member member = Mockito.mock(Member.class);
-        Mockito.when(member.getId()).thenReturn(id);
-        Mockito.when(member.getEmail()).thenReturn(email);
-        return member;
+    protected List<Address> createAddress(String state, String... districts) {
+        return Arrays.stream(districts).map(district -> Address.builder()
+                        .state(state)
+                        .district(district)
+                        .build())
+                .toList();
     }
 }
