@@ -81,7 +81,6 @@ public class PilgrimageQueryService {
 
         // 주소, 성지순례 리스트 정보 담은 주소 리스트 생성
         List<Address> addressList = addressRepository.findByPilgrimages_Rally(rally);
-        System.out.println(addressList.size());
         if (addressList.isEmpty()) {
             throw new RestApiException(ErrorCode.PILGRIMAGE_NOT_FOUND);
         }
