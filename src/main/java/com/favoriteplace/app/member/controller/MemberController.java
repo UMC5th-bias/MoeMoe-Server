@@ -1,15 +1,15 @@
 package com.favoriteplace.app.member.controller;
 
+import com.favoriteplace.app.member.controller.dto.TokenInfoDto;
+import com.favoriteplace.global.auth.provider.JwtTokenProvider;
 import com.favoriteplace.app.member.controller.dto.KaKaoSignUpRequestDto;
 import com.favoriteplace.app.member.controller.dto.MemberDto;
 import com.favoriteplace.app.member.controller.dto.MemberDto.EmailCheckReqDto;
 import com.favoriteplace.app.member.controller.dto.MemberDto.EmailDuplicateResDto;
 import com.favoriteplace.app.member.controller.dto.MemberDto.EmailSendResDto;
-import com.favoriteplace.app.member.controller.dto.MemberDto.TokenInfo;
 import com.favoriteplace.app.member.controller.dto.MemberSignUpReqDto;
 import com.favoriteplace.app.member.service.MailSendService;
 import com.favoriteplace.app.member.service.MemberService;
-import com.favoriteplace.global.security.provider.JwtTokenProvider;
 import com.favoriteplace.global.util.SecurityUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,7 +40,7 @@ public class MemberController {
     private final SecurityUtil securityUtil;
 
     @PostMapping("/login/kakao")
-    public ResponseEntity<TokenInfo> kakaoLogin(
+    public ResponseEntity<TokenInfoDto> kakaoLogin(
             @RequestHeader("Authorization") final String token
     ) {
         return ResponseEntity.ok(memberService.kakaoLogin(token));

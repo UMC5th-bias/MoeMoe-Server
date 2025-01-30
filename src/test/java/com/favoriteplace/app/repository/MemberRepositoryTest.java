@@ -1,6 +1,7 @@
-package com.favoriteplace.app.member.repository;
+package com.favoriteplace.app.repository;
 
 import com.favoriteplace.app.member.domain.Member;
+import com.favoriteplace.app.member.repository.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

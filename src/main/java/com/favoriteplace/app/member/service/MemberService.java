@@ -5,6 +5,7 @@ import static com.favoriteplace.global.exception.ErrorCode.USER_ALREADY_EXISTS;
 import static com.favoriteplace.global.exception.ErrorCode.USER_NOT_FOUND;
 
 import com.favoriteplace.app.member.controller.dto.MemberSignUpReqDto;
+import com.favoriteplace.app.member.controller.dto.TokenInfoDto;
 import com.favoriteplace.app.member.domain.Member;
 import com.favoriteplace.app.item.domain.Item;
 import com.favoriteplace.app.member.controller.dto.UserInfoResponseDto;
@@ -14,10 +15,10 @@ import com.favoriteplace.app.member.controller.dto.MemberDto.EmailDuplicateResDt
 import com.favoriteplace.app.member.controller.dto.MemberDto.EmailSendReqDto;
 import com.favoriteplace.app.item.repository.ItemRepository;
 import com.favoriteplace.app.member.repository.MemberRepository;
+import com.favoriteplace.global.auth.kakao.KakaoClient;
+import com.favoriteplace.global.auth.provider.JwtTokenProvider;
 import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.s3Image.AmazonS3ImageManager;
-import com.favoriteplace.global.security.kakao.KakaoClient;
-import com.favoriteplace.global.security.provider.JwtTokenProvider;
 
 import java.io.IOException;
 import java.util.List;
@@ -45,7 +46,7 @@ public class MemberService {
     private final RedisTemplate redisTemplate;
     private final KakaoClient kakaoClient;
 
-    public MemberDto.TokenInfo kakaoLogin(final String token) {
+    public TokenInfoDto kakaoLogin(final String token) {
         String userEmail = getUserEmailFromKakao(token);
 
         // 최초 로그인이라면 회원가입 API로 통신하도록
@@ -73,11 +74,11 @@ public class MemberService {
         Item titleItem = getDefaultProfileItem();
 
         Member member = saveUser(memberSignUpReqDto.nickname(), userEmail,
-                                 memberSignUpReqDto.snsAllow(), memberSignUpReqDto.introduction(),
-                                 profileImage, titleItem);
+                memberSignUpReqDto.snsAllow(), memberSignUpReqDto.introduction(),
+                profileImage, titleItem);
 
-        MemberDto.TokenInfo tokenInfo = issueToken(userEmail);
-        member.updateRefreshToken(tokenInfo.getRefreshToken());
+        TokenInfoDto tokenInfo = issueToken(userEmail);
+        member.updateRefreshToken(tokenInfo.refreshToken());
 
         return MemberDto.MemberSignUpResDto.from(member, tokenInfo);
 
@@ -104,11 +105,11 @@ public class MemberService {
         String profileImage = getProfileImageFromRequest(images);
 
         Member member = saveUser(memberSignUpReqDto.nickname(), memberSignUpReqDto.email(),
-                                 memberSignUpReqDto.snsAllow(), memberSignUpReqDto.introduction(),
-                                 profileImage, titleItem);
+                memberSignUpReqDto.snsAllow(), memberSignUpReqDto.introduction(),
+                profileImage, titleItem);
 
-        MemberDto.TokenInfo tokenInfo = issueToken(member.getEmail());
-        member.updateRefreshToken(tokenInfo.getRefreshToken());
+        TokenInfoDto tokenInfo= issueToken(member.getEmail());
+        member.updateRefreshToken(tokenInfo.refreshToken());
 
         return MemberDto.MemberSignUpResDto.from(member, tokenInfo);
     }
@@ -172,7 +173,7 @@ public class MemberService {
         return itemRepository.findByName("새싹회원").get();
     }
 
-    private MemberDto.TokenInfo issueToken(String email) {
+    private TokenInfoDto issueToken(String email) {
         return jwtTokenProvider.generateToken(email);
     }
 

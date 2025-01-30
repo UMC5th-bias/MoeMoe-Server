@@ -1,5 +1,6 @@
 package com.favoriteplace.app.item.controller;
 
+import com.favoriteplace.global.auth.resolver.UserEmail;
 import com.favoriteplace.app.item.controller.dto.ItemDto;
 import com.favoriteplace.app.item.service.ShopService;
 import com.favoriteplace.global.util.SecurityUtil;
@@ -33,7 +34,8 @@ public class ShopController {
     }
 
     @GetMapping("/new")
-    public ResponseEntity<ItemDto.NewItemListResDto> getNewItemList() {
+    public ResponseEntity<ItemDto.NewItemListResDto> getNewItemList(@UserEmail String email) {
+        System.out.println("email = " + email);
         return ResponseEntity.ok(shopService.getNewItemList());
     }
 
@@ -45,7 +47,10 @@ public class ShopController {
     }
 
     @PostMapping("/purchase/{item_id}")
-    public ResponseEntity<ItemDto.ItemPurchaseRes> buyItem(@PathVariable("item_id") Long itemId) {
+    public ResponseEntity<ItemDto.ItemPurchaseRes> buyItem(
+            @PathVariable("item_id") Long itemId,
+            @UserEmail String userEmail
+    ) {
         return ResponseEntity.ok(shopService.buyItem(itemId));
     }
 }
