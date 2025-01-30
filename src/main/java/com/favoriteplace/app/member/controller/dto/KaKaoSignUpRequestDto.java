@@ -10,17 +10,4 @@ public record KaKaoSignUpRequestDto(
         Boolean snsAllow,
         String introduction
 ) {
-    public Member toEntity(String profileImg, Item titleItem, String email) {
-        return Member.builder()
-                .nickname(nickname)
-                .email(email)
-                .alarmAllowance(snsAllow)
-                .description(introduction)
-                .profileImageUrl(profileImg)
-                .point(0L)
-                .loginType(LoginType.KAKAO)
-                .profileTitle(titleItem)
-                .status(MemberStatus.Y)
-                .build();
-    }
 }

@@ -43,7 +43,7 @@ public class Member extends BaseTimeEntity {
     @JoinColumn(name = "profile_icon_id")
     private Item profileIcon;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
     private String password;
@@ -75,6 +75,24 @@ public class Member extends BaseTimeEntity {
     private String refreshToken;
 
     private String fcmToken;
+
+    public static Member create(
+            String nickname, String email,
+            boolean snsAllow, String introduction,
+            String profileImage, Item titleItem)
+    {
+        return Member.builder()
+                .nickname(nickname)
+                .email(email)
+                .alarmAllowance(snsAllow)
+                .description(introduction)
+                .profileImageUrl(profileImage)
+                .point(0L)
+                .loginType(LoginType.KAKAO)
+                .profileTitle(titleItem)
+                .status(MemberStatus.Y)
+                .build();
+    }
 
     public void updatePassword(String password) { this.password = password; }
 
