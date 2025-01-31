@@ -7,6 +7,7 @@ import com.favoriteplace.app.pilgrimage.service.PilgrimageCategoryQueryService;
 import com.favoriteplace.app.rally.controller.dto.RallyResponseDto;
 import com.favoriteplace.app.pilgrimage.service.PilgrimageCommandService;
 import com.favoriteplace.app.pilgrimage.service.PilgrimageQueryService;
+import com.favoriteplace.app.rally.service.RallyService;
 import com.favoriteplace.global.auth.resolver.UserEmail;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
@@ -36,6 +37,7 @@ public class PilgrimageApiController {
     private final PilgrimageCategoryQueryService pilgrimageCategoryQueryService;
     private final PilgrimageQueryService pilgrimageQueryService;
     private final PilgrimageCommandService pilgrimageCommandService;
+    private final RallyService rallyService;
     private final SecurityUtil securityUtil;
 
     /* ================ GET ================ */
@@ -111,14 +113,14 @@ public class PilgrimageApiController {
     @PostMapping("/{rally_id}")
     public CommonResponseDto.PostResponseDto likeToRally(@PathVariable("rally_id") Long rallyId) {
         Member member = securityUtil.getUser();
-        return pilgrimageCommandService.likeToRally(rallyId, member);
+        return rallyService.likeToRally(rallyId, member);
     }
 
     // 랠리 FCM 구독
     @PostMapping("/{rally_id}/subscribe")
     public ResponseEntity<Void> subscribeRally(@PathVariable("rally_id") Long rallyId) {
         Member member = securityUtil.getUser();
-        pilgrimageCommandService.subscribeRally(rallyId, member);
+        rallyService.subscribeRally(rallyId, member);
         return ResponseEntity.ok().build();
     }
 
@@ -126,7 +128,7 @@ public class PilgrimageApiController {
     @DeleteMapping("/{rally_id}/unsubscribe")
     public ResponseEntity<Void> unsubscribeRally(@PathVariable("rally_id") Long rallyId) {
         Member member = securityUtil.getUser();
-        pilgrimageCommandService.unsubscribeRally(rallyId, member);
+        rallyService.unsubscribeRally(rallyId, member);
         return ResponseEntity.noContent().build();
     }
 

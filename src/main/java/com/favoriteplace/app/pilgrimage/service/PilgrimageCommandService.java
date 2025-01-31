@@ -49,39 +49,16 @@ import static com.favoriteplace.app.notification.service.FCMNotificationService.
 public class PilgrimageCommandService {
     private static final Double MAX_DISTANCE_WITHIN_100M = 0.00135;
 
-    private final FCMNotificationService fcmNotificationService;
     private final RedisService redisService;
     private final GuestBookRepository guestBookRepository;
     private final RallyRepository rallyRepository;
     private final PilgrimageRepository pilgrimageRepository;
-    private final LikedRallyRepository likedRallyRepository;
     private final VisitedPilgrimageRepository visitedPilgrimageRepository;
     private final PointHistoryRepository pointHistoryRepository;
     private final CompleteRallyRepository completeRallyRepository;
     private final AcquiredItemRepository acquiredItemRepository;
 
     private Map<Long, Map<Long, PilgrimageSocketDto.ButtonState>> lastButtonStateCache = new ConcurrentHashMap<>();
-
-    /***
-     * 랠리 찜하기
-     * @param rallyId 랠리 아이디
-     * @param member 찜한 사용자
-     * @return
-     */
-    public CommonResponseDto.PostResponseDto likeToRally(Long rallyId, Member member) {
-        Rally rally = rallyRepository.findById(rallyId).orElseThrow(
-                () -> new RestApiException(ErrorCode.RALLY_NOT_FOUND));
-        LikedRally likedRally = likedRallyRepository.findByRallyAndMember(rally, member);
-
-        if (likedRally == null) {
-            LikedRally newLikedRally = LikedRally.builder().rally(rally).member(member).build();
-            likedRallyRepository.save(newLikedRally);
-            return CommonConverter.toPostResponseDto(true, "찜 목록에 추가됐습니다.");
-        } else {
-            likedRallyRepository.delete(likedRally);
-            return CommonConverter.toPostResponseDto(false, "찜을 취소했습니다.");
-        }
-    }
 
     /***
      * 성지순례 방문 인증하기
@@ -120,26 +97,6 @@ public class PilgrimageCommandService {
             throw new RestApiException(ErrorCode.PILGRIMAGE_ALREADY_CERTIFIED);
         }
         return CommonConverter.toRallyResponseDto(true, false, "성지순례 인증하기 15P를 얻으셨습니다!");
-    }
-
-    /**
-     * 랠리 구독 (FCM 토픽에 해당 사용자의 토큰 추가)
-     */
-    public void subscribeRally(Long rallyId, Member member) {
-        if (member.getFcmToken() == null) {
-            throw new RestApiException(ErrorCode.FCM_TOKEN_NOT_FOUND);
-        }
-        fcmNotificationService.subscribeTopic(makeAnimationTopicName(rallyId), member.getFcmToken());
-    }
-
-    /**
-     * 랠리 구독 취소 (FCM 토픽에 해당 사용자의 토큰 제거)
-     */
-    public void unsubscribeRally(Long rallyId, Member member) {
-        if (member.getFcmToken() == null) {
-            throw new RestApiException(ErrorCode.FCM_TOKEN_NOT_FOUND);
-        }
-        fcmNotificationService.unsubscribeTopic(makeAnimationTopicName(rallyId), member.getFcmToken());
     }
 
     public boolean isUserAtPilgrimage(Pilgrimage pilgrimage, Double latitude, Double longitude) {
