@@ -28,8 +28,6 @@ import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
 import com.favoriteplace.global.websocket.RedisService;
 
-import jakarta.persistence.EntityManager;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -49,8 +47,11 @@ import static com.favoriteplace.app.notification.service.FCMNotificationService.
 @Transactional
 @RequiredArgsConstructor
 public class PilgrimageCommandService {
-    private final GuestBookRepository guestBookRepository;
     private static final Double MAX_DISTANCE_WITHIN_100M = 0.00135;
+
+    private final FCMNotificationService fcmNotificationService;
+    private final RedisService redisService;
+    private final GuestBookRepository guestBookRepository;
     private final RallyRepository rallyRepository;
     private final PilgrimageRepository pilgrimageRepository;
     private final LikedRallyRepository likedRallyRepository;
@@ -58,9 +59,7 @@ public class PilgrimageCommandService {
     private final PointHistoryRepository pointHistoryRepository;
     private final CompleteRallyRepository completeRallyRepository;
     private final AcquiredItemRepository acquiredItemRepository;
-    private final FCMNotificationService fcmNotificationService;
-    private final EntityManager em;
-    private final RedisService redisService;
+
     private Map<Long, Map<Long, PilgrimageSocketDto.ButtonState>> lastButtonStateCache = new ConcurrentHashMap<>();
 
     /***
