@@ -90,14 +90,6 @@ public class MemberService {
             final List<MultipartFile> images
     ) throws IOException {
 
-//        memberRepository.findByEmail(memberSignUpReqDto.getEmail())
-//                .ifPresent(
-//                        existingMember -> {
-//                            throw new RestApiException(USER_ALREADY_EXISTS);
-//                        }
-//                );
-
-
         String password = passwordEncoder.encode(memberSignUpReqDto.password());
 
         Item titleItem = getDefaultProfileItem();
