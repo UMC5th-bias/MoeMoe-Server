@@ -7,7 +7,7 @@ import com.favoriteplace.app.member.controller.dto.MemberDto;
 import com.favoriteplace.app.member.controller.dto.MemberDto.EmailCheckReqDto;
 import com.favoriteplace.app.member.controller.dto.MemberDto.EmailDuplicateResDto;
 import com.favoriteplace.app.member.controller.dto.MemberDto.EmailSendResDto;
-import com.favoriteplace.app.member.controller.dto.MemberDto.MemberSignUpReqDto;
+import com.favoriteplace.app.member.controller.dto.MemberSignUpReqDto;
 import com.favoriteplace.app.member.service.MailSendService;
 import com.favoriteplace.app.member.service.MemberService;
 import com.favoriteplace.global.util.SecurityUtil;

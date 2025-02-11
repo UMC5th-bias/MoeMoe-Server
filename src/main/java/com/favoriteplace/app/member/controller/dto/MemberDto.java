@@ -13,34 +13,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 public class MemberDto {
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class MemberSignUpReqDto {
-        @NotBlank(message = "닉네임은 필수값입니다.")
-        public String nickname;
-
-        public String email;
-        public String password;
-        public Boolean snsAllow;
-        public String introduction;
-
-        public Member toEntity(String encodedPassword, String profileImg, Item titleItem) {
-            return Member.builder()
-                    .nickname(nickname)
-                    .email(email)
-                    .password(encodedPassword)
-                    .alarmAllowance(snsAllow)
-                    .description(introduction)
-                    .profileImageUrl(profileImg)
-                    .point(0L)
-                    .loginType(LoginType.SELF)
-                    .profileTitle(titleItem)
-                    .status(MemberStatus.Y)
-                    .build();
-        }
-    }
-
     @Builder
     @Getter
     @AllArgsConstructor
