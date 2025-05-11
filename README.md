@@ -1,19 +1,11 @@
-# 💞 모애모애 - Server
-
-![image](https://github.com/user-attachments/assets/e81ad6e1-1e1c-4eca-88c6-9679c1c7fcf7)
-![image](https://github.com/user-attachments/assets/d04d13f8-19d5-41fb-a672-389b084a758e)
-
-<br/>
-
 ## 💗 Back-end 파트원
 
-| <img src="https://github.com/user-attachments/assets/22e6bade-4ec1-472c-bb39-96182230c120" width=300px>  | <img src="https://github.com/user-attachments/assets/f6222753-a571-4d70-a2dc-50821667972f" width=300px>  | <img src="https://github.com/user-attachments/assets/dabe90a6-120f-415d-9216-e1e5ad138196" width=300px>
+| <img src="https://github.com/user-attachments/assets/22e6bade-4ec1-472c-bb39-96182230c120" width=300px>  | <img src="https://github.com/user-attachments/assets/f6222753-a571-4d70-a2dc-50821667972f" width=300px>  | <img src="https://github.com/user-attachments/assets/dabe90a6-120f-415d-9216-e1e5ad138196" width=300px> |
 | :-----: | :-----: | :-----: |
-| [신정윤](https://github.com/JungYoonShin) | [양수빈](https://github.com/ppparkta) | [조유리](https://github.com/jorippppong) |
+| **[신정윤](https://github.com/JungYoonShin)** | **[양수빈](https://github.com/ppparkta)** | **[조유리](https://github.com/jorippppong)** |
+|<li>Github Actions + AWS CodeDeploy CI/CD </li><li> ERD 및 엔티티 설계 </li><li>예외처리 </li><li>로그인 + 회원가입 API </li><li>상점 도메인 API</li><li>카카오 로그인</li><li>AWS S3 이미지 업로드</li> | <li>API 명세서</li><li>성지순례 도메인 API</li><li>위치 기반 인증(STOMP)</li><li>마이페이지 도메인 API</li>| <li>ERD 및 엔티티 설계</li><li>홈 화면 API</li><li>커뮤니티 도메인 API</li><li>FCM 푸시 알림</li><li>대댓글 API</li> |
 
-| | | | | 
-|---------|--------------|----------|-------------|
-| 담당 역할 | <li>Github Actions + AWS CodeDeploy CI/CD </li><li> ERD 및 엔티티 설계 </li><li>예외처리 </li><li>로그인 + 회원가입 API </li><li>상점 도메인 API</li><li>카카오 로그인</li><li>AWS S3 이미지 업로드</li> | <li>API 명세서</li><li>성지순례 도메인 API</li><li>위치 기반 인증(STOMP)</li><li>마이페이지 도메인 API</li>| <li>ERD 및 엔티티 설계</li><li>홈 화면 API</li><li>커뮤니티 도메인 API</li><li>FCM 푸시 알림</li><li>대댓글 API</li> |
+
 
 </div>
 <br/><br/>
