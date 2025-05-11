@@ -1,3 +1,9 @@
+# 💞 모애모애 - Server
+
+![image](https://github.com/user-attachments/assets/e81ad6e1-1e1c-4eca-88c6-9679c1c7fcf7)
+![image](https://github.com/user-attachments/assets/d04d13f8-19d5-41fb-a672-389b084a758e)
+
+<br/>
 ## 💗 Back-end 파트원
 
 | <img src="https://github.com/user-attachments/assets/22e6bade-4ec1-472c-bb39-96182230c120" width=300px>  | <img src="https://github.com/user-attachments/assets/f6222753-a571-4d70-a2dc-50821667972f" width=300px>  | <img src="https://github.com/user-attachments/assets/dabe90a6-120f-415d-9216-e1e5ad138196" width=300px> |
