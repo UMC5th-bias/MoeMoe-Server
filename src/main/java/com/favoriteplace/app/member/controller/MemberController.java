@@ -1,5 +1,6 @@
 package com.favoriteplace.app.member.controller;
 
+import com.favoriteplace.app.member.Facade.AuthFacade;
 import com.favoriteplace.app.member.controller.dto.TokenInfoDto;
 import com.favoriteplace.global.auth.provider.JwtTokenProvider;
 import com.favoriteplace.app.member.controller.dto.KaKaoSignUpRequestDto;
@@ -34,8 +35,9 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 @RequestMapping("/auth")
 public class MemberController {
-    private final MemberService memberService;
+    private final AuthFacade authFacade;
     private final MailSendService mailSendService;
+    private final MemberService memberService;
     private final JwtTokenProvider jwtTokenProvider;
     private final SecurityUtil securityUtil;
 
@@ -43,7 +45,7 @@ public class MemberController {
     public ResponseEntity<TokenInfoDto> kakaoLogin(
             @RequestHeader("Authorization") final String token
     ) {
-        return ResponseEntity.ok(memberService.kakaoLogin(token));
+        return ResponseEntity.ok(authFacade.kakaoLogin(token));
     }
 
     @PostMapping("/signup/kakao")
@@ -52,7 +54,7 @@ public class MemberController {
             @RequestPart(required = false) final List<MultipartFile> images,
             @RequestPart final KaKaoSignUpRequestDto data
     ) throws IOException {
-        return ResponseEntity.ok(memberService.kakaoSignUp(token, data, images));
+        return ResponseEntity.ok(authFacade.kakaoSignUp(token, data, images));
     }
 
     @PostMapping("/signup")
@@ -60,7 +62,7 @@ public class MemberController {
             @RequestPart(required = false) List<MultipartFile> images,
             @RequestPart MemberSignUpReqDto data
     ) throws IOException {
-        return ResponseEntity.ok(memberService.signup(data, images));
+        return ResponseEntity.ok(authFacade.signup(data, images));
     }
 
     @PostMapping("/signup/email")
@@ -97,8 +99,7 @@ public class MemberController {
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request) {
         String accessToken = securityUtil.resolveToken(request);
-        memberService.logout(accessToken);
-
+        authFacade.logout(accessToken);
         return ResponseEntity.ok("로그아웃 되었습니다.");
     }
 }
