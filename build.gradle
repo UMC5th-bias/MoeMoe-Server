@@ -79,6 +79,9 @@ dependencies {
 
 	// Jackson (Date/Time Serialization)
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+	//actuator
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 }
 
 
