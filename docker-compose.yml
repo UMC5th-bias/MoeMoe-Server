@@ -1,0 +1,40 @@
+services:
+  redis:
+    container_name: redis
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+
+  blue:
+    container_name: moemoe-blue
+    image: 859043921675.dkr.ecr.ap-northeast-2.amazonaws.com/moemoe:latest
+    expose:
+      - 8080
+    ports:
+      - "8081:8080"
+    environment:
+      - TZ=Asia/Seoul
+    depends_on:
+      - redis
+    networks:
+      - app-network
+
+  green:
+    container_name: moemoe-green
+    image: 859043921675.dkr.ecr.ap-northeast-2.amazonaws.com/moemoe:latest
+    expose:
+      - 8080
+    ports:
+      - "8082:8080"
+    environment:
+      - TZ=Asia/Seoul
+    depends_on:
+      - redis
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
