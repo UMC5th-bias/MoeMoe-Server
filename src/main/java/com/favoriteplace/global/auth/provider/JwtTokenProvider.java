@@ -41,25 +41,12 @@ public class JwtTokenProvider {
     @Value("${jwt.secret}")
     private String key;
 
-    public TokenInfoDto generateToken(String userEmail) {
-        String accessToken = issueToken(userEmail, ACCESS_TOKEN_EXPIRATION_TIME);
-        String refreshToken = issueToken(userEmail, REFRESH_TOKEN_EXPIRATION_TIME);
-
-        return TokenInfoDto.of(accessToken, refreshToken);
+    public String issueRefreshToken(String userEmail) {
+        return issueToken(userEmail, REFRESH_TOKEN_EXPIRATION_TIME);
     }
 
-    public String issueToken(String userEmail, Long expirePeriod) {
-        Claims claims = Jwts.claims().setSubject(userEmail);
-        Date now = new Date();
-
-        String refreshToken = Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + expirePeriod))
-                .signWith(SignatureAlgorithm.HS256, key)
-                .compact();
-
-        return refreshToken;
+    public String issueAccessToken(String userEmail) {
+        return issueToken(userEmail, ACCESS_TOKEN_EXPIRATION_TIME);
     }
 
     public Authentication getAuthentication(String token) {
@@ -76,10 +63,9 @@ public class JwtTokenProvider {
         return (expiration.getTime() - now);
     }
 
-    public boolean validateToken(String token) {
+    public void validateToken(String token) {
         try {
             parseClaims(token);
-            return true;
         } catch (MalformedJwtException e) {
             throw new RestApiException(INVALID_JWT);
         } catch (ExpiredJwtException e) {
@@ -93,6 +79,20 @@ public class JwtTokenProvider {
 
     private Claims parseClaims(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+    }
+
+    private String issueToken(String userEmail, Long expirePeriod) {
+        Claims claims = Jwts.claims().setSubject(userEmail);
+        Date now = new Date();
+
+        String token = Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + expirePeriod))
+                .signWith(SignatureAlgorithm.HS256, key)
+                .compact();
+
+        return token;
     }
 
 }

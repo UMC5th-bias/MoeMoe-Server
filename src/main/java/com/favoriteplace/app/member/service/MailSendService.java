@@ -31,8 +31,6 @@ public class MailSendService {
 
     private final RedisUtil redisUtil;
 
-
-    //임의의 6자리 양수를 반환합니다.
     public void makeRandomNumber() {
         Random r = new Random();
         String randomNumber = "";
@@ -43,23 +41,21 @@ public class MailSendService {
         authNumber = Integer.parseInt(randomNumber);
     }
 
-    //mail을 어디서 보내는지, 어디로 보내는지 , 인증 번호를 html 형식으로 어떻게 보내는지 작성합니다.
     public MemberDto.EmailSendResDto joinEmail(String email) {
         makeRandomNumber();
         String setFrom = host; // email-config에 설정한 자신의 이메일 주소를 입력
         String toMail = email;
-        String title = "[최애의 장소] 회원 가입 인증 이메일 입니다."; // 이메일 제목
+        String title = "[최애의 장소] 회원 가입 인증 이메일 입니다.";
         String content =
-                "최애의 장소를 방문해주셔서 감사합니다." +    //html 형식으로 작성 !
+                "최애의 장소를 방문해주셔서 감사합니다." +
                         "<br><br>" +
                         "인증 번호는 " + authNumber + "입니다." +
                         "<br>" +
-                        "인증번호를 올바르게 입력해주세요 :)"; //이메일 내용 삽입
+                        "인증번호를 올바르게 입력해주세요 :)";
         mailSend(setFrom, toMail, title, content);
         return new MemberDto.EmailSendResDto(authNumber);
     }
 
-    //이메일을 전송합니다.
     public void mailSend(String setFrom, String toMail, String title, String content) {
         //JavaMailSender 객체를 사용하여 MimeMessage 객체를 생성
         MimeMessage message = mailSender.createMimeMessage();

@@ -51,10 +51,7 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
                 String jwt = bearerToken.startsWith("Bearer ") ? bearerToken.substring(7) : bearerToken;
 
                 try {
-                    // JWT 토큰 검증
-                    if (!jwtProvider.validateToken(jwt)) {
-                        throw new RestApiException(ErrorCode.USER_NOT_AUTHOR);
-                    }
+                    jwtProvider.validateToken(jwt);
 
                     Authentication authentication = jwtProvider.getAuthentication(jwt);
 

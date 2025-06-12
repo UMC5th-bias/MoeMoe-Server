@@ -43,8 +43,10 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new RestApiException(ErrorCode.USER_NOT_FOUND));
 
-        TokenInfoDto tokenInfo = jwtTokenProvider.generateToken(member.getEmail());
+        String issuedRefreshToken = jwtTokenProvider.issueRefreshToken(member.getEmail());
+        String issuedAccessToken = jwtTokenProvider.issueRefreshToken(member.getEmail());
 
+        TokenInfoDto tokenInfo = TokenInfoDto.of(issuedAccessToken, issuedRefreshToken);
         member.updateRefreshToken(tokenInfo.refreshToken());
 
         response.setContentType(APPLICATION_JSON_VALUE);

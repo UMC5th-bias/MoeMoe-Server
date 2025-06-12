@@ -1,6 +1,7 @@
 package com.favoriteplace.app.repository;
 
 import com.favoriteplace.app.member.domain.Member;
+import com.favoriteplace.app.member.domain.enums.LoginType;
 import com.favoriteplace.app.member.repository.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -35,7 +36,8 @@ class MemberRepositoryTest {
                 true,
                 "자기소개",
                 "image",
-                null);
+                null,
+                LoginType.SELF);
     }
 
     @Test

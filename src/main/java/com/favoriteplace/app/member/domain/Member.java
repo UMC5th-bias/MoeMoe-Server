@@ -79,7 +79,7 @@ public class Member extends BaseTimeEntity {
     public static Member create(
             String nickname, String email,
             boolean snsAllow, String introduction,
-            String profileImage, Item titleItem)
+            String profileImage, Item titleItem, LoginType loginType)
     {
         return Member.builder()
                 .nickname(nickname)
@@ -88,7 +88,7 @@ public class Member extends BaseTimeEntity {
                 .description(introduction)
                 .profileImageUrl(profileImage)
                 .point(0L)
-                .loginType(LoginType.KAKAO)
+                .loginType(loginType)
                 .profileTitle(titleItem)
                 .status(MemberStatus.Y)
                 .build();
