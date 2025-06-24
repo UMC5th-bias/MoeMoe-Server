@@ -7,12 +7,14 @@ import com.favoriteplace.app.notification.service.TotalTopicMessage;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@ConditionalOnProperty(prefix = "fcm", name = "enabled", havingValue = "true")
 @RequestMapping("/fcm")
 @RequiredArgsConstructor
 public class FCMNotificationController {
