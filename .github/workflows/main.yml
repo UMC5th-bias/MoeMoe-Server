@@ -68,6 +68,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: 📦 Upload docker-compose.yml
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_KEY }}
+          source: "docker-compose.yml"
+          target: "~/"
+
       - name: 🚀 Deploy via SSH
         uses: appleboy/ssh-action@master
         with:
