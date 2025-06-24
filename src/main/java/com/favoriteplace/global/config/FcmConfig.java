@@ -5,6 +5,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,6 +13,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 @Configuration
+@ConditionalOnProperty(prefix = "fcm", name = "enabled", havingValue = "true")
 public class FcmConfig {
     @Value("${fcm.type}")
     private String type;
@@ -47,7 +49,7 @@ public class FcmConfig {
     private String universeDomain;
 
     @Bean
-    public FirebaseApp firebaseApp() throws IOException{
+    public FirebaseApp firebaseApp() throws IOException {
         String jsonKey = String.format(
                 "{" +
                         "\"type\":\"%s\"," +
@@ -62,8 +64,17 @@ public class FcmConfig {
                         "\"client_x509_cert_url\":\"%s\"," +
                         "\"universe_domain\":\"%s\"" +
                         "}",
-                type, projectId, privateKeyId, privateKey, clientEmail, clientId,
-                authUri, tokenUri, authProviderX509CertUrl, clientX509CertUrl, universeDomain
+                type,
+                projectId,
+                privateKeyId,
+                privateKey.replace("\\n", "\n"), // 🔥 핵심
+                clientEmail,
+                clientId,
+                authUri,
+                tokenUri,
+                authProviderX509CertUrl,
+                clientX509CertUrl,
+                universeDomain
         );
 
         GoogleCredentials credentials = GoogleCredentials.fromStream(
@@ -76,6 +87,7 @@ public class FcmConfig {
 
         return FirebaseApp.initializeApp(options);
     }
+
 
     @Bean
     public FirebaseMessaging firebaseMessaging(FirebaseApp firebaseApp){

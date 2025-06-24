@@ -11,6 +11,7 @@ import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.TopicManagementResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Service
+@ConditionalOnProperty(prefix = "fcm", name = "enabled", havingValue = "true")
 @RequiredArgsConstructor
 @Slf4j
 public class FCMNotificationService {

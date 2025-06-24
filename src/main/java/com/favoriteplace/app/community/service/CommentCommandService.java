@@ -14,9 +14,10 @@ import com.favoriteplace.app.community.repository.PostRepository;
 import com.favoriteplace.app.notification.service.FCMNotificationService;
 import com.favoriteplace.global.exception.ErrorCode;
 import com.favoriteplace.global.exception.RestApiException;
-
 import lombok.RequiredArgsConstructor;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,17 +27,30 @@ import static com.favoriteplace.app.notification.converter.FcmConverter.*;
 import static com.favoriteplace.app.notification.converter.NotificationConverter.*;
 
 @Service
-@RequiredArgsConstructor
 public class CommentCommandService {
+
     private final PostRepository postRepository;
     private final GuestBookRepository guestBookRepository;
     private final CommentRepository commentRepository;
     private final NotificationRepository notificationRepository;
-    private final FCMNotificationService fcmNotificationService;
 
-    /**
-     * 자유게시글 새로운 댓글 작성
-     */
+    @Lazy
+    @Autowired(required = false)
+    private FCMNotificationService fcmNotificationService;
+
+    @Value("${fcm.enabled:false}")
+    private boolean fcmEnabled;
+
+    public CommentCommandService(PostRepository postRepository,
+                                 GuestBookRepository guestBookRepository,
+                                 CommentRepository commentRepository,
+                                 NotificationRepository notificationRepository) {
+        this.postRepository = postRepository;
+        this.guestBookRepository = guestBookRepository;
+        this.commentRepository = commentRepository;
+        this.notificationRepository = notificationRepository;
+    }
+
     @Transactional
     public Long createPostComment(Member member, long postId, CommentCreateRequestDto dto) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new RestApiException(ErrorCode.POST_NOT_FOUND));
@@ -46,9 +60,6 @@ public class CommentCommandService {
         return newComment.getId();
     }
 
-    /**
-     * 성지순례 인증글에 댓글 추가
-     */
     @Transactional
     public Long createGuestBookComment(Member member, Long guestbookId, CommentCreateRequestDto dto) {
         GuestBook guestBook = guestBookRepository.findById(guestbookId)
@@ -59,27 +70,23 @@ public class CommentCommandService {
         return newComment.getId();
     }
 
-    /**
-     * 자유 게시판 관련 알림 전송
-     */
     @Transactional
     public void sendPostNotification(Long postId, Long commentId) {
+        if (fcmNotificationService == null) return;
+
         Post post = postRepository.findById(postId).orElseThrow(() -> new RestApiException(ErrorCode.POST_NOT_FOUND));
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RestApiException(ErrorCode.COMMENT_NOT_FOUND));
 
-        // 게시글 작성자에게 전송
         fcmNotificationService.sendNotificationByToken(toPostWriter(post, comment));
-        Notification postNotification = toPostNewComment(post, comment);
-        notificationRepository.save(postNotification);
+        notificationRepository.save(toPostNewComment(post, comment));
 
-        // 댓글에 언급된 사람에게 전송
-        if (comment.getParentComment() != null) { // 부모 댓글에게 전송
+        if (comment.getParentComment() != null) {
             Notification commentNotification;
             if (comment.getReferenceComment() == null) {
                 fcmNotificationService.sendNotificationByToken(toParentCommentWriter(post, comment));
                 commentNotification = toPostParentNewSubComment(post, comment);
-            } else { // reference 댓글에게 전송
+            } else {
                 fcmNotificationService.sendNotificationByToken(toReferCommentWriter(post, comment));
                 commentNotification = toPostReferNewSubComment(post, comment);
             }
@@ -87,28 +94,24 @@ public class CommentCommandService {
         }
     }
 
-    /**
-     * 성지 순례 인증글 관련 알림 전송
-     */
     @Transactional
     public void sendGuestBookNotification(Long guestBookId, Long commentId) {
+        if (fcmNotificationService == null) return;
+
         GuestBook guestBook = guestBookRepository.findById(guestBookId)
                 .orElseThrow(() -> new RestApiException(ErrorCode.GUESTBOOK_NOT_FOUND));
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RestApiException(ErrorCode.COMMENT_NOT_FOUND));
 
-        // 게시글 작성자에게 전송
         fcmNotificationService.sendNotificationByToken(toGuestBookWriter(guestBook, comment));
-        Notification postNotification = toGuestBookNewComment(guestBook, comment);
-        notificationRepository.save(postNotification);
+        notificationRepository.save(toGuestBookNewComment(guestBook, comment));
 
-        // 댓글에 언급된 사람에게 전송
         if (comment.getParentComment() != null) {
             Notification commentNotification;
-            if (comment.getReferenceComment() == null) {  // 부모 댓글에게 전송
+            if (comment.getReferenceComment() == null) {
                 fcmNotificationService.sendNotificationByToken(toParentCommentWriter(guestBook, comment));
                 commentNotification = toGuestBookParentNewSubComment(guestBook, comment);
-            } else { // reference 댓글에게 전송
+            } else {
                 fcmNotificationService.sendNotificationByToken(toReferCommentWriter(guestBook, comment));
                 commentNotification = toGuestBookReferNewSubComment(guestBook, comment);
             }
@@ -116,9 +119,6 @@ public class CommentCommandService {
         }
     }
 
-    /**
-     * 댓글 수정
-     */
     @Transactional
     public void modifyComment(Member member, long commentId, String content) {
         Comment comment = commentRepository.findById(commentId)
@@ -128,49 +128,34 @@ public class CommentCommandService {
         Optional.ofNullable(content).ifPresent(comment::modifyContent);
     }
 
-    /**
-     * 댓글 삭제
-     */
     @Transactional
     public void deleteComment(Member member, long commendId) {
         Comment comment = commentRepository.findById(commendId)
                 .orElseThrow(() -> new RestApiException(ErrorCode.COMMENT_NOT_FOUND));
         checkAuthOfComment(member, comment);
         checkIsDeleteOfComment(comment);
-        // 최상위 댓글
+
         if (comment.getCommentType() == CommentType.PARENT_COMMENT) {
-            // 대댓글이 있는 경우 - soft delete
             if (commentRepository.existsByParentComment(comment)) {
                 comment.softDeleteComment();
-            }
-            // 대댓글이 없는 경우 - hard delete
-            else {
+            } else {
                 commentRepository.delete(comment);
             }
-
-        } else {  // 대댓글
-            // 나를 참조하는 댓글이 있는 경우 - soft delete
+        } else {
             if (commentRepository.existsByReferenceComment(comment)) {
                 comment.softDeleteComment();
-            }
-            // 나를 참조하는 댓글이 없는 경우
-            else {
+            } else {
                 commentRepository.delete(comment);
-                // 내가 참조하는 댓글이 soft delete -> hard delete 가능한 경우
                 Comment lastDeleteComment = hardDeleteReferenceComment(comment);
-                // 가장 마지막으로 삭제된 대댓글의 최상위 댓글이 soft delete -> hard delete 가능한 경우
                 hardDeleteParentComment(lastDeleteComment);
             }
         }
     }
 
-    /**
-     * 내가 참조하는 댓글이 soft delete -> hard delete 가능한 경우
-     */
     private Comment hardDeleteReferenceComment(Comment comment) {
         Comment referenceComment = comment.getReferenceComment();
-        if (referenceComment != null && referenceComment.isDeleted() && !commentRepository.existsByReferenceComment(
-                referenceComment)) {
+        if (referenceComment != null && referenceComment.isDeleted() &&
+                !commentRepository.existsByReferenceComment(referenceComment)) {
             commentRepository.delete(referenceComment);
             return hardDeleteReferenceComment(referenceComment);
         } else {
@@ -178,46 +163,33 @@ public class CommentCommandService {
         }
     }
 
-    /**
-     * 최상위 댓글 soft delete -> hard delete 가능한 경우
-     *
-     * @param comment
-     */
     private void hardDeleteParentComment(Comment comment) {
         Comment parentComment = comment.getParentComment();
-        if (parentComment.isDeleted() && !commentRepository.existsByParentComment(parentComment)) {
+        if (parentComment != null && parentComment.isDeleted() &&
+                !commentRepository.existsByParentComment(parentComment)) {
             commentRepository.delete(parentComment);
         }
     }
 
-    /**
-     * 댓글의 작성자가 맞는지 확인하는 함수 (만약 작성자가 아니라면 에러 출력)
-     */
     private void checkAuthOfComment(Member member, Comment comment) {
         if (!member.getId().equals(comment.getMember().getId())) {
             throw new RestApiException(ErrorCode.USER_NOT_AUTHOR);
         }
     }
 
-    /**
-     * soft delete로 이미 삭제된 댓글인지 확인하는 함수 (삭제된 댓글이면 에러 출력)
-     */
     private void checkIsDeleteOfComment(Comment comment) {
         if (comment.isDeleted()) {
             throw new RestApiException(ErrorCode.COMMENT_ALREADY_DELETED);
         }
     }
 
-    /**
-     * 댓글 연관관계 setting
-     */
     private Comment setCommentRelation(Member member, CommentCreateRequestDto dto) {
         Comment newComment = Comment.builder()
                 .member(member)
                 .commentType(CommentType.PARENT_COMMENT)
                 .content(dto.content())
                 .build();
-        // 대댓글
+
         if (dto.parentCommentId() != null) {
             Comment parentComment = commentRepository.findById(dto.parentCommentId())
                     .orElseThrow(() -> new RestApiException(ErrorCode.COMMENT_NOT_FOUND));
@@ -226,7 +198,7 @@ public class CommentCommandService {
             }
             newComment.setCommentType(CommentType.CHILD_COMMENT);
             newComment.addParentComment(parentComment);
-            // 다른 대댓글 참조 O
+
             if (dto.referenceCommentId() != null) {
                 Comment referenceComment = commentRepository.findById(dto.referenceCommentId())
                         .orElseThrow(() -> new RestApiException(ErrorCode.COMMENT_NOT_FOUND));
