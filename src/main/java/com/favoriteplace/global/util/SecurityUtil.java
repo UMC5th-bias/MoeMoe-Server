@@ -1,12 +1,13 @@
 package com.favoriteplace.global.util;
 
-import com.favoriteplace.app.domain.Member;
-import com.favoriteplace.app.repository.MemberRepository;
-import com.favoriteplace.global.exception.ErrorCode;
-import com.favoriteplace.global.exception.RestApiException;
-import com.favoriteplace.global.security.provider.JwtTokenProvider;
+import com.favoriteplace.global.auth.provider.JwtTokenProvider;
+import com.favoriteplace.app.member.domain.Member;
+import com.favoriteplace.app.member.repository.MemberRepository;
+
 import jakarta.servlet.http.HttpServletRequest;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;

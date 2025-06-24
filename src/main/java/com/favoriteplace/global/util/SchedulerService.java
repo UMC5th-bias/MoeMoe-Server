@@ -1,7 +1,7 @@
 package com.favoriteplace.global.util;
 
 
-import com.favoriteplace.app.repository.ItemRepository;
+import com.favoriteplace.app.item.repository.ItemRepository;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
