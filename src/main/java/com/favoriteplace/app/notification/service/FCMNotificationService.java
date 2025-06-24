@@ -19,7 +19,6 @@ import java.util.Collections;
 import java.util.List;
 
 @Service
-@ConditionalOnProperty(prefix = "fcm", name = "enabled", havingValue = "true")
 @RequiredArgsConstructor
 @Slf4j
 public class FCMNotificationService {
